@@ -1,0 +1,11 @@
+.next
+out
+build
+node_modules
+package-lock.json
+public
+
+# User-authored docs — don't touch prose
+CLAUDE.md
+project_plan.md
+project_phases/

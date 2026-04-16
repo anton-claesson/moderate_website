@@ -68,7 +68,7 @@ Each feature is sized to be implementable in roughly one focused session. Depend
 
 Get the project skeleton, tooling, and deployment pipeline in place before touching product features.
 
-- [ ] **F0.1 — Project scaffold.** Initialize Next.js project, set up TypeScript, linting, formatting, and basic folder structure. Decide on styling approach (`[DECISION NEEDED]`: Tailwind vs. CSS Modules).
+- [x] **F0.1 — Project scaffold.** Initialize Next.js project, set up TypeScript, linting, formatting, and basic folder structure. Decide on styling approach (`[DECISION NEEDED]`: Tailwind vs. CSS Modules).
 - [ ] **F0.2 — Vercel deployment pipeline.** Connect repo to Vercel, verify preview deploys on PRs, confirm production deploy on `main` merge.
 - [ ] **F0.3 — Base layout & responsive shell.** Mobile-first page shell with sections stubbed out (header / intro / map / videos / form / footer). No real content yet.
 - [ ] **F0.4 — Design tokens & visual language.** Establish palette, typography, spacing scale aligned to "Google Maps × Sims" aesthetic. Document in a short style reference.
@@ -147,7 +147,7 @@ Tracked here so they don't get lost between sessions. Resolve before — or as t
 
 | ID | Decision | Blocks | Notes |
 |---|---|---|---|
-| D1 | Styling approach (Tailwind vs. CSS Modules) | F0.1 | |
+| D1 | Styling approach (Tailwind vs. CSS Modules) | F0.1 | **Resolved 2026-04-16: Tailwind CSS.** |
 | D2 | Video source(s) and count | F1.3 | |
 | D3 | Mapbox style: Studio vs. inline overrides | F2.3 | |
 | D4 | Source datasets for current & future housing | F3.1 | Likely Lantmäteriet, SCB, municipal open data |
@@ -177,4 +177,4 @@ _Add an entry each time a feature is completed or scope changes meaningfully._
 
 | Date | Feature | Change | PR |
 |---|---|---|---|
-| _yyyy-mm-dd_ | _F0.1_ | _example entry_ | _#1_ |
+| 2026-04-16 | F0.1 | Next.js + TS + Tailwind scaffold, ESLint/Prettier, tsconfig `noUncheckedIndexedAccess`, editorconfig. D1 resolved: Tailwind. | _pending_ |
