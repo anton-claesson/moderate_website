@@ -39,8 +39,8 @@ npm run build         # Production build
 
 Copy `.env.example` to `.env.local` and fill in the values. Never commit `.env.local`.
 
-| Variable | Required | Description |
-|---|---|---|
+| Variable                   | Required  | Description                                                                              |
+| -------------------------- | --------- | ---------------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_MAPBOX_TOKEN` | From F2.1 | Mapbox GL JS access token — get one at [account.mapbox.com](https://account.mapbox.com/) |
 
 When deploying, add these variables in the Vercel project dashboard under **Settings → Environment Variables**.
@@ -81,10 +81,10 @@ public/
 
 ## Tech Stack
 
-| Layer | Choice |
-|---|---|
+| Layer     | Choice               |
+| --------- | -------------------- |
 | Framework | Next.js (App Router) |
-| Map | Mapbox GL JS |
-| Data | Static GeoJSON |
-| Styling | Tailwind CSS |
-| Hosting | Vercel |
+| Map       | Mapbox GL JS         |
+| Data      | Static GeoJSON       |
+| Styling   | Tailwind CSS         |
+| Hosting   | Vercel               |
