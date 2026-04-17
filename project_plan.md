@@ -93,23 +93,23 @@ Stand up the map with the right framing and styling, before adding data overlays
 
 ### Phase 3 — Housing Data Visualization
 
-The product's core: representing housing stock as 3D extrusions on the map.
+The product's core: interactive map with municipality selection → 3D housing stock visualization.
 
-- [x] **F3.1 — Data source & schema definition.** Decide on the input data sources for current and future housing; define a normalized GeoJSON schema (geometry, units, status, municipality, year, etc.). D4 resolved: `/public/bostads_data.csv` (from XLSX). Columns used: `Antal småhus`, `Antal flerbostadshus`, `Antal flerbostadshus 2060 (hög)`. Representative unit model: 1 map unit per 100 småhus / 1000 flerbostadshus. Schema in `/src/types/housing.ts`.
-- [ ] **F3.2 — Sample dataset.** Hand-crafted or scripted sample GeoJSON covering 2–3 municipalities for development. Replaces real data temporarily.
-- [ ] **F3.3 — Current housing stock layer.** Render LOD1/LOD2 extrusions for current housing in a distinct color.
-- [ ] **F3.4 — Future housing stock layer.** Render planned housing in a contrasting color.
-- [ ] **F3.5 — Toggle: current vs. future.** UI control (switch / segmented control) to show one, the other, or both simultaneously.
-- [ ] **F3.6 — Real dataset integration.** Replace sample data with real GeoJSON for the full Stockholm Region. Validate performance.
+UX: 2D overview (all municipalities visible, no pan) → click/select municipality → flyTo + 3D extrusions → toggle Idag/2060 → back to overview.
+
+- [x] **F3.1 — Data source & schema definition.** D4 resolved: `/public/bostads_data.csv`. Columns: `Antal småhus`, `Antal flerbostadshus`, `Antal flerbostadshus 2060 (hög)`. Representative model: 1 unit per 100 småhus / 1000 flerbostadshus. Schema in `/src/types/housing.ts`.
+- [x] **F3.2 — Housing dataset.** GeoJSON generation script reads CSV → 3 static GeoJSON files in `/public/data/`. All 26 municipalities covered.
+- [ ] **F3.3 — Municipality boundaries + 2D overview.** Render Stockholm Region municipality polygons as a schematic 2D layer. Pan/zoom disabled. Prerequisite: `/public/data/municipalities.geojson` from SCB open data.
+- [ ] **F3.4 — Municipality selection.** Click on map or choose from list → smooth flyTo + pitch=45 transition to detail view. Hover highlight on polygons.
+- [ ] **F3.5 — Housing visualization in detail view.** Show representative extrusions filtered to the selected municipality. Lazy-load GeoJSON on first selection.
+- [ ] **F3.6 — Toggle + back.** "Idag" / "2060" toggle (visible only in detail view). Back button returns to 2D overview.
 
 ### Phase 4 — Map Interactions
 
-Make the map respond to user intent.
-
-- [ ] **F4.1 — Municipality boundaries layer.** Render municipality polygons as selectable regions.
-- [ ] **F4.2 — Municipality selection & zoom animation.** Tapping/clicking a municipality triggers a smooth `flyTo` animation focused on it.
-- [ ] **F4.3 — Info text box overlay.** Persistent overlay showing context — either general legend/instructions, or municipality-specific stats when one is selected. `[DECISION NEEDED]`: scope of info shown.
-- [ ] **F4.4 — Reset / "back to overview" control.** Easy way to return to the default birds-eye view.
+- [~] **F4.1 — Municipality boundaries layer.** Merged into F3.3.
+- [~] **F4.2 — Municipality selection & zoom animation.** Merged into F3.4.
+- [ ] **F4.3 — Info text box overlay.** Overlay showing municipality name and summary stats when selected. `[DECISION NEEDED]`: scope of info shown.
+- [ ] **F4.4 — Reset / "back to overview" control.** Merged into F3.6.
 
 ### Phase 5 — Contact / Newsletter
 

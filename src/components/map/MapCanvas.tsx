@@ -3,12 +3,20 @@
 import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import {
+  STOCKHOLM_CENTER,
+  STOCKHOLM_BOUNDS,
+  OVERVIEW_ZOOM,
+  OVERVIEW_PITCH,
+  OVERVIEW_BEARING,
+} from '@/lib/mapConfig';
 
 interface MapCanvasProps {
-  style?: string | mapboxgl.Style;
+  style?: string;
+  onMapReady?: (map: mapboxgl.Map) => void;
 }
 
-export default function MapCanvas({ style = '/map-style.json' }: MapCanvasProps) {
+export default function MapCanvas({ style = '/map-style.json', onMapReady }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
 
@@ -17,22 +25,27 @@ export default function MapCanvas({ style = '/map-style.json' }: MapCanvasProps)
 
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? '';
 
-    mapRef.current = new mapboxgl.Map({
+    const map = new mapboxgl.Map({
       container: containerRef.current,
       style,
-      center: [18.05, 59.3],
-      zoom: 9,
-      maxBounds: [
-        [17.5, 59.0],
-        [18.6, 59.6],
-      ],
+      center: STOCKHOLM_CENTER,
+      zoom: OVERVIEW_ZOOM,
+      pitch: OVERVIEW_PITCH,
+      bearing: OVERVIEW_BEARING,
+      maxBounds: STOCKHOLM_BOUNDS,
+    });
+
+    mapRef.current = map;
+
+    map.on('load', () => {
+      onMapReady?.(map);
     });
 
     return () => {
-      mapRef.current?.remove();
+      map.remove();
       mapRef.current = null;
     };
-  }, [style]);
+  }, [style, onMapReady]);
 
   return <div ref={containerRef} className="w-full h-full" />;
 }
