@@ -2,18 +2,27 @@ interface VideosSectionProps {
   id: string;
 }
 
+const VIDEOS: { id: string; title: string }[] = [
+  { id: 'PLACEHOLDER_ID_1', title: 'Video 1' },
+  { id: 'PLACEHOLDER_ID_2', title: 'Video 2' },
+];
+
 export default function VideosSection({ id }: VideosSectionProps) {
   return (
     <section id={id} className="min-h-[50vh] flex items-center bg-surface-muted">
       <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 py-16">
-        <p className="text-sm font-medium text-text-muted uppercase tracking-widest mb-4">Videos</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {[1, 2].map((n) => (
-            <div
-              key={n}
-              className="aspect-video rounded-lg bg-surface border border-dashed border-border flex items-center justify-center"
-            >
-              <span className="text-text-muted text-sm">Video embed {n} — coming in F1.3</span>
+        <p className="text-sm font-semibold uppercase tracking-widest text-primary mb-6">Videos</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {VIDEOS.map((video) => (
+            <div key={video.id} className="aspect-video rounded-lg overflow-hidden bg-surface shadow-sm">
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${video.id}`}
+                title={video.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+                className="w-full h-full"
+              />
             </div>
           ))}
         </div>
