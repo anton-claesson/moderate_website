@@ -7,9 +7,9 @@ const navLinks = [
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b border-zinc-200">
+    <header className="sticky top-0 z-50 w-full bg-primary-dark border-b border-primary-dark">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <span className="text-base font-semibold tracking-tight text-zinc-900">
+        <span className="text-base font-semibold tracking-tight text-text-on-dark">
           Stockholm Housing Visualizer
         </span>
         <nav className="hidden md:flex items-center gap-6">
@@ -17,7 +17,7 @@ export default function Header() {
             <a
               key={link.href}
               href={link.href}
-              className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors"
+              className="text-sm text-text-on-dark/80 hover:text-text-on-dark transition-colors"
             >
               {link.label}
             </a>
