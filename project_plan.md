@@ -86,10 +86,10 @@ Ship a complete, content-light version of the site without the map's interactive
 
 Stand up the map with the right framing and styling, before adding data overlays.
 
-- [ ] **F2.1 — Mapbox integration.** Add Mapbox GL JS, configure access token (env var), render a map in the page.
-- [ ] **F2.2 — Birds-eye 3D camera & Stockholm bounds.** Set initial pitch/bearing/zoom for the birds-eye view; restrict pan/zoom to the Stockholm Region bounding box.
-- [ ] **F2.3 — Custom map style.** Apply stylized basemap (muted colors, simplified labels) consistent with the design tokens. May use Mapbox Studio style or runtime style overrides. `[DECISION NEEDED]`: Studio vs. inline.
-- [ ] **F2.4 — Performance baseline.** Measure load time and FPS on a mid-range mobile device; document numbers as a regression baseline.
+- [x] **F2.1 — Mapbox integration.** Add Mapbox GL JS, configure access token (env var), render a map in the page.
+- [x] **F2.2 — Birds-eye 3D camera & Stockholm bounds.** Set initial pitch/bearing/zoom for the birds-eye view; restrict pan/zoom to the Stockholm Region bounding box.
+- [x] **F2.3 — Custom map style.** Apply stylized basemap (muted colors, simplified labels) consistent with the design tokens. May use Mapbox Studio style or runtime style overrides. D3 resolved: Mapbox Studio → exported `style.json` at `/public/map-style.json`.
+- [x] **F2.4 — Performance baseline.** Measure load time and FPS on a mid-range mobile device; document numbers as a regression baseline. Production score: 68. See `docs/performance-baseline.md`.
 
 ### Phase 3 — Housing Data Visualization
 
@@ -149,7 +149,7 @@ Tracked here so they don't get lost between sessions. Resolve before — or as t
 |---|---|---|---|
 | D1 | Styling approach (Tailwind vs. CSS Modules) | F0.1 | **Resolved 2026-04-16: Tailwind CSS.** |
 | D2 | Video source(s) and count | F1.3 | **Resolved 2026-04-17: YouTube (nocookie embeds), 2 videos.** |
-| D3 | Mapbox style: Studio vs. inline overrides | F2.3 | |
+| D3 | Mapbox style: Studio vs. inline overrides | F2.3 | **Resolved 2026-04-17: Mapbox Studio → exported `style.json` committed to `/public/`.** |
 | D4 | Source datasets for current & future housing | F3.1 | Likely Lantmäteriet, SCB, municipal open data |
 | D5 | Info overlay scope (static vs. per-municipality stats) | F4.3 | |
 | D6 | Form backend provider | F5.2 | GDPR compliance is a hard requirement |
@@ -182,3 +182,4 @@ _Add an entry each time a feature is completed or scope changes meaningfully._
 | 2026-04-17 | F0.3 | Responsive shell: Header, Footer, four stub sections (intro, map, videos, contact), page.tsx rewritten, metadata updated. | #3 |
 | 2026-04-17 | F0.4 | Design token system in globals.css (sage green / amber palette), all components updated to token-based classes, dark mode, docs/style-guide.md added. | #4 |
 | 2026-04-17 | F1.1–F1.4 | Phase 1 complete: mobile hamburger nav, Swedish intro copy, YouTube nocookie embeds (2 videos), 3-column footer with data attribution. D2 resolved: YouTube. | #5 |
+| 2026-04-17 | F2.1–F2.4 | Phase 2 complete: Mapbox GL JS integrated, Stockholm camera + pan bounds, Mapbox Studio style exported to `/public/map-style.json`, lazy-loaded via `next/dynamic`. Production Lighthouse score: 68. D3 resolved: Studio export. See `docs/performance-baseline.md`. | #6 |
