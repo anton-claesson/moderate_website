@@ -9,7 +9,7 @@ interface MapCanvasProps {
 }
 
 export default function MapCanvas({
-  style = 'mapbox://styles/mapbox/streets-v12',
+  style = '/map-style.json',
 }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
