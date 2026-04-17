@@ -3,8 +3,8 @@ interface VideosSectionProps {
 }
 
 const VIDEOS: { id: string; title: string }[] = [
-  { id: 'PLACEHOLDER_ID_1', title: 'Video 1' },
-  { id: 'PLACEHOLDER_ID_2', title: 'Video 2' },
+  { id: 'y90h0n7vOrc', title: 'Video 1' },
+  { id: 'qCSfy670df4', title: 'Video 2' },
 ];
 
 export default function VideosSection({ id }: VideosSectionProps) {
