@@ -95,7 +95,7 @@ Stand up the map with the right framing and styling, before adding data overlays
 
 The product's core: representing housing stock as 3D extrusions on the map.
 
-- [ ] **F3.1 — Data source & schema definition.** Decide on the input data sources for current and future housing; define a normalized GeoJSON schema (geometry, units, status, municipality, year, etc.). `[DECISION NEEDED]`: data sources.
+- [x] **F3.1 — Data source & schema definition.** Decide on the input data sources for current and future housing; define a normalized GeoJSON schema (geometry, units, status, municipality, year, etc.). D4 resolved: `/public/bostads_data.csv` (from XLSX). Columns used: `Antal småhus`, `Antal flerbostadshus`, `Antal flerbostadshus 2060 (hög)`. Representative unit model: 1 map unit per 100 småhus / 1000 flerbostadshus. Schema in `/src/types/housing.ts`.
 - [ ] **F3.2 — Sample dataset.** Hand-crafted or scripted sample GeoJSON covering 2–3 municipalities for development. Replaces real data temporarily.
 - [ ] **F3.3 — Current housing stock layer.** Render LOD1/LOD2 extrusions for current housing in a distinct color.
 - [ ] **F3.4 — Future housing stock layer.** Render planned housing in a contrasting color.
@@ -150,7 +150,7 @@ Tracked here so they don't get lost between sessions. Resolve before — or as t
 | D1 | Styling approach (Tailwind vs. CSS Modules) | F0.1 | **Resolved 2026-04-16: Tailwind CSS.** |
 | D2 | Video source(s) and count | F1.3 | **Resolved 2026-04-17: YouTube (nocookie embeds), 2 videos.** |
 | D3 | Mapbox style: Studio vs. inline overrides | F2.3 | **Resolved 2026-04-17: Mapbox Studio → exported `style.json` committed to `/public/`.** |
-| D4 | Source datasets for current & future housing | F3.1 | Likely Lantmäteriet, SCB, municipal open data |
+| D4 | Source datasets for current & future housing | F3.1 | **Resolved 2026-04-18: `/public/bostads_data.csv`. Columns: Antal småhus, Antal flerbostadshus, Antal flerbostadshus 2060 (hög). Script generates static GeoJSON at dev time.** |
 | D5 | Info overlay scope (static vs. per-municipality stats) | F4.3 | |
 | D6 | Form backend provider | F5.2 | GDPR compliance is a hard requirement |
 | D7 | Analytics provider | F6.1 | |
