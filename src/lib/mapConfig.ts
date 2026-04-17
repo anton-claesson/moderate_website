@@ -3,7 +3,10 @@ export const STOCKHOLM_BOUNDS: [[number, number], [number, number]] = [
   [17.25, 58.9],
   [19.1, 59.85],
 ];
-export const DEFAULT_ZOOM = 9;
+export const OVERVIEW_ZOOM = 8;
+export const OVERVIEW_PITCH = 0;
+export const OVERVIEW_BEARING = 0;
+export const DETAIL_ZOOM = 13;
 export const DEFAULT_PITCH = 45;
 export const DEFAULT_BEARING = -15;
 
