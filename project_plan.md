@@ -77,10 +77,10 @@ Get the project skeleton, tooling, and deployment pipeline in place before touch
 
 Ship a complete, content-light version of the site without the map's interactive features.
 
-- [ ] **F1.1 — Header.** Title, optional logo, anchor navigation to page sections.
-- [ ] **F1.2 — Intro textbox.** Static copy describing the project, its data, and how to read the map.
-- [ ] **F1.3 — Embedded videos section.** Responsive video embeds (provider TBD: YouTube / Vimeo / self-hosted MP4). `[DECISION NEEDED]`: source & how many.
-- [ ] **F1.4 — Footer.** Credits, data attribution, contact info, year.
+- [x] **F1.1 — Header.** Title, optional logo, anchor navigation to page sections.
+- [x] **F1.2 — Intro textbox.** Static copy describing the project, its data, and how to read the map.
+- [x] **F1.3 — Embedded videos section.** Responsive video embeds (provider TBD: YouTube / Vimeo / self-hosted MP4). D2 resolved: YouTube (nocookie), 2 videos.
+- [x] **F1.4 — Footer.** Credits, data attribution, contact info, year.
 
 ### Phase 2 — Map Foundation
 
@@ -148,7 +148,7 @@ Tracked here so they don't get lost between sessions. Resolve before — or as t
 | ID | Decision | Blocks | Notes |
 |---|---|---|---|
 | D1 | Styling approach (Tailwind vs. CSS Modules) | F0.1 | **Resolved 2026-04-16: Tailwind CSS.** |
-| D2 | Video source(s) and count | F1.3 | |
+| D2 | Video source(s) and count | F1.3 | **Resolved 2026-04-17: YouTube (nocookie embeds), 2 videos.** |
 | D3 | Mapbox style: Studio vs. inline overrides | F2.3 | |
 | D4 | Source datasets for current & future housing | F3.1 | Likely Lantmäteriet, SCB, municipal open data |
 | D5 | Info overlay scope (static vs. per-municipality stats) | F4.3 | |
@@ -181,3 +181,4 @@ _Add an entry each time a feature is completed or scope changes meaningfully._
 | 2026-04-16 | F0.2 | Vercel connected, GitHub Actions CI (lint + format + build), `vercel.json`, `.env.example`, README rewritten. Node 24. | #2 |
 | 2026-04-17 | F0.3 | Responsive shell: Header, Footer, four stub sections (intro, map, videos, contact), page.tsx rewritten, metadata updated. | #3 |
 | 2026-04-17 | F0.4 | Design token system in globals.css (sage green / amber palette), all components updated to token-based classes, dark mode, docs/style-guide.md added. | #4 |
+| 2026-04-17 | F1.1–F1.4 | Phase 1 complete: mobile hamburger nav, Swedish intro copy, YouTube nocookie embeds (2 videos), 3-column footer with data attribution. D2 resolved: YouTube. | #5 |
