@@ -25,8 +25,8 @@ export default function IntroSection({ id }: IntroSectionProps) {
         <div className="rounded-lg bg-primary-light border border-border px-5 py-4 text-sm text-text-muted leading-relaxed">
           <span className="font-semibold text-text">Datakällor & metod — </span>
           Data kommer från Lantmäteriet och SCB. De tredimensionella volymerna är schematiska
-          (LOD1/LOD2) och visar täthet och placering, inte arkitektonisk form.
-          Informationen är avsedd för orientering och beslutsunderlag, inte rättsliga ändamål.
+          (LOD1/LOD2) och visar täthet och placering, inte arkitektonisk form. Informationen är
+          avsedd för orientering och beslutsunderlag, inte rättsliga ändamål.
         </div>
       </div>
     </section>

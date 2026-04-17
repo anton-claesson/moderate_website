@@ -14,7 +14,10 @@ export default function VideosSection({ id }: VideosSectionProps) {
         <p className="text-sm font-semibold uppercase tracking-widest text-primary mb-6">Videos</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {VIDEOS.map((video) => (
-            <div key={video.id} className="aspect-video rounded-lg overflow-hidden bg-surface shadow-sm">
+            <div
+              key={video.id}
+              className="aspect-video rounded-lg overflow-hidden bg-surface shadow-sm"
+            >
               <iframe
                 src={`https://www.youtube-nocookie.com/embed/${video.id}`}
                 title={video.title}
