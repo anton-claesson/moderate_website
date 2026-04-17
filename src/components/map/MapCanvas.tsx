@@ -8,9 +8,7 @@ interface MapCanvasProps {
   style?: string | mapboxgl.Style;
 }
 
-export default function MapCanvas({
-  style = '/map-style.json',
-}: MapCanvasProps) {
+export default function MapCanvas({ style = '/map-style.json' }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
 
@@ -22,9 +20,12 @@ export default function MapCanvas({
     mapRef.current = new mapboxgl.Map({
       container: containerRef.current,
       style,
-      center: [18.05, 59.30],
+      center: [18.05, 59.3],
       zoom: 9,
-      maxBounds: [[17.5, 59.0], [18.6, 59.6]],
+      maxBounds: [
+        [17.5, 59.0],
+        [18.6, 59.6],
+      ],
     });
 
     return () => {

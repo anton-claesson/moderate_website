@@ -18,15 +18,15 @@ Lighthouse mobile preset (Moto G Power 2022 simulation, Fast 3G). Two runs taken
 **Environment:** `npm run build && npm start` (localhost:3000)  
 **Lazy-loading:** `MapCanvas` deferred via `next/dynamic` (applied before this run)
 
-| Metric | Value | Target | Status |
-|--------|-------|--------|--------|
-| Performance score | **68** | ≥ 70 | ⚠️ Close |
-| First Contentful Paint | 0.8 s | < 1.8 s | ✅ |
-| Largest Contentful Paint | 2.4 s | < 2.5 s | ✅ |
-| Total Blocking Time | 2,140 ms | < 200 ms | ❌ |
-| Speed Index | 4.1 s | < 3.4 s | ⚠️ |
-| Cumulative Layout Shift | 0 | < 0.1 | ✅ |
-| Time to Interactive | 13.3 s | — | ❌ |
+| Metric                   | Value    | Target   | Status   |
+| ------------------------ | -------- | -------- | -------- |
+| Performance score        | **68**   | ≥ 70     | ⚠️ Close |
+| First Contentful Paint   | 0.8 s    | < 1.8 s  | ✅       |
+| Largest Contentful Paint | 2.4 s    | < 2.5 s  | ✅       |
+| Total Blocking Time      | 2,140 ms | < 200 ms | ❌       |
+| Speed Index              | 4.1 s    | < 3.4 s  | ⚠️       |
+| Cumulative Layout Shift  | 0        | < 0.1    | ✅       |
+| Time to Interactive      | 13.3 s   | —        | ❌       |
 
 ### Root cause of TBT / TTI
 
