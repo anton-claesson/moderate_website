@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "generate:housing": "tsx scripts/generate-housing-geojson.ts"
   },
   "dependencies": {
     "mapbox-gl": "^3.21.0",
