@@ -53,8 +53,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-surface: #0f1a0f;
-    --color-surface-muted: #1a2b1a;
+    --color-primary-light: #1c3a20;
+    --color-surface: #1a2b1a;
+    --color-surface-muted: #0f1a0f;
     --color-text: #e8f0e8;
     --color-text-muted: #9ab09a;
     --color-border: #2e422e;

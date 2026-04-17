@@ -91,8 +91,9 @@ Dark mode is applied automatically via `@media (prefers-color-scheme: dark)`. On
 
 | Token                   | Light     | Dark      |
 | ----------------------- | --------- | --------- |
-| `--color-surface`       | `#FAFAF7` | `#0F1A0F` |
-| `--color-surface-muted` | `#F0F0EA` | `#1A2B1A` |
+| `--color-primary-light` | `#EDF4EC` | `#1C3A20` |
+| `--color-surface`       | `#FAFAF7` | `#1A2B1A` |
+| `--color-surface-muted` | `#F0F0EA` | `#0F1A0F` |
 | `--color-text`          | `#1C2B1C` | `#E8F0E8` |
 | `--color-text-muted`    | `#5A6B5A` | `#9AB09A` |
 | `--color-border`        | `#D4DDD3` | `#2E422E` |
