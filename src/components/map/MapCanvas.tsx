@@ -22,6 +22,9 @@ export default function MapCanvas({
     mapRef.current = new mapboxgl.Map({
       container: containerRef.current,
       style,
+      center: [18.05, 59.30],
+      zoom: 9,
+      maxBounds: [[17.5, 59.0], [18.6, 59.6]],
     });
 
     return () => {
