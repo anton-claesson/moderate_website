@@ -71,7 +71,7 @@ Get the project skeleton, tooling, and deployment pipeline in place before touch
 - [x] **F0.1 — Project scaffold.** Initialize Next.js project, set up TypeScript, linting, formatting, and basic folder structure. Decide on styling approach (`[DECISION NEEDED]`: Tailwind vs. CSS Modules).
 - [x] **F0.2 — Vercel deployment pipeline.** Connect repo to Vercel, verify preview deploys on PRs, confirm production deploy on `main` merge.
 - [x] **F0.3 — Base layout & responsive shell.** Mobile-first page shell with sections stubbed out (header / intro / map / videos / form / footer). No real content yet.
-- [ ] **F0.4 — Design tokens & visual language.** Establish palette, typography, spacing scale aligned to "Google Maps × Sims" aesthetic. Document in a short style reference.
+- [x] **F0.4 — Design tokens & visual language.** Establish palette, typography, spacing scale aligned to "Google Maps × Sims" aesthetic. Document in a short style reference.
 
 ### Phase 1 — Static Content & Layout
 
@@ -180,3 +180,4 @@ _Add an entry each time a feature is completed or scope changes meaningfully._
 | 2026-04-16 | F0.1 | Next.js + TS + Tailwind scaffold, ESLint/Prettier, tsconfig `noUncheckedIndexedAccess`, editorconfig. D1 resolved: Tailwind. | #1 |
 | 2026-04-16 | F0.2 | Vercel connected, GitHub Actions CI (lint + format + build), `vercel.json`, `.env.example`, README rewritten. Node 24. | #2 |
 | 2026-04-17 | F0.3 | Responsive shell: Header, Footer, four stub sections (intro, map, videos, contact), page.tsx rewritten, metadata updated. | #3 |
+| 2026-04-17 | F0.4 | Design token system in globals.css (sage green / amber palette), all components updated to token-based classes, dark mode, docs/style-guide.md added. | #4 |
