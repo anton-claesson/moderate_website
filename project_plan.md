@@ -115,9 +115,9 @@ UX: 2D overview (all municipalities visible, no pan) → click/select municipali
 
 Convert visitors into newsletter subscribers.
 
-- [ ] **F5.1 — Contact form UI.** Mobile-first form with name + email fields, validation, success/error states.
-- [ ] **F5.2 — Form submission backend.** Wire form to chosen provider. `[DECISION NEEDED]`: Formspree vs. Resend vs. Vercel Forms vs. other. Consider GDPR (audience is in EU).
-- [ ] **F5.3 — GDPR consent & privacy copy.** Consent checkbox, link to privacy policy, document data handling.
+- [x] **F5.1 — Contact form UI.** Mobile-first form with name, email, phone, zip/municipality fields, client-side validation, success/error states.
+- [x] **F5.2 — Form submission backend.** D6 resolved: Formspree (EU data storage, AJAX mode). `NEXT_PUBLIC_FORMSPREE_URL` env var. No new npm dependencies.
+- [x] **F5.3 — GDPR consent & privacy copy.** Required consent checkbox with inline Swedish privacy copy; submit disabled until checked.
 
 ### Phase 6 — Analytics & Observability
 
@@ -138,6 +138,7 @@ Convert visitors into newsletter subscribers.
 - [ ] **F8.2 — Additional municipality stats.** Richer info overlay (population, units planned, timelines).
 - [ ] **F8.3 — Time-slider.** Scrub through years to see future stock materialize over time.
 - [ ] **F8.4 — Filtering by attributes.** E.g., by developer, project status, building type.
+- [ ] **F8.5 — Form/newsletter platform review.** Evaluate replacing Formspree with a dedicated newsletter tool (e.g., Buttondown, Brevo, Mailchimp) once subscriber volume and stakeholder requirements are known. Consider subscriber management, double opt-in, unsubscribe flows, and cost at scale.
 
 ---
 
@@ -152,7 +153,7 @@ Tracked here so they don't get lost between sessions. Resolve before — or as t
 | D3 | Mapbox style: Studio vs. inline overrides | F2.3 | **Resolved 2026-04-17: Mapbox Studio → exported `style.json` committed to `/public/`.** |
 | D4 | Source datasets for current & future housing | F3.1 | **Resolved 2026-04-18: `/public/bostads_data.csv`. Columns: Antal småhus, Antal flerbostadshus, Antal flerbostadshus 2060 (hög). Script generates static GeoJSON at dev time.** |
 | D5 | Info overlay scope (static vs. per-municipality stats) | F4.3 | **Resolved 2026-04-20: municipality name + småhus + current flerbostadshus + 2060 flerbostadshus + total growth %. Static lookup from CSV. Floating card layout.** |
-| D6 | Form backend provider | F5.2 | GDPR compliance is a hard requirement |
+| D6 | Form backend provider | F5.2 | **Resolved 2026-04-20: Formspree with EU data storage. Easy to swap via `NEXT_PUBLIC_FORMSPREE_URL`. Platform review deferred to F8.5.** |
 | D7 | Analytics provider | F6.1 | |
 
 ## 7. Risks
@@ -185,3 +186,4 @@ _Add an entry each time a feature is completed or scope changes meaningfully._
 | 2026-04-17 | F2.1–F2.4 | Phase 2 complete: Mapbox GL JS integrated, Stockholm camera + pan bounds, Mapbox Studio style exported to `/public/map-style.json`, lazy-loaded via `next/dynamic`. Production Lighthouse score: 68. D3 resolved: Studio export. See `docs/performance-baseline.md`. | #6 |
 | 2026-04-20 | F3.1–F3.6 + F4.1–F4.2 | Phase 3 complete: CSV → GeoJSON generation script, municipality boundaries (okfse/sweden-geojson), monochrome map style, 2D overview with hover highlight, municipality selection (click + list), fitBounds + 3D transition at pitch=45, housing extrusions (småhus/flerbostadshus/new), Idag/2060 toggle, back button. F4.1 and F4.2 merged into Phase 3. Race condition in lazy housing init fixed. D4 resolved. | #7 |
 | 2026-04-20 | F4.3 | Phase 4 complete. MunicipalityCard (overview/detail states), StatsPanel, bidirectional hover sync with auto-scroll, municipality dim layer, tighter zoom. UI polish: 3px outlines + white hover outline, glassy card (zinc-700/88), flex-1 toggle, floating absolute layout. D5 resolved. | #8 |
+| 2026-04-20 | F5.1–F5.3 | Phase 5 complete. ContactForm component: 4 fields (name, email, phone, zip/municipality), client-side validation, idle/submitting/success/error states. Formspree integration via `NEXT_PUBLIC_FORMSPREE_URL` (no new deps). GDPR consent checkbox with inline Swedish privacy copy. F8.5 added for future platform review. D6 resolved. | #9 |
