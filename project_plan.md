@@ -99,10 +99,10 @@ UX: 2D overview (all municipalities visible, no pan) → click/select municipali
 
 - [x] **F3.1 — Data source & schema definition.** D4 resolved: `/public/bostads_data.csv`. Columns: `Antal småhus`, `Antal flerbostadshus`, `Antal flerbostadshus 2060 (hög)`. Representative model: 1 unit per 100 småhus / 1000 flerbostadshus. Schema in `/src/types/housing.ts`.
 - [x] **F3.2 — Housing dataset.** GeoJSON generation script reads CSV → 3 static GeoJSON files in `/public/data/`. All 26 municipalities covered.
-- [x] **F3.3 — Municipality boundaries + 2D overview.** 26 Stockholm Region municipality polygons from okfse/sweden-geojson (38 KB). Schematic 2D overview at zoom=8; all user interactions disabled. Hover highlight + click handler wired.
-- [x] **F3.4 — Municipality selection.** Click on map or choose from list → smooth flyTo + pitch=45 + housing extrusions (lazy-loaded on first selection). Hover highlight on polygons.
-- [x] **F3.5 — Housing visualization in detail view.** `housingLayers.ts` with `initHousingLayers`/`showHousingForMunicipality`/`hideHousingLayers`. Filter applied per municipality.
-- [x] **F3.6 — Toggle + back.** "Idag" / "2060" toggle and "← Alla kommuner" back button. Both visible only in detail view.
+- [x] **F3.3 — Municipality boundaries + 2D overview.** 26 polygons (okfse/sweden-geojson). Monochrome style. `fitBounds` ensures full region visible on load + back-navigation. Municipality name labels as symbol overlay; hover highlight (fill + label) disabled in detail view.
+- [x] **F3.4 — Municipality selection.** Click polygon or list → `fitBounds` to municipality polygon at pitch=45. Hover highlight disabled once a municipality is selected.
+- [x] **F3.5 — Housing visualization in detail view.** Larger footprints, staggered+jittered grid. Spatially separated areas (småhus north, current flerbostadshus center, new flerbostadshus south). Only newly built apartments (delta 2060 − today) shown in amber; current stock always green.
+- [x] **F3.6 — Toggle + back.** "Idag" = småhus + current apartments. "2060" = adds new apartments in amber. Back button → `fitBounds` full region.
 
 ### Phase 4 — Map Interactions
 

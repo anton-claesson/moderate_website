@@ -3,17 +3,17 @@ import type { HousingCollection, HousingView } from '@/types/housing';
 import {
   SMAHUS_LAYER_ID,
   FLERBOSTADSHUS_CURRENT_LAYER_ID,
-  FLERBOSTADSHUS_2060_LAYER_ID,
+  FLERBOSTADSHUS_NEW_LAYER_ID,
   SMAHUS_COLOR,
   FLERBOSTADSHUS_COLOR,
-  FLERBOSTADSHUS_2060_COLOR,
+  FLERBOSTADSHUS_NEW_COLOR,
   SMAHUS_HEIGHT_M,
   FLERBOSTADSHUS_HEIGHT_M,
 } from './mapConfig';
 
 const SMAHUS_SOURCE_ID = 'housing-smahus';
 const FLERBOSTADSHUS_SOURCE_ID = 'housing-flerbostadshus';
-const FLERBOSTADSHUS_2060_SOURCE_ID = 'housing-flerbostadshus-2060';
+const FLERBOSTADSHUS_NEW_SOURCE_ID = 'housing-flerbostadshus-new';
 
 const municipalityFilter = (name: string): mapboxgl.FilterSpecification => [
   '==',
@@ -43,16 +43,16 @@ function addExtrusionLayer(
   });
 }
 
-// Call once when housing data is first fetched. Layers start hidden with an empty filter.
+// Call once when housing data is first fetched. Layers start hidden.
 export function initHousingLayers(
   map: mapboxgl.Map,
   smahusData: HousingCollection,
   currentData: HousingCollection,
-  futureData: HousingCollection,
+  newData: HousingCollection,
 ) {
   map.addSource(SMAHUS_SOURCE_ID, { type: 'geojson', data: smahusData });
   map.addSource(FLERBOSTADSHUS_SOURCE_ID, { type: 'geojson', data: currentData });
-  map.addSource(FLERBOSTADSHUS_2060_SOURCE_ID, { type: 'geojson', data: futureData });
+  map.addSource(FLERBOSTADSHUS_NEW_SOURCE_ID, { type: 'geojson', data: newData });
 
   addExtrusionLayer(map, SMAHUS_LAYER_ID, SMAHUS_SOURCE_ID, SMAHUS_COLOR, SMAHUS_HEIGHT_M);
   addExtrusionLayer(
@@ -64,40 +64,37 @@ export function initHousingLayers(
   );
   addExtrusionLayer(
     map,
-    FLERBOSTADSHUS_2060_LAYER_ID,
-    FLERBOSTADSHUS_2060_SOURCE_ID,
-    FLERBOSTADSHUS_2060_COLOR,
+    FLERBOSTADSHUS_NEW_LAYER_ID,
+    FLERBOSTADSHUS_NEW_SOURCE_ID,
+    FLERBOSTADSHUS_NEW_COLOR,
     FLERBOSTADSHUS_HEIGHT_M,
   );
 }
 
-// Show housing extrusions for a single municipality.
+// Show housing for a municipality; defaults to "current" view (new apartments hidden).
 export function showHousingForMunicipality(map: mapboxgl.Map, municipality: string) {
   const filter = municipalityFilter(municipality);
   map.setFilter(SMAHUS_LAYER_ID, filter);
   map.setFilter(FLERBOSTADSHUS_CURRENT_LAYER_ID, filter);
-  map.setFilter(FLERBOSTADSHUS_2060_LAYER_ID, filter);
+  map.setFilter(FLERBOSTADSHUS_NEW_LAYER_ID, filter);
   map.setLayoutProperty(SMAHUS_LAYER_ID, 'visibility', 'visible');
   map.setLayoutProperty(FLERBOSTADSHUS_CURRENT_LAYER_ID, 'visibility', 'visible');
-  map.setLayoutProperty(FLERBOSTADSHUS_2060_LAYER_ID, 'visibility', 'none');
+  map.setLayoutProperty(FLERBOSTADSHUS_NEW_LAYER_ID, 'visibility', 'none');
 }
 
 // Hide all housing layers (when returning to overview).
 export function hideHousingLayers(map: mapboxgl.Map) {
   map.setLayoutProperty(SMAHUS_LAYER_ID, 'visibility', 'none');
   map.setLayoutProperty(FLERBOSTADSHUS_CURRENT_LAYER_ID, 'visibility', 'none');
-  map.setLayoutProperty(FLERBOSTADSHUS_2060_LAYER_ID, 'visibility', 'none');
+  map.setLayoutProperty(FLERBOSTADSHUS_NEW_LAYER_ID, 'visibility', 'none');
 }
 
-// Switch the apartment layer between current and 2060.
+// "Idag": current apartments visible, new hidden.
+// "2060": current apartments stay visible + new apartments (amber) added.
 export function setLayerView(map: mapboxgl.Map, view: HousingView) {
+  map.setLayoutProperty(FLERBOSTADSHUS_CURRENT_LAYER_ID, 'visibility', 'visible');
   map.setLayoutProperty(
-    FLERBOSTADSHUS_CURRENT_LAYER_ID,
-    'visibility',
-    view === 'current' ? 'visible' : 'none',
-  );
-  map.setLayoutProperty(
-    FLERBOSTADSHUS_2060_LAYER_ID,
+    FLERBOSTADSHUS_NEW_LAYER_ID,
     'visibility',
     view === '2060' ? 'visible' : 'none',
   );
