@@ -18,10 +18,11 @@ import {
   OVERVIEW_BEARING,
   DEFAULT_PITCH,
   DEFAULT_BEARING,
+  DESKTOP_MAP_PADDING,
+  MOBILE_MAP_PADDING,
+  DESKTOP_BREAKPOINT,
 } from '@/lib/mapConfig';
-import LayerToggle from '@/components/map/LayerToggle';
-import BackButton from '@/components/map/BackButton';
-import MunicipalityList from '@/components/map/MunicipalityList';
+import MunicipalityCard from '@/components/map/MunicipalityCard';
 
 const MapCanvas = dynamic(() => import('@/components/map/MapCanvas'), {
   ssr: false,
@@ -86,12 +87,13 @@ export default function MapSection({ id }: MapSectionProps) {
   const hoveredRef = useRef<string | null>(null);
   const selectedRef = useRef<string | null>(null);
   const municipalityFeaturesRef = useRef<Map<string, MunicipalityFeature>>(new Map());
+  const paddingCleanupRef = useRef<(() => void) | null>(null);
 
   const [selected, setSelected] = useState<string | null>(null);
   const [view, setView] = useState<HousingView>('current');
   const [housingReady, setHousingReady] = useState(false);
+  const [hoveredMunicipality, setHoveredMunicipality] = useState<string | null>(null);
 
-  // Preload municipality polygons for bounds computation
   useEffect(() => {
     fetch('/data/municipalities.geojson')
       .then((r) => r.json())
@@ -102,10 +104,16 @@ export default function MapSection({ id }: MapSectionProps) {
       });
   }, []);
 
-  // Keep selectedRef in sync for use inside map event handlers
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
+
+  // Clean up resize listener on unmount
+  useEffect(() => {
+    return () => {
+      paddingCleanupRef.current?.();
+    };
+  }, []);
 
   async function ensureHousingReady(map: MapboxMap) {
     if (!housingReadyPromiseRef.current) {
@@ -126,8 +134,8 @@ export default function MapSection({ id }: MapSectionProps) {
 
     setSelected(name);
     setView('current');
+    setHoveredMunicipality(null);
 
-    // Disable hover visuals in detail view
     map.setLayoutProperty(MUNICIPALITY_HOVER_LAYER, 'visibility', 'none');
 
     await ensureHousingReady(map);
@@ -149,9 +157,9 @@ export default function MapSection({ id }: MapSectionProps) {
     const map = mapRef.current;
     if (!map) return;
     setSelected(null);
+    setHoveredMunicipality(null);
     hideHousingLayers(map);
 
-    // Re-enable hover visuals
     map.setLayoutProperty(MUNICIPALITY_HOVER_LAYER, 'visibility', 'visible');
 
     map.fitBounds(STOCKHOLM_BOUNDS, {
@@ -160,6 +168,20 @@ export default function MapSection({ id }: MapSectionProps) {
       bearing: OVERVIEW_BEARING,
       duration: 1200,
     });
+  }, []);
+
+  const handleListHover = useCallback((name: string | null) => {
+    if (selectedRef.current) return;
+    const map = mapRef.current;
+    if (!map) return;
+    hoveredRef.current = name;
+    setHoveredMunicipality(name);
+    map.setFilter(MUNICIPALITY_HOVER_LAYER, [
+      '==',
+      ['get', 'kom_namn'],
+      name ?? '',
+    ] as mapboxgl.FilterSpecification);
+    map.getCanvas().style.cursor = name ? 'pointer' : '';
   }, []);
 
   useEffect(() => {
@@ -177,7 +199,16 @@ export default function MapSection({ id }: MapSectionProps) {
       map.doubleClickZoom.disable();
       map.touchZoomRotate.disable();
 
-      // Fit full Stockholm Region immediately
+      // Apply camera padding so the region sits left-of-center on desktop
+      const updatePadding = () => {
+        map.setPadding(
+          window.innerWidth >= DESKTOP_BREAKPOINT ? DESKTOP_MAP_PADDING : MOBILE_MAP_PADDING,
+        );
+      };
+      updatePadding();
+      window.addEventListener('resize', updatePadding);
+      paddingCleanupRef.current = () => window.removeEventListener('resize', updatePadding);
+
       map.fitBounds(STOCKHOLM_BOUNDS, { padding: 20, duration: 0 });
 
       map.addSource(MUNICIPALITY_SOURCE, {
@@ -185,7 +216,6 @@ export default function MapSection({ id }: MapSectionProps) {
         data: '/data/municipalities.geojson',
       });
 
-      // Transparent hit area
       map.addLayer({
         id: MUNICIPALITY_FILL_LAYER,
         type: 'fill',
@@ -193,7 +223,6 @@ export default function MapSection({ id }: MapSectionProps) {
         paint: { 'fill-color': '#ffffff', 'fill-opacity': 0 },
       });
 
-      // Boundary outlines
       map.addLayer({
         id: MUNICIPALITY_OUTLINE_LAYER,
         type: 'line',
@@ -201,7 +230,6 @@ export default function MapSection({ id }: MapSectionProps) {
         paint: { 'line-color': '#888888', 'line-width': 1, 'line-opacity': 0.6 },
       });
 
-      // Hover fill highlight
       map.addLayer({
         id: MUNICIPALITY_HOVER_LAYER,
         type: 'fill',
@@ -215,6 +243,7 @@ export default function MapSection({ id }: MapSectionProps) {
         const name = e.features?.[0]?.properties?.['kom_namn'] as string | undefined;
         if (name && name !== hoveredRef.current) {
           hoveredRef.current = name;
+          setHoveredMunicipality(name);
           map.setFilter(MUNICIPALITY_HOVER_LAYER, ['==', ['get', 'kom_namn'], name]);
           map.getCanvas().style.cursor = 'pointer';
         }
@@ -223,6 +252,7 @@ export default function MapSection({ id }: MapSectionProps) {
       map.on('mouseleave', MUNICIPALITY_FILL_LAYER, () => {
         if (selectedRef.current) return;
         hoveredRef.current = null;
+        setHoveredMunicipality(null);
         map.setFilter(MUNICIPALITY_HOVER_LAYER, ['==', ['get', 'kom_namn'], '']);
         map.getCanvas().style.cursor = '';
       });
@@ -236,24 +266,42 @@ export default function MapSection({ id }: MapSectionProps) {
   );
 
   return (
-    <section id={id} className="min-h-[80vh] bg-map-bg">
-      <div className="relative w-full h-[80vh]">
+    <section id={id} className="bg-map-bg">
+      {/* Mobile card — stacked above map */}
+      <div className="md:hidden">
+        <MunicipalityCard
+          isMobile={true}
+          municipalities={SORTED_MUNICIPALITIES}
+          selected={selected}
+          view={view}
+          hoveredMunicipality={hoveredMunicipality}
+          onSelect={selectMunicipality}
+          onBack={returnToOverview}
+          onViewChange={setView}
+          onHoverMunicipality={handleListHover}
+        />
+      </div>
+
+      {/* Map */}
+      <div className="relative h-[70vh] md:h-[80vh]">
         <MapCanvas onMapReady={handleMapReady} />
 
-        <div className="absolute top-3 right-3 z-10">
-          <MunicipalityList
-            municipalities={SORTED_MUNICIPALITIES}
-            selected={selected}
-            onSelect={selectMunicipality}
-          />
-        </div>
-
-        {selected && (
-          <div className="absolute bottom-6 left-3 z-10 flex gap-2">
-            <BackButton onClick={returnToOverview} />
-            <LayerToggle view={view} onChange={setView} />
+        {/* Desktop card — floating over ocean area on right */}
+        <div className="hidden md:flex absolute top-0 right-6 h-full items-center z-10 pointer-events-none">
+          <div className="pointer-events-auto w-[280px]">
+            <MunicipalityCard
+              isMobile={false}
+              municipalities={SORTED_MUNICIPALITIES}
+              selected={selected}
+              view={view}
+              hoveredMunicipality={hoveredMunicipality}
+              onSelect={selectMunicipality}
+              onBack={returnToOverview}
+              onViewChange={setView}
+              onHoverMunicipality={handleListHover}
+            />
           </div>
-        )}
+        </div>
       </div>
     </section>
   );
