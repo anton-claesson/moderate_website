@@ -93,27 +93,18 @@ State lifted to `MapSection`:
 - `onHoverMunicipality?: (name: string | null) => void` — fires on `mouseenter`/`mouseleave` (skipped on mobile)
 - `isMobile?: boolean` — suppresses hover handlers
 
-### Map Padding (Desktop Offset)
+### Desktop Layout (CSS Grid)
 
-Mapbox camera padding shifts the optical center without changing the canvas dimensions. Applied once on map load, updated on viewport resize.
+The map section uses a CSS grid on `md:` breakpoints: map takes `1fr` (all remaining width) and the card takes a fixed `288px` right column. This is more reliable than Mapbox camera padding, which was constrained by `maxBounds` and produced no visible offset.
 
-```ts
-// mapConfig.ts
-export const DESKTOP_MAP_PADDING = { top: 0, bottom: 0, left: 0, right: 320 };
-export const MOBILE_MAP_PADDING  = { top: 0, bottom: 0, left: 0, right: 0 };
-export const DESKTOP_BREAKPOINT  = 768;
+```
+<div class="md:grid md:grid-cols-[1fr_288px] h-[80vh]">
+  <div>MapCanvas (fills cell)</div>
+  <div>MunicipalityCard (288px column)</div>
+</div>
 ```
 
-```ts
-// In handleMapReady:
-const isDesktop = () => window.innerWidth >= DESKTOP_BREAKPOINT;
-const updatePadding = () => map.setPadding(isDesktop() ? DESKTOP_MAP_PADDING : MOBILE_MAP_PADDING);
-updatePadding();
-window.addEventListener('resize', updatePadding);
-// cleanup via map 'remove' event or component unmount
-```
-
-All subsequent `fitBounds` calls automatically respect the padding — no changes needed to existing camera calls.
+`maxBounds` is removed from `MapCanvas` — pan/zoom is already disabled programmatically, so the constraint is not needed and prevented correct camera positioning.
 
 ---
 
@@ -143,39 +134,49 @@ Display format: numbers with `toLocaleString('sv-SE')` (space thousands separato
 
 | File | Change |
 |------|--------|
-| `src/lib/mapConfig.ts` | Add `DESKTOP_MAP_PADDING`, `MOBILE_MAP_PADDING`, `DESKTOP_BREAKPOINT` |
+| `src/lib/mapConfig.ts` | Add `MUNICIPALITY_OUTLINE_HOVER_LAYER`, `MUNICIPALITY_DIM_LAYER` constants |
 | `src/data/housingStats.ts` | **New** — static stats lookup (26 entries) |
-| `src/components/map/MapCanvas.tsx` | Add `externalHover` + `onHoverMunicipality` props; apply padding via `handleMapReady` |
-| `src/components/map/MunicipalityList.tsx` | Add `hoveredMunicipality`, `onHoverMunicipality`, `isMobile` props; remove absolute positioning |
-| `src/components/map/LayerToggle.tsx` | Remove absolute positioning (now inside card) |
-| `src/components/map/BackButton.tsx` | Remove absolute positioning (now inside card) |
+| `src/components/map/MapCanvas.tsx` | Remove `maxBounds` (pan disabled programmatically; bounds fought camera) |
+| `src/components/map/MunicipalityList.tsx` | Hover props; `scrollIntoView` on hover change; accent/semibold hover style |
+| `src/components/map/LayerToggle.tsx` | `flex-1` on each button (fills width, eliminates empty third-slot visual) |
 | `src/components/map/StatsPanel.tsx` | **New** — renders 4 stat rows from `MunicipalityStats` |
-| `src/components/map/MunicipalityCard.tsx` | **New** — card container, switches overview ↔ detail |
-| `src/components/sections/MapSection.tsx` | Layout restructure; lift hover state; wire padding; remove old overlay divs |
+| `src/components/map/MunicipalityCard.tsx` | **New** — card container, switches overview ↔ detail; opaque background |
+| `src/components/sections/MapSection.tsx` | CSS grid layout; new outline-hover + dim layers; tighter fitBounds; `setHighlight()` helper |
 
 ---
 
-## Commit Sequence
+## Commit Sequence (as shipped)
 
 1. `feat(layout): restructure MapSection for card-based UI, desktop/mobile split`
-2. `feat(map): apply Mapbox camera padding for desktop region offset`
-3. `feat(map): bidirectional hover sync between MunicipalityList and map polygons`
-4. `feat(map): MunicipalityCard component — overview and detail states`
-5. `feat(data): static housingStats lookup resolving D5`
-6. `feat(map): StatsPanel component displaying municipality housing data`
-7. `test: unit tests for housingStats and StatsPanel`
+2. `feat(data): static housingStats lookup and StatsPanel component, resolving D5`
+3. `docs: add Phase 4 implementation plan, update project_plan.md`
+4. `fix(map): six UI refinements — layout, outlines, hover, card, toggle, zoom`
+
+---
+
+## Refinements Applied (post initial implementation)
+
+After first-pass review the following changes were made in commit 4:
+
+| # | Issue | Fix |
+|---|-------|-----|
+| 1 | Camera padding didn't visibly offset the region | Replaced with CSS grid layout: map `1fr`, card `288px` column. Removed `DESKTOP_MAP_PADDING` / `MOBILE_MAP_PADDING` / `DESKTOP_BREAKPOINT`. Removed `maxBounds` from `MapCanvas`. |
+| 2 | Outlines too thin and no hover colour change | Base outline: 2px / 0.8 opacity. New `municipalities-outline-hover` line layer (white, 2.5px) filtered to hovered/selected name. |
+| 3 | Hover highlight in list not prominent; no auto-scroll | `scrollIntoView({block:'nearest'})` on `hoveredMunicipality` change. Hover style: `bg-accent/20 text-accent font-semibold`. |
+| 4 | Card semi-transparent, hard to read | `bg-header-bg/90 backdrop-blur-sm` → `bg-header-bg`. |
+| 5 | Toggle appeared to have three options | Each button: `flex-1` (was `min-w-[80px]`). The dead space at the end of the container looked like a third slot. |
+| 6 | Too much surrounding context in detail view | `fitBounds` padding reduced 60 → 20. Selected municipality keeps its fill+outline highlight. New `municipalities-dim` fill layer (black, 0.4 opacity) dims all other polygons; hidden in overview. |
 
 ---
 
 ## Verification Checklist
 
-- [ ] Desktop (≥768px): region appears left-of-center; card floats on right over ocean
-- [ ] Desktop: hovering list name highlights polygon; hovering polygon highlights list name
-- [ ] Desktop: clicking municipality switches card to detail view with correct stats
-- [ ] Desktop: Idag/2060 toggle shows/hides amber layer
-- [ ] Desktop: back button restores overview, list reappears, map returns to 2D
+- [ ] Desktop (≥768px): map takes left portion, card column on right — region fills the map canvas
+- [ ] Desktop: hovering list name highlights polygon (green fill + white outline) and scrolls list; hovering polygon highlights list name
+- [ ] Desktop: clicking municipality → card shows stats, surroundings dimmed, municipality tightly fitted
+- [ ] Desktop: Idag/2060 toggle fills full card width with exactly 2 buttons
+- [ ] Desktop: back button restores overview, dim cleared, list reappears
 - [ ] Mobile (<768px): card is top 30vh, map is bottom 70vh; no hover effects
 - [ ] Mobile: select/back/toggle all functional
-- [ ] Mobile centering unaffected by desktop padding (padding = 0 on mobile)
 - [ ] Stats values match raw CSV (spot-check ≥3 municipalities)
 - [ ] `npm run lint && npm run format:check && npm run build` passes
