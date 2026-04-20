@@ -1,7 +1,7 @@
 # Phase 4 — Map Interactions: Implementation Plan
 
-> Phase 4 — Map Interactions. Feature F4.3 (F4.1, F4.2, F4.4 merged into Phase 3).
-> Branch: `feature/phase4-map-ui`.
+> Phase 4 — Map Interactions. Feature F4.3 (F4.1, F4.2, F4.4 merged into Phase 3). **Complete — merged in #8.**
+> Branch: `feature/phase4-map-ui` (deleted after merge).
 
 ---
 
