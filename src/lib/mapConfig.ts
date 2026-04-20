@@ -1,4 +1,7 @@
 export const STOCKHOLM_CENTER: [number, number] = [18.07, 59.33];
+export const DESKTOP_MAP_PADDING = { top: 0, bottom: 0, left: 0, right: 320 };
+export const MOBILE_MAP_PADDING = { top: 0, bottom: 0, left: 0, right: 0 };
+export const DESKTOP_BREAKPOINT = 768;
 export const STOCKHOLM_BOUNDS: [[number, number], [number, number]] = [
   [17.25, 58.9],
   [19.1, 59.85],
