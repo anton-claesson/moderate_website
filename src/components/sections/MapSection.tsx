@@ -223,7 +223,7 @@ export default function MapSection({ id }: MapSectionProps) {
         id: MUNICIPALITY_OUTLINE_LAYER,
         type: 'line',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'line-color': '#888888', 'line-width': 2, 'line-opacity': 0.8 },
+        paint: { 'line-color': '#888888', 'line-width': 3, 'line-opacity': 0.9 },
       });
 
       // Hover/selected fill highlight
@@ -298,25 +298,24 @@ export default function MapSection({ id }: MapSectionProps) {
         />
       </div>
 
-      {/* Map + desktop card side-by-side via CSS grid */}
-      <div className="h-[70vh] md:h-[80vh] md:grid md:grid-cols-[1fr_288px]">
-        <div className="relative h-full">
-          <MapCanvas onMapReady={handleMapReady} />
-        </div>
+      {/* Map — full width; desktop card floats absolutely on the right */}
+      <div className="relative h-[70vh] md:h-[80vh]">
+        <MapCanvas onMapReady={handleMapReady} />
 
-        {/* Desktop card — own grid column, no absolute positioning */}
-        <div className="hidden md:flex flex-col justify-center px-4 py-6 bg-map-bg">
-          <MunicipalityCard
-            isMobile={false}
-            municipalities={SORTED_MUNICIPALITIES}
-            selected={selected}
-            view={view}
-            hoveredMunicipality={hoveredMunicipality}
-            onSelect={selectMunicipality}
-            onBack={returnToOverview}
-            onViewChange={setView}
-            onHoverMunicipality={handleListHover}
-          />
+        <div className="hidden md:flex absolute top-0 right-4 h-full items-center z-10 pointer-events-none">
+          <div className="pointer-events-auto w-[280px]">
+            <MunicipalityCard
+              isMobile={false}
+              municipalities={SORTED_MUNICIPALITIES}
+              selected={selected}
+              view={view}
+              hoveredMunicipality={hoveredMunicipality}
+              onSelect={selectMunicipality}
+              onBack={returnToOverview}
+              onViewChange={setView}
+              onHoverMunicipality={handleListHover}
+            />
+          </div>
         </div>
       </div>
     </section>
