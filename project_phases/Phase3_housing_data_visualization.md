@@ -42,14 +42,14 @@ MapSection (main orchestrator)
 
 ---
 
-## Status
+## Status — COMPLETE (merged 2026-04-20, PR #7)
 
 - [x] F3.1 — Schema, mapConfig, municipalityCentroids
-- [x] F3.2 — GeoJSON generation from XLSX
-- [ ] F3.3 — Municipality boundaries + 2D overview
-- [ ] F3.4 — Municipality selection (click + list)
-- [ ] F3.5 — Detail view: flyTo, 3D, housing layers
-- [ ] F3.6 — "Idag" / "2060" toggle + back button
+- [x] F3.2 — GeoJSON generation from CSV
+- [x] F3.3 — Municipality boundaries + 2D overview
+- [x] F3.4 — Municipality selection (click + list)
+- [x] F3.5 — Detail view: fitBounds, 3D, housing layers
+- [x] F3.6 — "Idag" / "2060" toggle + back button
 
 ---
 

@@ -106,8 +106,8 @@ UX: 2D overview (all municipalities visible, no pan) → click/select municipali
 
 ### Phase 4 — Map Interactions
 
-- [~] **F4.1 — Municipality boundaries layer.** Merged into F3.3.
-- [~] **F4.2 — Municipality selection & zoom animation.** Merged into F3.4.
+- [x] **F4.1 — Municipality boundaries layer.** Merged into F3.3.
+- [x] **F4.2 — Municipality selection & zoom animation.** Merged into F3.4.
 - [ ] **F4.3 — Info text box overlay.** Overlay showing municipality name and summary stats when selected. `[DECISION NEEDED]`: scope of info shown.
 - [ ] **F4.4 — Reset / "back to overview" control.** Merged into F3.6.
 
@@ -183,3 +183,4 @@ _Add an entry each time a feature is completed or scope changes meaningfully._
 | 2026-04-17 | F0.4 | Design token system in globals.css (sage green / amber palette), all components updated to token-based classes, dark mode, docs/style-guide.md added. | #4 |
 | 2026-04-17 | F1.1–F1.4 | Phase 1 complete: mobile hamburger nav, Swedish intro copy, YouTube nocookie embeds (2 videos), 3-column footer with data attribution. D2 resolved: YouTube. | #5 |
 | 2026-04-17 | F2.1–F2.4 | Phase 2 complete: Mapbox GL JS integrated, Stockholm camera + pan bounds, Mapbox Studio style exported to `/public/map-style.json`, lazy-loaded via `next/dynamic`. Production Lighthouse score: 68. D3 resolved: Studio export. See `docs/performance-baseline.md`. | #6 |
+| 2026-04-20 | F3.1–F3.6 + F4.1–F4.2 | Phase 3 complete: CSV → GeoJSON generation script, municipality boundaries (okfse/sweden-geojson), monochrome map style, 2D overview with hover highlight, municipality selection (click + list), fitBounds + 3D transition at pitch=45, housing extrusions (småhus/flerbostadshus/new), Idag/2060 toggle, back button. F4.1 and F4.2 merged into Phase 3. Race condition in lazy housing init fixed. D4 resolved. | #7 |
