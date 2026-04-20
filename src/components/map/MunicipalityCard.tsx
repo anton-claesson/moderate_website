@@ -32,7 +32,7 @@ export default function MunicipalityCard({
 
   return (
     <div
-      className={`bg-header-bg/90 backdrop-blur-sm border border-white/10 shadow-xl flex flex-col overflow-hidden ${
+      className={`bg-header-bg border border-white/10 shadow-xl flex flex-col overflow-hidden ${
         isMobile ? 'h-[30vh] rounded-none' : 'rounded-xl max-h-[70vh]'
       }`}
     >

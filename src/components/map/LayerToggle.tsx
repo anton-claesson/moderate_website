@@ -12,7 +12,7 @@ export default function LayerToggle({ view, onChange }: LayerToggleProps) {
         <button
           key={v}
           onClick={() => onChange(v)}
-          className={`min-w-[80px] min-h-[44px] px-4 text-sm font-medium transition-colors ${
+          className={`flex-1 min-h-[44px] px-4 text-sm font-medium transition-colors ${
             view === v
               ? 'bg-accent text-text-on-dark'
               : 'bg-header-bg text-text-on-dark/60 hover:text-text-on-dark'

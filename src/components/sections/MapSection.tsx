@@ -18,9 +18,8 @@ import {
   OVERVIEW_BEARING,
   DEFAULT_PITCH,
   DEFAULT_BEARING,
-  DESKTOP_MAP_PADDING,
-  MOBILE_MAP_PADDING,
-  DESKTOP_BREAKPOINT,
+  MUNICIPALITY_OUTLINE_HOVER_LAYER,
+  MUNICIPALITY_DIM_LAYER,
 } from '@/lib/mapConfig';
 import MunicipalityCard from '@/components/map/MunicipalityCard';
 
@@ -87,7 +86,6 @@ export default function MapSection({ id }: MapSectionProps) {
   const hoveredRef = useRef<string | null>(null);
   const selectedRef = useRef<string | null>(null);
   const municipalityFeaturesRef = useRef<Map<string, MunicipalityFeature>>(new Map());
-  const paddingCleanupRef = useRef<(() => void) | null>(null);
 
   const [selected, setSelected] = useState<string | null>(null);
   const [view, setView] = useState<HousingView>('current');
@@ -108,13 +106,6 @@ export default function MapSection({ id }: MapSectionProps) {
     selectedRef.current = selected;
   }, [selected]);
 
-  // Clean up resize listener on unmount
-  useEffect(() => {
-    return () => {
-      paddingCleanupRef.current?.();
-    };
-  }, []);
-
   async function ensureHousingReady(map: MapboxMap) {
     if (!housingReadyPromiseRef.current) {
       housingReadyPromiseRef.current = (async () => {
@@ -127,6 +118,13 @@ export default function MapSection({ id }: MapSectionProps) {
     await housingReadyPromiseRef.current;
   }
 
+  // Updates the hover fill + outline highlight layers; used by both map events and list hover
+  function setHighlight(map: MapboxMap, name: string | null) {
+    const filter = ['==', ['get', 'kom_namn'], name ?? ''] as mapboxgl.FilterSpecification;
+    map.setFilter(MUNICIPALITY_HOVER_LAYER, filter);
+    map.setFilter(MUNICIPALITY_OUTLINE_HOVER_LAYER, filter);
+  }
+
   const selectMunicipality = useCallback(async (name: string) => {
     const map = mapRef.current;
     if (!map) return;
@@ -136,7 +134,16 @@ export default function MapSection({ id }: MapSectionProps) {
     setView('current');
     setHoveredMunicipality(null);
 
-    map.setLayoutProperty(MUNICIPALITY_HOVER_LAYER, 'visibility', 'none');
+    // Keep hover fill + outline showing the selected municipality
+    setHighlight(map, name);
+
+    // Dim all surrounding municipalities
+    map.setFilter(MUNICIPALITY_DIM_LAYER, [
+      '!=',
+      ['get', 'kom_namn'],
+      name,
+    ] as mapboxgl.FilterSpecification);
+    map.setLayoutProperty(MUNICIPALITY_DIM_LAYER, 'visibility', 'visible');
 
     await ensureHousingReady(map);
     showHousingForMunicipality(map, name);
@@ -144,11 +151,10 @@ export default function MapSection({ id }: MapSectionProps) {
     const feature = municipalityFeaturesRef.current.get(name);
     if (feature) {
       map.fitBounds(computeBounds(feature), {
-        padding: 60,
+        padding: 20,
         pitch: DEFAULT_PITCH,
         bearing: DEFAULT_BEARING,
         duration: 1400,
-        maxZoom: 14,
       });
     }
   }, []);
@@ -160,7 +166,9 @@ export default function MapSection({ id }: MapSectionProps) {
     setHoveredMunicipality(null);
     hideHousingLayers(map);
 
-    map.setLayoutProperty(MUNICIPALITY_HOVER_LAYER, 'visibility', 'visible');
+    // Clear all highlights and dim
+    setHighlight(map, null);
+    map.setLayoutProperty(MUNICIPALITY_DIM_LAYER, 'visibility', 'none');
 
     map.fitBounds(STOCKHOLM_BOUNDS, {
       padding: 20,
@@ -176,11 +184,7 @@ export default function MapSection({ id }: MapSectionProps) {
     if (!map) return;
     hoveredRef.current = name;
     setHoveredMunicipality(name);
-    map.setFilter(MUNICIPALITY_HOVER_LAYER, [
-      '==',
-      ['get', 'kom_namn'],
-      name ?? '',
-    ] as mapboxgl.FilterSpecification);
+    setHighlight(map, name);
     map.getCanvas().style.cursor = name ? 'pointer' : '';
   }, []);
 
@@ -199,16 +203,6 @@ export default function MapSection({ id }: MapSectionProps) {
       map.doubleClickZoom.disable();
       map.touchZoomRotate.disable();
 
-      // Apply camera padding so the region sits left-of-center on desktop
-      const updatePadding = () => {
-        map.setPadding(
-          window.innerWidth >= DESKTOP_BREAKPOINT ? DESKTOP_MAP_PADDING : MOBILE_MAP_PADDING,
-        );
-      };
-      updatePadding();
-      window.addEventListener('resize', updatePadding);
-      paddingCleanupRef.current = () => window.removeEventListener('resize', updatePadding);
-
       map.fitBounds(STOCKHOLM_BOUNDS, { padding: 20, duration: 0 });
 
       map.addSource(MUNICIPALITY_SOURCE, {
@@ -216,6 +210,7 @@ export default function MapSection({ id }: MapSectionProps) {
         data: '/data/municipalities.geojson',
       });
 
+      // Transparent hit area
       map.addLayer({
         id: MUNICIPALITY_FILL_LAYER,
         type: 'fill',
@@ -223,19 +218,40 @@ export default function MapSection({ id }: MapSectionProps) {
         paint: { 'fill-color': '#ffffff', 'fill-opacity': 0 },
       });
 
+      // Base boundary outlines — thicker and more opaque than before
       map.addLayer({
         id: MUNICIPALITY_OUTLINE_LAYER,
         type: 'line',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'line-color': '#888888', 'line-width': 1, 'line-opacity': 0.6 },
+        paint: { 'line-color': '#888888', 'line-width': 2, 'line-opacity': 0.8 },
       });
 
+      // Hover/selected fill highlight
       map.addLayer({
         id: MUNICIPALITY_HOVER_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#5C8B5A', 'fill-opacity': 0.18 },
+        paint: { 'fill-color': '#5C8B5A', 'fill-opacity': 0.25 },
         filter: ['==', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
+      });
+
+      // Bright outline on hover or selection (sits above fill)
+      map.addLayer({
+        id: MUNICIPALITY_OUTLINE_HOVER_LAYER,
+        type: 'line',
+        source: MUNICIPALITY_SOURCE,
+        paint: { 'line-color': '#ffffff', 'line-width': 2.5, 'line-opacity': 0.85 },
+        filter: ['==', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
+      });
+
+      // Dark overlay to dim surrounding municipalities in detail view
+      map.addLayer({
+        id: MUNICIPALITY_DIM_LAYER,
+        type: 'fill',
+        source: MUNICIPALITY_SOURCE,
+        paint: { 'fill-color': '#000000', 'fill-opacity': 0.4 },
+        filter: ['!=', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
+        layout: { visibility: 'none' },
       });
 
       map.on('mousemove', MUNICIPALITY_FILL_LAYER, (e: MapMouseEvent) => {
@@ -244,7 +260,7 @@ export default function MapSection({ id }: MapSectionProps) {
         if (name && name !== hoveredRef.current) {
           hoveredRef.current = name;
           setHoveredMunicipality(name);
-          map.setFilter(MUNICIPALITY_HOVER_LAYER, ['==', ['get', 'kom_namn'], name]);
+          setHighlight(map, name);
           map.getCanvas().style.cursor = 'pointer';
         }
       });
@@ -253,7 +269,7 @@ export default function MapSection({ id }: MapSectionProps) {
         if (selectedRef.current) return;
         hoveredRef.current = null;
         setHoveredMunicipality(null);
-        map.setFilter(MUNICIPALITY_HOVER_LAYER, ['==', ['get', 'kom_namn'], '']);
+        setHighlight(map, null);
         map.getCanvas().style.cursor = '';
       });
 
@@ -282,25 +298,25 @@ export default function MapSection({ id }: MapSectionProps) {
         />
       </div>
 
-      {/* Map */}
-      <div className="relative h-[70vh] md:h-[80vh]">
-        <MapCanvas onMapReady={handleMapReady} />
+      {/* Map + desktop card side-by-side via CSS grid */}
+      <div className="h-[70vh] md:h-[80vh] md:grid md:grid-cols-[1fr_288px]">
+        <div className="relative h-full">
+          <MapCanvas onMapReady={handleMapReady} />
+        </div>
 
-        {/* Desktop card — floating over ocean area on right */}
-        <div className="hidden md:flex absolute top-0 right-6 h-full items-center z-10 pointer-events-none">
-          <div className="pointer-events-auto w-[280px]">
-            <MunicipalityCard
-              isMobile={false}
-              municipalities={SORTED_MUNICIPALITIES}
-              selected={selected}
-              view={view}
-              hoveredMunicipality={hoveredMunicipality}
-              onSelect={selectMunicipality}
-              onBack={returnToOverview}
-              onViewChange={setView}
-              onHoverMunicipality={handleListHover}
-            />
-          </div>
+        {/* Desktop card — own grid column, no absolute positioning */}
+        <div className="hidden md:flex flex-col justify-center px-4 py-6 bg-map-bg">
+          <MunicipalityCard
+            isMobile={false}
+            municipalities={SORTED_MUNICIPALITIES}
+            selected={selected}
+            view={view}
+            hoveredMunicipality={hoveredMunicipality}
+            onSelect={selectMunicipality}
+            onBack={returnToOverview}
+            onViewChange={setView}
+            onHoverMunicipality={handleListHover}
+          />
         </div>
       </div>
     </section>

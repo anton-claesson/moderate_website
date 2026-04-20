@@ -3,12 +3,7 @@
 import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import {
-  STOCKHOLM_CENTER,
-  STOCKHOLM_BOUNDS,
-  OVERVIEW_PITCH,
-  OVERVIEW_BEARING,
-} from '@/lib/mapConfig';
+import { STOCKHOLM_CENTER, OVERVIEW_PITCH, OVERVIEW_BEARING } from '@/lib/mapConfig';
 
 interface MapCanvasProps {
   style?: string;
@@ -34,7 +29,6 @@ export default function MapCanvas({
       zoom: 8,
       pitch: OVERVIEW_PITCH,
       bearing: OVERVIEW_BEARING,
-      maxBounds: STOCKHOLM_BOUNDS,
     });
 
     mapRef.current = map;
