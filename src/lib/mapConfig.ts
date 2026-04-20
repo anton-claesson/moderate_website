@@ -1,7 +1,4 @@
 export const STOCKHOLM_CENTER: [number, number] = [18.07, 59.33];
-export const DESKTOP_MAP_PADDING = { top: 0, bottom: 0, left: 0, right: 320 };
-export const MOBILE_MAP_PADDING = { top: 0, bottom: 0, left: 0, right: 0 };
-export const DESKTOP_BREAKPOINT = 768;
 export const STOCKHOLM_BOUNDS: [[number, number], [number, number]] = [
   [17.25, 58.9],
   [19.1, 59.85],
@@ -10,6 +7,9 @@ export const OVERVIEW_PITCH = 0;
 export const OVERVIEW_BEARING = 0;
 export const DEFAULT_PITCH = 45;
 export const DEFAULT_BEARING = -15;
+
+export const MUNICIPALITY_OUTLINE_HOVER_LAYER = 'municipalities-outline-hover';
+export const MUNICIPALITY_DIM_LAYER = 'municipalities-dim';
 
 export const SMAHUS_LAYER_ID = 'smahus-extrusion';
 export const FLERBOSTADSHUS_CURRENT_LAYER_ID = 'flerbostadshus-current-extrusion';
