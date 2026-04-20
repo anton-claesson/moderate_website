@@ -82,7 +82,7 @@ export default function MapSection({ id }: MapSectionProps) {
   const housingDataRef = useRef<[HousingCollection, HousingCollection, HousingCollection] | null>(
     null,
   );
-  const housingInitRef = useRef(false);
+  const housingReadyPromiseRef = useRef<Promise<void> | null>(null);
   const hoveredRef = useRef<string | null>(null);
   const selectedRef = useRef<string | null>(null);
   const municipalityFeaturesRef = useRef<Map<string, MunicipalityFeature>>(new Map());
@@ -108,12 +108,15 @@ export default function MapSection({ id }: MapSectionProps) {
   }, [selected]);
 
   async function ensureHousingReady(map: MapboxMap) {
-    if (housingInitRef.current) return;
-    housingInitRef.current = true;
-    const data = await fetchHousingData();
-    housingDataRef.current = data;
-    initHousingLayers(map, ...data);
-    setHousingReady(true);
+    if (!housingReadyPromiseRef.current) {
+      housingReadyPromiseRef.current = (async () => {
+        const data = await fetchHousingData();
+        housingDataRef.current = data;
+        initHousingLayers(map, ...data);
+        setHousingReady(true);
+      })();
+    }
+    await housingReadyPromiseRef.current;
   }
 
   const selectMunicipality = useCallback(async (name: string) => {
