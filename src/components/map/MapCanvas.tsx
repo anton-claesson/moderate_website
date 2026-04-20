@@ -6,7 +6,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import {
   STOCKHOLM_CENTER,
   STOCKHOLM_BOUNDS,
-  OVERVIEW_ZOOM,
   OVERVIEW_PITCH,
   OVERVIEW_BEARING,
 } from '@/lib/mapConfig';
@@ -16,7 +15,10 @@ interface MapCanvasProps {
   onMapReady?: (map: mapboxgl.Map) => void;
 }
 
-export default function MapCanvas({ style = '/map-style.json', onMapReady }: MapCanvasProps) {
+export default function MapCanvas({
+  style = '/map-style/monochrome-map-style.json',
+  onMapReady,
+}: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
 
@@ -29,7 +31,7 @@ export default function MapCanvas({ style = '/map-style.json', onMapReady }: Map
       container: containerRef.current,
       style,
       center: STOCKHOLM_CENTER,
-      zoom: OVERVIEW_ZOOM,
+      zoom: 8,
       pitch: OVERVIEW_PITCH,
       bearing: OVERVIEW_BEARING,
       maxBounds: STOCKHOLM_BOUNDS,

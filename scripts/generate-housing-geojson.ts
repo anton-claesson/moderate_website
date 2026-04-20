@@ -7,11 +7,20 @@ import {
   FLERBOSTADSHUS_PER_REPRESENTATIVE,
   SMAHUS_SIZE_DEG,
   FLERBOSTADSHUS_SIZE_DEG,
+  SMAHUS_LAT_OFFSET,
+  FLERBOSTADSHUS_LAT_OFFSET,
+  FLERBOSTADSHUS_NEW_LAT_OFFSET,
 } from '../src/lib/mapConfig';
 import type { HousingCollection, HousingUnitProperties } from '../src/types/housing';
 import type { Feature, Polygon } from 'geojson';
 
-const GRID_COLS = 8;
+const GRID_COLS = 7;
+
+// Deterministic pseudo-random jitter in [-1, 1] for a given seed
+function djitter(seed: number): number {
+  const h = ((seed * 2654435761 + 1013904223) >>> 0) % 1000;
+  return h / 1000 - 0.5;
+}
 
 function makeSquare(
   centerLng: number,
@@ -41,6 +50,7 @@ function generateGrid(
   count: number,
   sizeHalf: number,
   spacing: number,
+  latOffset: number,
   municipality: string,
   id_prefix: string,
   props: Omit<HousingUnitProperties, 'id' | 'municipality'>,
@@ -51,8 +61,15 @@ function generateGrid(
   for (let i = 0; i < count; i++) {
     const col = i % GRID_COLS;
     const row = Math.floor(i / GRID_COLS);
-    const lng = baseLng + (col - GRID_COLS / 2) * spacing;
-    const lat = baseLat + row * spacing;
+    // Stagger every other row for a less grid-like appearance
+    const stagger = row % 2 === 1 ? spacing * 0.5 : 0;
+    // Deterministic jitter: up to 30% of spacing
+    const jx = djitter(i * 3 + 1) * spacing * 0.3;
+    const jy = djitter(i * 3 + 2) * spacing * 0.3;
+
+    const lng = baseLng + (col - GRID_COLS / 2) * spacing + stagger + jx;
+    const lat = baseLat + latOffset + row * spacing + jy;
+
     const feature = makeSquare(lng, lat, sizeHalf);
     feature.properties = {
       id: `${id_prefix}-${municipality}-${i}`,
@@ -88,9 +105,12 @@ const rows = parseCsv(csvPath);
 
 const smahusFeatures: Feature<Polygon, HousingUnitProperties>[] = [];
 const flerbostadshusFeatures: Feature<Polygon, HousingUnitProperties>[] = [];
-const flerbostadshus2060Features: Feature<Polygon, HousingUnitProperties>[] = [];
+const flerbostadshusNewFeatures: Feature<Polygon, HousingUnitProperties>[] = [];
 
 let warnings = 0;
+
+const smahusSpacing = SMAHUS_SIZE_DEG * 2.5;
+const flerSpacing = FLERBOSTADSHUS_SIZE_DEG * 2.5;
 
 for (const row of rows) {
   const municipality = (row['Kommun'] ?? '').trim();
@@ -109,39 +129,53 @@ for (const row of rows) {
 
   const nSmahus = Math.floor(smahus / SMAHUS_PER_REPRESENTATIVE);
   const nFler = Math.floor(flerbostad / FLERBOSTADSHUS_PER_REPRESENTATIVE);
-  const nFler2060 = Math.floor(flerbostad2060 / FLERBOSTADSHUS_PER_REPRESENTATIVE);
-
-  const smahusSpacing = SMAHUS_SIZE_DEG * 2.2;
-  const flerSpacing = FLERBOSTADSHUS_SIZE_DEG * 2.2;
+  // Only the *new* apartments built between now and 2060
+  const nFlerNew = Math.max(
+    0,
+    Math.floor((flerbostad2060 - flerbostad) / FLERBOSTADSHUS_PER_REPRESENTATIVE),
+  );
 
   smahusFeatures.push(
-    ...generateGrid(centroid, nSmahus, SMAHUS_SIZE_DEG, smahusSpacing, municipality, 'sm', {
-      type: 'smahus',
-      view: 'both',
-    }),
+    ...generateGrid(
+      centroid,
+      nSmahus,
+      SMAHUS_SIZE_DEG,
+      smahusSpacing,
+      SMAHUS_LAT_OFFSET,
+      municipality,
+      'sm',
+      { type: 'smahus', view: 'both' },
+    ),
   );
 
   flerbostadshusFeatures.push(
-    ...generateGrid(centroid, nFler, FLERBOSTADSHUS_SIZE_DEG, flerSpacing, municipality, 'fb', {
-      type: 'flerbostadshus',
-      view: 'current',
-    }),
-  );
-
-  flerbostadshus2060Features.push(
     ...generateGrid(
       centroid,
-      nFler2060,
+      nFler,
       FLERBOSTADSHUS_SIZE_DEG,
       flerSpacing,
+      FLERBOSTADSHUS_LAT_OFFSET,
       municipality,
-      'fb60',
+      'fb',
+      { type: 'flerbostadshus', view: 'current' },
+    ),
+  );
+
+  flerbostadshusNewFeatures.push(
+    ...generateGrid(
+      centroid,
+      nFlerNew,
+      FLERBOSTADSHUS_SIZE_DEG,
+      flerSpacing,
+      FLERBOSTADSHUS_NEW_LAT_OFFSET,
+      municipality,
+      'fb-new',
       { type: 'flerbostadshus', view: '2060' },
     ),
   );
 
   console.log(
-    `  ${municipality}: ${nSmahus} småhus, ${nFler} flerbostadshus (idag), ${nFler2060} flerbostadshus (2060)`,
+    `  ${municipality}: ${nSmahus} småhus, ${nFler} apt (idag), +${nFlerNew} nya apt (2060)`,
   );
 }
 
@@ -153,10 +187,7 @@ function writeCollection(filePath: string, features: Feature<Polygon, HousingUni
 
 writeCollection(path.join(outDir, 'housing-smahus.geojson'), smahusFeatures);
 writeCollection(path.join(outDir, 'housing-flerbostadshus.geojson'), flerbostadshusFeatures);
-writeCollection(
-  path.join(outDir, 'housing-flerbostadshus-2060.geojson'),
-  flerbostadshus2060Features,
-);
+writeCollection(path.join(outDir, 'housing-flerbostadshus-new.geojson'), flerbostadshusNewFeatures);
 
 if (warnings > 0) {
   console.warn(`\n${warnings} municipalities had no centroid and were skipped.`);

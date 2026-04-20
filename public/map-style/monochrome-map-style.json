@@ -1,0 +1,59 @@
+{
+    "version": 8,
+    "name": "Stockholm-Base-Style",
+    "metadata": {
+        "mapbox:autocomposite": true,
+        "mapbox:thumb": "data:image/webp;base64,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",
+        "mapbox:uiParadigm": "imports",
+        "mapbox:sdk-support": {
+            "js": "3.21.0",
+            "android": "11.21.0",
+            "ios": "11.21.0"
+        },
+        "mapbox:groups": {},
+        "mapbox:uiExpandedImports": ["basemap"]
+    },
+    "center": [-34, 38],
+    "zoom": 2,
+    "terrain": null,
+    "imports": [
+        {
+            "id": "basemap",
+            "url": "mapbox://styles/mapbox/standard",
+            "config": {
+                "colorTrunks": "hsla(235, 20%, 70%, 0.19)",
+                "colorPlaceLabels": "hsla(0, 0%, 0%, 0.52)",
+                "colorEducation": "hsl(0, 0%, 89%)",
+                "show3dObjects": false,
+                "colorGreenspace": "hsla(115, 60%, 84%, 0.39)",
+                "showPlaceLabels": false,
+                "theme": "monochrome",
+                "colorCommercial": "hsl(0, 0%, 89%)",
+                "colorMedical": "hsl(0, 0%, 89%)",
+                "colorLand": "hsl(0, 0%, 89%)",
+                "colorRoads": "hsla(224, 25%, 80%, 0.49)",
+                "showPointOfInterestLabels": false,
+                "colorWater": "hsl(200, 100%, 80%)",
+                "lightPreset": "dawn",
+                "showTransitLabels": false,
+                "colorMotorways": "hsla(214, 23%, 70%, 0.26)",
+                "showAdminBoundaries": false,
+                "showPedestrianRoads": false,
+                "showRoadLabels": false,
+                "colorIndustrial": "hsl(0, 0%, 89%)"
+            }
+        }
+    ],
+    "sources": {},
+    "sprite": "mapbox://sprites/manny-modera/cmo2xbkz0000p01s7at98gimq/b8fjw435hx85pp7j172f016pl",
+    "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+    "projection": {"name": "globe"},
+    "layers": [],
+    "created": "2026-04-17T13:08:06.252Z",
+    "modified": "2026-04-20T10:10:16.099Z",
+    "id": "cmo2xbkz0000p01s7at98gimq",
+    "owner": "manny-modera",
+    "visibility": "private",
+    "protected": false,
+    "draft": false
+}
