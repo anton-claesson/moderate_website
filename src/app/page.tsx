@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <>
       {/* <Header /> */}
-      <main className="flex flex-col flex-1">
+      <main className="flex flex-col flex-1 w-full">
         <IntroSection id="intro" />
         <MapSection id="map" />
         <VideosSection id="videos" />
