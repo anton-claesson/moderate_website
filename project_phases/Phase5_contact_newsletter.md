@@ -106,6 +106,26 @@ Layout: single-column on mobile → 2-column grid on `md+` for the four fields.
 
 ---
 
+---
+
+## F5.4 — Aesthetic Refinements (2026-04-21)
+
+Post-launch polish pass to move away from a generic out-of-the-box look.
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `src/app/layout.tsx` | Font switched from Geist to Space Grotesk via `next/font/google` |
+| `src/components/sections/IntroSection.tsx` | Headline scaled to `text-5xl sm:text-7xl` with `leading-[1.1]`; first body paragraph bumped to `text-xl` |
+| `src/components/sections/VideosSection.tsx` | Eyebrow "Videos" label removed; `border-t border-border` divider added; centered placeholder text above video grid |
+| `src/components/sections/ContactSection.tsx` | Eyebrow label removed (already done); `border-t border-border` removed |
+| `src/components/contact/ContactForm.tsx` | Card wrapper removed; inputs switched to bottom-border-only style (`border-b`, `bg-transparent`); submit button changed to pill (`rounded-full px-8`); success state simplified to plain text |
+| `src/components/Footer.tsx` | Reduced to single slim bar on `bg-primary-light`; only copyright, data note, and email retained |
+| `project_plan.md` | F5.4 added and marked done; change log entry added |
+
+---
+
 ## Verification Checklist
 
 - [ ] Submit with all fields filled → Formspree dashboard shows all 4 fields

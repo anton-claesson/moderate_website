@@ -118,6 +118,7 @@ Convert visitors into newsletter subscribers.
 - [x] **F5.1 — Contact form UI.** Mobile-first form with name, email, phone, zip/municipality fields, client-side validation, success/error states.
 - [x] **F5.2 — Form submission backend.** D6 resolved: Formspree (EU data storage, AJAX mode). `NEXT_PUBLIC_FORMSPREE_URL` env var. No new npm dependencies.
 - [x] **F5.3 — GDPR consent & privacy copy.** Required consent checkbox with inline Swedish privacy copy; submit disabled until checked.
+- [x] **F5.4 — Aesthetic refinements.** Font switched to Space Grotesk. Hero headline scaled to display size. Section eyebrow labels removed. ContactForm card removed, inputs styled as bottom-border-only lines, submit button pill-shaped. Footer reduced to single slim bar (copyright, data note, email). Section dividers added between intro/map/videos, removed between videos/contact.
 
 ### Phase 6 — Analytics & Observability
 
@@ -187,3 +188,4 @@ _Add an entry each time a feature is completed or scope changes meaningfully._
 | 2026-04-20 | F3.1–F3.6 + F4.1–F4.2 | Phase 3 complete: CSV → GeoJSON generation script, municipality boundaries (okfse/sweden-geojson), monochrome map style, 2D overview with hover highlight, municipality selection (click + list), fitBounds + 3D transition at pitch=45, housing extrusions (småhus/flerbostadshus/new), Idag/2060 toggle, back button. F4.1 and F4.2 merged into Phase 3. Race condition in lazy housing init fixed. D4 resolved. | #7 |
 | 2026-04-20 | F4.3 | Phase 4 complete. MunicipalityCard (overview/detail states), StatsPanel, bidirectional hover sync with auto-scroll, municipality dim layer, tighter zoom. UI polish: 3px outlines + white hover outline, glassy card (zinc-700/88), flex-1 toggle, floating absolute layout. D5 resolved. | #8 |
 | 2026-04-20 | F5.1–F5.3 | Phase 5 complete. ContactForm component: 4 fields (name, email, phone, zip/municipality), client-side validation, idle/submitting/success/error states. Formspree integration via `NEXT_PUBLIC_FORMSPREE_URL` (no new deps). GDPR consent checkbox with inline Swedish privacy copy. F8.5 added for future platform review. D6 resolved. | #9 |
+| 2026-04-21 | F5.4 | Aesthetic refinements. Font: Geist → Space Grotesk. Hero headline: text-5xl/7xl with tight leading. Eyebrow labels removed sitewide. ContactForm: no card wrapper, bottom-border inputs, pill submit button. Footer: single slim bar (copyright, data note, email) on bg-primary-light. Section dividers: border-t between intro→videos; removed between videos→contact. Placeholder text added above video grid. | #10 |

@@ -74,7 +74,7 @@ export default function ContactForm() {
 
   if (formState === 'success') {
     return (
-      <div className="rounded-xl bg-surface border border-border p-8 text-center">
+      <div className="py-8 text-center">
         <p className="text-2xl font-bold text-text mb-2">Tack!</p>
         <p className="text-base text-text-muted">Vi hör av oss när projektet uppdateras.</p>
       </div>
@@ -82,11 +82,7 @@ export default function ContactForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      noValidate
-      className="rounded-xl bg-surface border border-border p-6 sm:p-8"
-    >
+    <form onSubmit={handleSubmit} noValidate>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <label htmlFor="namn" className="block text-sm text-text-muted mb-1">
@@ -100,7 +96,7 @@ export default function ContactForm() {
             autoComplete="name"
             value={fields.namn}
             onChange={handleChange}
-            className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+            className="w-full border-0 border-b border-border bg-transparent px-0 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-0 focus:border-primary"
             placeholder="Anna Svensson"
           />
         </div>
@@ -116,7 +112,7 @@ export default function ContactForm() {
             autoComplete="email"
             value={fields.epost}
             onChange={handleChange}
-            className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+            className="w-full border-0 border-b border-border bg-transparent px-0 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-0 focus:border-primary"
             placeholder="anna@exempel.se"
           />
         </div>
@@ -131,7 +127,7 @@ export default function ContactForm() {
             autoComplete="tel"
             value={fields.telefon}
             onChange={handleChange}
-            className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+            className="w-full border-0 border-b border-border bg-transparent px-0 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-0 focus:border-primary"
             placeholder="070-000 00 00"
           />
         </div>
@@ -146,7 +142,7 @@ export default function ContactForm() {
             autoComplete="postal-code"
             value={fields.postOrKommun}
             onChange={handleChange}
-            className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+            className="w-full border-0 border-b border-border bg-transparent px-0 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-0 focus:border-primary"
             placeholder="11234 eller Stockholm"
           />
         </div>
@@ -183,7 +179,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={!fields.gdprConsent || formState === 'submitting'}
-        className="w-full sm:w-auto px-6 py-2.5 rounded-md bg-accent text-white text-sm font-semibold hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full sm:w-auto px-8 py-2.5 rounded-full bg-accent text-white text-sm font-semibold hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {formState === 'submitting' ? 'Skickar…' : 'Skicka'}
       </button>
