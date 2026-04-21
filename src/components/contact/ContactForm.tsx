@@ -75,8 +75,9 @@ export default function ContactForm() {
   if (formState === 'success') {
     return (
       <div className="py-8 text-center">
-        <p className="text-2xl font-bold text-text mb-2">Tack!</p>
-        <p className="text-base text-text-muted">Vi hör av oss när projektet uppdateras.</p>
+        <p className="text-2xl font-bold text-text">
+          Tack! Vi hör av oss när projektet uppdateras.
+        </p>
       </div>
     );
   }
