@@ -3,15 +3,21 @@ interface VideosSectionProps {
 }
 
 const VIDEOS: { id: string; title: string }[] = [
-  { id: 'y90h0n7vOrc', title: 'Video 1' },
-  { id: 'qCSfy670df4', title: 'Video 2' },
+  { id: 'iYDbHNDhB-I', title: 'Video 1' },
+  { id: 'XnTwlZhFsEk', title: 'Video 2' },
 ];
 
 export default function VideosSection({ id }: VideosSectionProps) {
   return (
-    <section id={id} className="min-h-[50vh] flex items-center bg-surface-muted">
+    <section
+      id={id}
+      className="min-h-[50vh] flex items-center bg-primary-light border-t border-border"
+    >
       <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 py-16">
-        <p className="text-sm font-semibold uppercase tracking-widest text-primary mb-6">Videos</p>
+        <p className="text-base text-text-muted leading-relaxed mb-10 text-center">
+          Kort beskrivning av vad som visas i kartan och hur man använder verktyget. Platshållartext
+          — ersätts med riktigt innehåll senare.
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {VIDEOS.map((video) => (
             <div
