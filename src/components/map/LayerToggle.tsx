@@ -8,7 +8,7 @@ interface LayerToggleProps {
 export default function LayerToggle({ view, onChange }: LayerToggleProps) {
   return (
     <div className="flex rounded-lg overflow-hidden border border-white/10">
-      {(['current', 'Planerad'] as HousingView[]).map((v) => (
+      {(['current', 'planned'] as HousingView[]).map((v) => (
         <button
           key={v}
           onClick={() => onChange(v)}

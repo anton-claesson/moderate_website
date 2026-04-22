@@ -29,7 +29,7 @@ export default function StatsCard({ selected, stats, view, onBack, onViewChange 
       </div>
       <div className="px-3 pb-3 pt-2 border-t border-gray-100">
         <div className="flex rounded-lg overflow-hidden border border-gray-200">
-          {(['current', 'Planerad'] as HousingView[]).map((v) => (
+          {(['current', 'planned'] as HousingView[]).map((v) => (
             <button
               key={v}
               onClick={() => onViewChange(v)}

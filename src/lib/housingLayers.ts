@@ -99,6 +99,6 @@ export function setLayerView(map: mapboxgl.Map, view: HousingView) {
   map.setLayoutProperty(
     FLERBOSTADSHUS_NEW_LAYER_ID,
     'visibility',
-    view === '2060' ? 'visible' : 'none',
+    view === 'planned' ? 'visible' : 'none',
   );
 }

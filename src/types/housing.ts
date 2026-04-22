@@ -1,5 +1,5 @@
 export type HousingType = 'smahus' | 'flerbostadshus';
-export type HousingView = 'current' | '2060';
+export type HousingView = 'current' | 'planned';
 
 export interface HousingUnitProperties {
   id: string;
