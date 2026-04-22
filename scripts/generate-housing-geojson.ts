@@ -7,9 +7,9 @@ import type { Feature, Polygon, Position } from 'geojson';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TOTAL_COVERAGE = 0.5; // fraction of polygon area covered by all buildings combined
-const FILL_FACTOR = 0.8; // footprint occupies 80% of the grid cell
-const JITTER = 0.15; // ±15% of cellSize displacement; with FILL_FACTOR=0.8 keeps edge gap ≥ 5%
+const TOTAL_COVERAGE = 0.4; // fraction of polygon area covered by all buildings combined
+const FILL_FACTOR = 0.7; // footprint occupies 80% of the grid cell
+const JITTER = 0.1; // ±15% of cellSize displacement; with FILL_FACTOR=0.8 keeps edge gap ≥ 5%
 
 // Flerbo units represent 10× more actual dwellings than smahus units, so each
 // flerbo building gets 10× more area (√10 ≈ 3.16× larger footprint).
@@ -18,16 +18,16 @@ const FLERBO_WEIGHT = FLERBOSTADSHUS_PER_REPRESENTATIVE / SMAHUS_PER_REPRESENTAT
 // Height = footprint_halfsize_degrees × AVG_M_PER_DEG × ratio.
 // Gives natural proportions for typical municipalities; clamps handle sparse outliers.
 const AVG_M_PER_DEG = 84150; // average of longitude (~57 300 m/°) and latitude (~111 000 m/°) at 59°N
-const SMAHUS_HEIGHT_RATIO = 0.5;
+const SMAHUS_HEIGHT_RATIO = 1;
 const FLERBO_HEIGHT_RATIO = 2.5;
 const FLERBO_NEW_HEIGHT_RATIO = 3.0; // ~1.2× taller for new 2060 blocks
-const HEIGHT_VARIATION = 0.4; // per-building multiplier drawn from [0.8, 1.2]
+const HEIGHT_VARIATION = 0.2; // per-building multiplier drawn from [0.9, 1.1]
 // Hard clamps prevent extreme heights in large sparse municipalities
-const SMAHUS_HEIGHT_MIN = 10;
+const SMAHUS_HEIGHT_MIN = 20;
 const SMAHUS_HEIGHT_MAX = 60;
-const FLERBO_HEIGHT_MIN = 50;
+const FLERBO_HEIGHT_MIN = 150;
 const FLERBO_HEIGHT_MAX = 600;
-const FLERBO_NEW_HEIGHT_MIN = 60;
+const FLERBO_NEW_HEIGHT_MIN = 180;
 const FLERBO_NEW_HEIGHT_MAX = 720;
 
 // ─── PRNG ─────────────────────────────────────────────────────────────────────
@@ -108,10 +108,10 @@ function buildFootprintRing(
       break;
     case 'wide':
       offsets = [
-        [-1.5, -0.6],
-        [1.5, -0.6],
-        [1.5, 0.6],
-        [-1.5, 0.6],
+        [-1, -0.4],
+        [1, -0.4],
+        [1, 0.4],
+        [-1, 0.4],
       ];
       break;
     case 'T':
@@ -166,13 +166,21 @@ function generateGridPositions(
   count: number,
   cellSize: number,
   seed: number,
+  buffer: number,
 ): [number, number][] {
   const candidates: [number, number][] = [];
   for (let lat = bbox.minLat; lat < bbox.maxLat; lat += cellSize) {
     for (let lng = bbox.minLng; lng < bbox.maxLng; lng += cellSize) {
       const cx = lng + cellSize / 2;
       const cy = lat + cellSize / 2;
-      if (pointInRing(cx, cy, ring)) candidates.push([cx, cy]);
+      if (
+        pointInRing(cx, cy, ring) &&
+        pointInRing(cx + buffer, cy, ring) &&
+        pointInRing(cx - buffer, cy, ring) &&
+        pointInRing(cx, cy + buffer, ring) &&
+        pointInRing(cx, cy - buffer, ring)
+      )
+        candidates.push([cx, cy]);
     }
   }
   // Seeded Fisher-Yates shuffle for deterministic but non-sequential ordering
@@ -316,6 +324,7 @@ for (const row of rows) {
       totalFler,
       flerboCellSize,
       (muniSeed + 1000) >>> 0,
+      flerHalfSize * Math.SQRT2,
     );
 
     for (let i = 0; i < flerGrid.length; i++) {
@@ -365,6 +374,7 @@ for (const row of rows) {
       nSmahus,
       smaCellSize,
       (muniSeed + 2000) >>> 0,
+      smaHalfSize * Math.SQRT2,
     );
 
     for (let i = 0; i < smaGrid.length; i++) {
