@@ -379,7 +379,7 @@ for (const row of rows) {
         id: isNew ? `fb-new-${municipality}-${i}` : `fb-${municipality}-${i}`,
         municipality,
         type: 'flerbostadshus',
-        view: isNew ? '2060' : 'current',
+        view: isNew ? 'planned' : 'current',
         height: Math.round(height),
       };
 

@@ -4,7 +4,10 @@ interface IntroSectionProps {
 
 export default function IntroSection({ id }: IntroSectionProps) {
   return (
-    <section id={id} className="min-h-[50vh] w-full flex flex-col items-center justify-center bg-primary-light">
+    <section
+      id={id}
+      className="min-h-[50vh] w-full flex flex-col items-center justify-center bg-primary-light"
+    >
       <div className="mx-auto max-w-3xl w-full px-4 sm:px-6 pt-12 pb-8 sm:pt-20 sm:pb-10">
         <h2
           className="font-bold text-center leading-[1.1] mb-8 uppercase w-full flex justify-center"
@@ -12,7 +15,9 @@ export default function IntroSection({ id }: IntroSectionProps) {
             fontSize: 'clamp(2rem, 9vw, 5rem)',
           }}
         >
-          <span style={{ display: 'inline-block', transform: 'scaleX(0.9)', transformOrigin: 'center' }}>
+          <span
+            style={{ display: 'inline-block', transform: 'scaleX(0.9)', transformOrigin: 'center' }}
+          >
             Stoppa <span className="whitespace-nowrap">Miljonprogrammet!</span>
           </span>
         </h2>
