@@ -62,6 +62,21 @@
   }
 }
 
+.scrollbar-white {
+  scrollbar-width: thin;
+  scrollbar-color: white transparent;
+}
+.scrollbar-white::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-white::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-white::-webkit-scrollbar-thumb {
+  background: white;
+  border-radius: 9999px;
+}
+
 html {
   overflow-x: hidden;
 }

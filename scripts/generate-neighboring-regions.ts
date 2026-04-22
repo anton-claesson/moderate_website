@@ -6,8 +6,8 @@ const NEIGHBOR_LAN_CODES = new Set(['03', '04', '19']);
 
 const src = JSON.parse(fs.readFileSync('/tmp/swedish_municipalities.geojson', 'utf8'));
 
-const features = src.features.filter(
-  (f: { properties: { lan_code: string } }) => NEIGHBOR_LAN_CODES.has(f.properties.lan_code),
+const features = src.features.filter((f: { properties: { lan_code: string } }) =>
+  NEIGHBOR_LAN_CODES.has(f.properties.lan_code),
 );
 
 console.log(`Filtered ${features.length} municipalities from neighboring counties`);

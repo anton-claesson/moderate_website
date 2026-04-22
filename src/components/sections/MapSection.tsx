@@ -38,7 +38,7 @@ interface MapSectionProps {
   id: string;
 }
 
-const OVERVIEW_PADDING_DESKTOP = { top: 20, bottom: 20, left: 20, right: 420 };
+const OVERVIEW_PADDING_DESKTOP = { top: 20, bottom: 20, left: 20, right: 220 };
 
 const MUNICIPALITY_FILL_LAYER = 'municipalities-fill';
 const MUNICIPALITY_OUTLINE_LAYER = 'municipalities-outline';
@@ -270,7 +270,7 @@ export default function MapSection({ id }: MapSectionProps) {
         id: 'neighboring-regions-fill',
         type: 'fill',
         source: 'neighboring-regions',
-        paint: { 'fill-color': '#A18276', 'fill-opacity': 0.5 },
+        paint: { 'fill-color': '#d3d3d3', 'fill-opacity': 0.7 },
       });
 
       // Transparent hit area
@@ -287,7 +287,7 @@ export default function MapSection({ id }: MapSectionProps) {
         type: 'line',
         source: MUNICIPALITY_SOURCE,
         layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: { 'line-color': '#736372', 'line-width': 2, 'line-opacity': 0.8 },
+        paint: { 'line-color': '#736372', 'line-width': 4, 'line-opacity': 0.8 },
       });
 
       // Hover/selected fill highlight
@@ -305,7 +305,7 @@ export default function MapSection({ id }: MapSectionProps) {
         type: 'line',
         source: MUNICIPALITY_SOURCE,
         layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: { 'line-color': '#736372', 'line-width': 3.5, 'line-opacity': 1.0 },
+        paint: { 'line-color': '#D6D84F', 'line-width': 3.5, 'line-opacity': 1.0 },
         filter: ['==', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
       });
 
@@ -314,7 +314,7 @@ export default function MapSection({ id }: MapSectionProps) {
         id: MUNICIPALITY_DIM_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#DCEED1', 'fill-opacity': 0.5 },
+        paint: { 'fill-color': '#DCEED1', 'fill-opacity': 0.7 },
         filter: ['!=', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
         layout: { visibility: 'none' },
       });
@@ -412,7 +412,7 @@ export default function MapSection({ id }: MapSectionProps) {
         <MapCanvas onMapReady={handleMapReady} />
 
         <div className="hidden md:block absolute top-0 right-0 h-full z-10 pointer-events-none">
-          <div className="pointer-events-auto w-[370px] h-full">
+          <div className="pointer-events-auto w-[270px] h-full">
             <MunicipalityCard
               isMobile={false}
               municipalities={SORTED_MUNICIPALITIES}

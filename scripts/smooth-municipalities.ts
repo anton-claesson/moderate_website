@@ -30,8 +30,8 @@ const geojson = JSON.parse(fs.readFileSync(INPUT, 'utf8'));
 
 for (const feature of geojson.features) {
   if (feature.geometry.type === 'Polygon') {
-    feature.geometry.coordinates = feature.geometry.coordinates.map(
-      (ring: Position[]) => chaikin(ring, ITERATIONS),
+    feature.geometry.coordinates = feature.geometry.coordinates.map((ring: Position[]) =>
+      chaikin(ring, ITERATIONS),
     );
   }
 }

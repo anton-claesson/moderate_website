@@ -13,35 +13,50 @@ export default function MunicipalityList({
   onSelect,
   onHoverMunicipality,
 }: MunicipalityListProps) {
-  const containerRef = useRef<HTMLUListElement>(null);
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isListHovering = useRef(false);
   const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   useEffect(() => {
-    if (!hoveredMunicipality) return;
-    const container = containerRef.current;
-    const item = itemRefs.current.get(hoveredMunicipality);
-    if (!container || !item) return;
-    const targetScrollTop =
-      item.offsetTop - container.clientHeight / 2 + item.offsetHeight / 2;
-    container.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+    if (!hoveredMunicipality || isListHovering.current) return;
+    itemRefs.current
+      .get(hoveredMunicipality)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [hoveredMunicipality]);
 
+  const handleMouseEnter = (name: string) => {
+    if (leaveTimer.current !== null) {
+      clearTimeout(leaveTimer.current);
+      leaveTimer.current = null;
+    }
+    isListHovering.current = true;
+    onHoverMunicipality?.(name);
+  };
+
+  const handleMouseLeave = () => {
+    leaveTimer.current = setTimeout(() => {
+      isListHovering.current = false;
+      onHoverMunicipality?.(null);
+      leaveTimer.current = null;
+    }, 0);
+  };
+
   return (
-    <ul ref={containerRef}>
+    <ul className="pr-3">
       {municipalities.map((name) => (
-        <li key={name}>
+        <li key={name} className="flex justify-end">
           <button
             ref={(el) => {
               if (el) itemRefs.current.set(name, el);
               else itemRefs.current.delete(name);
             }}
             onClick={() => onSelect(name)}
-            onMouseEnter={onHoverMunicipality ? () => onHoverMunicipality(name) : undefined}
-            onMouseLeave={onHoverMunicipality ? () => onHoverMunicipality(null) : undefined}
-            className={`w-full text-right px-3 py-2 uppercase tracking-wide transition-all duration-150 origin-right text-white ${
+            onMouseEnter={onHoverMunicipality ? () => handleMouseEnter(name) : undefined}
+            onMouseLeave={onHoverMunicipality ? handleMouseLeave : undefined}
+            className={`px-3 py-2 uppercase tracking-wide transition-colors ${
               hoveredMunicipality === name
-                ? 'font-black scale-[1.15] text-base'
-                : 'font-bold text-sm'
+                ? 'font-black text-3xl text-[#AAC0AA] bg-white'
+                : 'font-bold text-2xl text-white'
             }`}
           >
             {name}

@@ -1,3 +1,6 @@
+'use client';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { HousingView } from '@/types/housing';
 import { HOUSING_STATS } from '@/data/housingStats';
 import MunicipalityList from './MunicipalityList';
@@ -17,6 +20,34 @@ interface MunicipalityCardProps {
   onHoverMunicipality: (name: string | null) => void;
 }
 
+function ChevronUp() {
+  return (
+    <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-75">
+      <path
+        d="M2 16L18 2L34 16"
+        stroke="white"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ChevronDown() {
+  return (
+    <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-75">
+      <path
+        d="M2 2L18 16L34 2"
+        stroke="white"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function MunicipalityCard({
   isMobile,
   municipalities,
@@ -29,12 +60,24 @@ export default function MunicipalityCard({
   onHoverMunicipality,
 }: MunicipalityCardProps) {
   const stats = selected != null ? (HOUSING_STATS[selected] ?? null) : null;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const [canScrollDown, setCanScrollDown] = useState(true);
+
+  const updateScrollState = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollUp(el.scrollTop > 0);
+    setCanScrollDown(el.scrollTop < el.scrollHeight - el.clientHeight - 1);
+  }, []);
+
+  useEffect(() => {
+    updateScrollState();
+  }, [updateScrollState]);
 
   return (
     <div
-      className={`flex flex-col overflow-hidden ${
-        isMobile ? 'h-[30vh] rounded-none' : 'h-full'
-      }`}
+      className={`flex flex-col overflow-hidden ${isMobile ? 'h-[30vh] rounded-none' : 'h-full'}`}
       style={{ backgroundColor: '#d3d3d3' }}
     >
       {selected != null ? (
@@ -52,8 +95,14 @@ export default function MunicipalityCard({
         </>
       ) : (
         <>
-          <div className="flex-1" />
-          <div className="flex-[4] overflow-y-auto min-h-0">
+          <div className="flex-[0.4] flex items-end justify-center pb-1 pointer-events-none">
+            {canScrollUp && <ChevronUp />}
+          </div>
+          <div
+            ref={scrollRef}
+            onScroll={updateScrollState}
+            className="flex-[4] min-h-0 overflow-y-scroll scrollbar-white"
+          >
             <MunicipalityList
               municipalities={municipalities}
               hoveredMunicipality={hoveredMunicipality}
@@ -61,7 +110,9 @@ export default function MunicipalityCard({
               onHoverMunicipality={isMobile ? undefined : onHoverMunicipality}
             />
           </div>
-          <div className="flex-1" />
+          <div className="flex-[0.42] flex items-start justify-center pt-1 pointer-events-none">
+            {canScrollDown && <ChevronDown />}
+          </div>
         </>
       )}
     </div>

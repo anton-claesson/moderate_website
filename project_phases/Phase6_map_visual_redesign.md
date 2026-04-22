@@ -48,11 +48,14 @@ Phase 3–4 delivered a functional map with green box extrusions and a flat UI c
 
 ### F6.6 — Municipality card & list UI
 - Card background: `#d3d3d3` (matches map water color), fills full right side, no border/shadow
-- List layout: flex 1:4:1 spacer ratio — list occupies center 2/3 of card height
-- List items: uppercase, bold, right-aligned, white; hovered item scales to `scale-[1.15]` + `text-base` (vs `text-sm`), `origin-right`
-- Auto-scroll: hovered item centered in list container via manual `scrollTop` calculation (avoids `scrollIntoView` scrolling the page)
+- List layout: flex 0.4:4:0.42 spacer ratio — list occupies most of card height with small breathing room top and bottom
+- List items: uppercase, `text-2xl` base size, right-aligned via `flex justify-end` on each `<li>`; hovered item: `text-3xl`, `font-black`, `text-[#AAC0AA]`, `bg-white`
+- Hover bug fix: 0 ms debounced leave handler (`leaveTimer` ref + `setTimeout`) prevents `onMouseLeave` from clearing the map highlight when the cursor transitions directly between adjacent items; `isListHovering` ref distinguishes list-originated hovers from map-originated hovers
+- Auto-scroll: `scrollIntoView({ behavior: 'smooth', block: 'nearest' })` triggered only when hover originates from the map (guarded by `isListHovering`), so hovering a list item directly never triggers a scroll that would re-fire `onMouseLeave`
+- Scroll indicators: up/down chevron SVGs (stroke-width 5, white, 75% opacity) rendered in the spacer flex areas above and below the list; visibility driven by `scrollTop` state updated on the container's `onScroll`
+- White custom scrollbar: `.scrollbar-white` CSS utility (`scrollbar-width: thin`, `scrollbar-color: white transparent`, `-webkit-scrollbar` overrides) applied to the list scroll container
 - Card width: 380 px; detail view uses `text-text-on-dark` white-variant text throughout
-- **Files:** `src/components/map/MunicipalityCard.tsx`, `src/components/map/MunicipalityList.tsx`, `src/components/map/StatsPanel.tsx`, `src/components/map/LayerToggle.tsx`, `src/components/map/BackButton.tsx`
+- **Files:** `src/app/globals.css`, `src/components/map/MunicipalityCard.tsx`, `src/components/map/MunicipalityList.tsx`, `src/components/map/StatsPanel.tsx`, `src/components/map/LayerToggle.tsx`, `src/components/map/BackButton.tsx`
 
 ### F6.7 — Neighboring regions overlay
 - Uppsala, Västmanland, Södermanland municipalities from `okfse/sweden-geojson` filtered by `lan_code` (03, 04, 19)
