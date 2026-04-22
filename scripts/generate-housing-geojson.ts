@@ -20,10 +20,10 @@ const FLERBO_SPACING = FLERBO_HALF * 2.5;
 
 const SMAHUS_HEIGHT_MIN = 8;
 const SMAHUS_HEIGHT_MAX = 20;
-const FLERBO_CURRENT_HEIGHT_MIN = 40;
-const FLERBO_CURRENT_HEIGHT_MAX = 120;
-const FLERBO_NEW_HEIGHT_MIN = 100;
-const FLERBO_NEW_HEIGHT_MAX = 250;
+const FLERBO_CURRENT_HEIGHT_MIN = 60;
+const FLERBO_CURRENT_HEIGHT_MAX = 180;
+const FLERBO_NEW_HEIGHT_MIN = 70;
+const FLERBO_NEW_HEIGHT_MAX = 220;
 
 // ─── PRNG ─────────────────────────────────────────────────────────────────────
 
@@ -252,11 +252,15 @@ function generateClusteredPositions(
     }
 
     if (!placed) {
-      // Last resort: force place slightly off center
       const jx = (seededFloat((jxSeed + 999) >>> 0) - 0.5) * spacing;
       const jy = (seededFloat((jySeed + 999) >>> 0) - 0.5) * spacing;
-      positions.push([cx + jx, cy + jy]);
-      occupied.push({ lng: cx + jx, lat: cy + jy, rad: footprintRad });
+      const fbLng = cx + jx;
+      const fbLat = cy + jy;
+      const [finalLng, finalLat] = pointInRing(fbLng, fbLat, ring)
+        ? [fbLng, fbLat]
+        : [cx, cy];
+      positions.push([finalLng, finalLat]);
+      occupied.push({ lng: finalLng, lat: finalLat, rad: footprintRad });
     }
   }
 
@@ -451,7 +455,9 @@ for (const row of rows) {
 
       // Scale height relative to the new footprint
       let height = baseHeight * flerboHeightMod;
-      height = Math.max(40, Math.min(height, 2000)); // sane clamping
+      const clampMin = isNew ? 70 : 60;
+      const clampMax = isNew ? 480 : 400;
+      height = Math.max(clampMin, Math.min(height, clampMax));
 
       const shape = pickShape((muniSeed + i * 11 + 300) >>> 0);
       const rotIdx = ((((muniSeed + i * 17 + 400) >>> 0) * 2654435761 + 1013904223) >>> 0) % 4;
@@ -501,7 +507,7 @@ for (const row of rows) {
         seededFloat(heightSeed) * (SMAHUS_HEIGHT_MAX - SMAHUS_HEIGHT_MIN) + SMAHUS_HEIGHT_MIN;
 
       let height = baseHeight * smahusHeightMod;
-      height = Math.max(10, Math.min(height, 800));
+      height = Math.max(8, Math.min(height, 20));
 
       // Single-family homes: mostly squares and wide rectangles
       const shapeVal = seededFloat((muniSeed + i * 5 + 700) >>> 0);
