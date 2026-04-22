@@ -18,12 +18,12 @@ const FLERBO_HALF = FLERBOSTADSHUS_SIZE_DEG; // 0.001 (~110m footprint)
 const SMAHUS_SPACING = SMAHUS_HALF * 2.5;
 const FLERBO_SPACING = FLERBO_HALF * 2.5;
 
-const SMAHUS_HEIGHT_MIN = 20;
-const SMAHUS_HEIGHT_MAX = 100;
-const FLERBO_CURRENT_HEIGHT_MIN = 80;
-const FLERBO_CURRENT_HEIGHT_MAX = 250;
-const FLERBO_NEW_HEIGHT_MIN = 150;
-const FLERBO_NEW_HEIGHT_MAX = 400;
+const SMAHUS_HEIGHT_MIN = 8;
+const SMAHUS_HEIGHT_MAX = 20;
+const FLERBO_CURRENT_HEIGHT_MIN = 40;
+const FLERBO_CURRENT_HEIGHT_MAX = 120;
+const FLERBO_NEW_HEIGHT_MIN = 100;
+const FLERBO_NEW_HEIGHT_MAX = 250;
 
 // ─── PRNG ─────────────────────────────────────────────────────────────────────
 
@@ -168,9 +168,9 @@ function findClusterCenters(
       let lng = bbox.minLng + seededFloat((muniSeed + c * 300 + attempt * 2 + 1) >>> 0) * lngRange;
       let lat = minBandLat + seededFloat((muniSeed + c * 300 + attempt * 2 + 2) >>> 0) * bandHeight;
 
-      // Pull points 40% towards the centroid to make the clusters more central
-      lng = lng * 0.6 + fallback[0] * 0.4;
-      lat = lat * 0.6 + fallback[1] * 0.4;
+      // Pull points heavily towards the centroid to make the clusters more central
+      lng = lng * 0.4 + fallback[0] * 0.6;
+      lat = lat * 0.4 + fallback[1] * 0.6;
 
       if (pointInRing(lng, lat, ring)) {
         centers.push([lng, lat]);
@@ -190,6 +190,23 @@ function findClusterCenters(
 
 // ─── Position generation ──────────────────────────────────────────────────────
 
+function isOverlapping(
+  lng: number,
+  lat: number,
+  footprintRad: number,
+  occupied: { lng: number; lat: number; rad: number }[],
+): boolean {
+  for (const o of occupied) {
+    const latScale = Math.cos((lat * Math.PI) / 180);
+    const dLng = (lng - o.lng) * latScale; // true distance proxy
+    const dLat = lat - o.lat;
+    const distSq = dLng * dLng + dLat * dLat;
+    const minD = footprintRad + o.rad + 0.00005; // tiny buffer
+    if (distSq < minD * minD) return true;
+  }
+  return false;
+}
+
 function generateClusteredPositions(
   ring: Position[],
   clusterCenters: [number, number][],
@@ -197,6 +214,8 @@ function generateClusteredPositions(
   spacing: number,
   muniSeed: number,
   typeOffset: number,
+  footprintRad: number,
+  occupied: { lng: number; lat: number; rad: number }[],
 ): [number, number][] {
   const positions: [number, number][] = [];
   const nClusters = clusterCenters.length;
@@ -216,23 +235,28 @@ function generateClusteredPositions(
     const jySeed = (muniSeed + typeOffset + i * 13 + 21) >>> 0;
 
     let placed = false;
-    for (let retry = 0; retry < 20; retry++) {
-      const jx = (seededFloat((jxSeed + retry * 7) >>> 0) - 0.5) * spacing * 1.2;
-      const jy = (seededFloat((jySeed + retry * 7) >>> 0) - 0.5) * spacing * 1.2;
+    for (let retry = 0; retry < 50; retry++) {
+      // wider jitter on retry to dodge collisions
+      const jMag = retry === 0 ? 0.3 : retry * 0.2;
+      const jx = (seededFloat((jxSeed + retry * 7) >>> 0) - 0.5) * spacing * jMag;
+      const jy = (seededFloat((jySeed + retry * 7) >>> 0) - 0.5) * spacing * jMag;
       const lng = cx + baseDx + jx;
       const lat = cy + baseDy + jy;
-      if (pointInRing(lng, lat, ring)) {
+
+      if (pointInRing(lng, lat, ring) && !isOverlapping(lng, lat, footprintRad, occupied)) {
         positions.push([lng, lat]);
+        occupied.push({ lng, lat, rad: footprintRad });
         placed = true;
         break;
       }
     }
 
     if (!placed) {
-      // Last resort: near cluster center with minimal jitter
-      const jx = (seededFloat((jxSeed + 999) >>> 0) - 0.5) * spacing * 0.4;
-      const jy = (seededFloat((jySeed + 999) >>> 0) - 0.5) * spacing * 0.4;
+      // Last resort: force place slightly off center
+      const jx = (seededFloat((jxSeed + 999) >>> 0) - 0.5) * spacing;
+      const jy = (seededFloat((jySeed + 999) >>> 0) - 0.5) * spacing;
       positions.push([cx + jx, cy + jy]);
+      occupied.push({ lng: cx + jx, lat: cy + jy, rad: footprintRad });
     }
   }
 
@@ -367,38 +391,33 @@ for (const row of rows) {
   let dynamicNClusters = seededFloat((muniSeed + 9999) >>> 0) < 0.5 ? 2 : 3;
 
   if (totalShares > 0 && polyArea > 0) {
-    // 1) Dynamic footprint scaling to cover ~18% of the polygon's bounding area
-    const TARGET_COVERAGE = 0.18;
+    // 1) Dynamic footprint scaling to cover ~20% of the polygon's bounding area
+    const TARGET_COVERAGE = 0.2;
     const areaPerShare = (polyArea * TARGET_COVERAGE) / totalShares;
 
     smahusHalfSize = Math.sqrt(areaPerShare) / 2;
     flerboHalfSize = Math.sqrt(areaPerShare * 4) / 2;
 
     // Optional bounds to prevent vanishing or comically absurd shapes
-    smahusHalfSize = Math.max(0.00005, Math.min(smahusHalfSize, 0.015));
-    flerboHalfSize = Math.max(0.0001, Math.min(flerboHalfSize, 0.03));
+    smahusHalfSize = Math.max(0.00005, Math.min(smahusHalfSize, 0.02));
+    flerboHalfSize = Math.max(0.0001, Math.min(flerboHalfSize, 0.04));
 
-    // 2) Wider Spacing to eliminate excessive overlap, but grouped
-    dynamicSmahusSpacing = smahusHalfSize * 2.8;
-    dynamicFlerboSpacing = flerboHalfSize * 2.8;
+    // 2) Really tight spacing to form cohesive neighborhoods
+    dynamicSmahusSpacing = smahusHalfSize * 2.05;
+    dynamicFlerboSpacing = flerboHalfSize * 2.05;
 
     // 3) Proportional height modifiers
-    // Both scale evenly so that small houses don't balloon taller than apartments
-    const globalHeightMod = Math.sqrt(areaPerShare) / 0.001;
+    // Base scale off polygon area so nothing looks ridiculously tall
+    const globalHeightMod = Math.max(0.5, Math.min(Math.sqrt(areaPerShare) / 0.001, 3));
     smahusHeightMod = globalHeightMod;
     flerboHeightMod = globalHeightMod;
 
-    // 4) Dynamic cluster counts based on total area and density
-    const baseDensity = totalUnits / polyArea; // units per sq degree
-    if (baseDensity > 15000) {
-      dynamicNClusters = 1; // highly urban, single dense mass
-    } else if (baseDensity > 5000) {
-      dynamicNClusters = 2; // suburban towns
-    } else {
-      dynamicNClusters = Math.min(5, Math.max(2, Math.floor(polyArea / 0.02)));
-    }
+    // 4) Dynamic cluster counts: use the entire space more evenly by spreading clusters out
+    // Lots of small clusters instead of 2-3 massive clumps
+    dynamicNClusters = Math.max(2, Math.floor(totalUnits / 4));
+    if (dynamicNClusters > 30) dynamicNClusters = 30; // cap to avoid fragmentation in massive towns
   }
-
+  const occupied: { lng: number; lat: number; rad: number }[] = [];
   // ── Flerbostadshus: unified pool so new buildings fill gaps among existing ──
   if (totalFler > 0) {
     const flerClusters = findClusterCenters(
@@ -415,6 +434,8 @@ for (const row of rows) {
       dynamicFlerboSpacing,
       muniSeed,
       0,
+      flerboHalfSize,
+      occupied,
     );
 
     for (let i = 0; i < flerPositions.length; i++) {
@@ -468,6 +489,8 @@ for (const row of rows) {
       dynamicSmahusSpacing,
       muniSeed,
       50000,
+      smahusHalfSize,
+      occupied,
     );
 
     for (let i = 0; i < smaPositions.length; i++) {
