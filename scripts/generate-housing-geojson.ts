@@ -1,29 +1,34 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { readFileSync } from 'fs';
-import { MUNICIPALITY_CENTROIDS } from '../src/data/municipalityCentroids';
-import {
-  SMAHUS_PER_REPRESENTATIVE,
-  FLERBOSTADSHUS_PER_REPRESENTATIVE,
-  SMAHUS_SIZE_DEG,
-  FLERBOSTADSHUS_SIZE_DEG,
-} from '../src/lib/mapConfig';
+import { SMAHUS_PER_REPRESENTATIVE, FLERBOSTADSHUS_PER_REPRESENTATIVE } from '../src/lib/mapConfig';
 import type { HousingCollection, HousingUnitProperties } from '../src/types/housing';
 import type { Feature, Polygon, Position } from 'geojson';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const SMAHUS_HALF = SMAHUS_SIZE_DEG; // 0.0005 (~55m footprint)
-const FLERBO_HALF = FLERBOSTADSHUS_SIZE_DEG; // 0.001 (~110m footprint)
-const SMAHUS_SPACING = SMAHUS_HALF * 2.5;
-const FLERBO_SPACING = FLERBO_HALF * 2.5;
+const TOTAL_COVERAGE = 0.5; // fraction of polygon area covered by all buildings combined
+const FILL_FACTOR = 0.8; // footprint occupies 80% of the grid cell
+const JITTER = 0.15; // ±15% of cellSize displacement; with FILL_FACTOR=0.8 keeps edge gap ≥ 5%
 
-const SMAHUS_HEIGHT_MIN = 8;
-const SMAHUS_HEIGHT_MAX = 20;
-const FLERBO_CURRENT_HEIGHT_MIN = 120;
-const FLERBO_CURRENT_HEIGHT_MAX = 360;
-const FLERBO_NEW_HEIGHT_MIN = 140;
-const FLERBO_NEW_HEIGHT_MAX = 440;
+// Flerbo units represent 10× more actual dwellings than smahus units, so each
+// flerbo building gets 10× more area (√10 ≈ 3.16× larger footprint).
+const FLERBO_WEIGHT = FLERBOSTADSHUS_PER_REPRESENTATIVE / SMAHUS_PER_REPRESENTATIVE;
+
+// Height = footprint_halfsize_degrees × AVG_M_PER_DEG × ratio.
+// Gives natural proportions for typical municipalities; clamps handle sparse outliers.
+const AVG_M_PER_DEG = 84150; // average of longitude (~57 300 m/°) and latitude (~111 000 m/°) at 59°N
+const SMAHUS_HEIGHT_RATIO = 0.5;
+const FLERBO_HEIGHT_RATIO = 2.5;
+const FLERBO_NEW_HEIGHT_RATIO = 3.0; // ~1.2× taller for new 2060 blocks
+const HEIGHT_VARIATION = 0.4; // per-building multiplier drawn from [0.8, 1.2]
+// Hard clamps prevent extreme heights in large sparse municipalities
+const SMAHUS_HEIGHT_MIN = 10;
+const SMAHUS_HEIGHT_MAX = 60;
+const FLERBO_HEIGHT_MIN = 50;
+const FLERBO_HEIGHT_MAX = 600;
+const FLERBO_NEW_HEIGHT_MIN = 60;
+const FLERBO_NEW_HEIGHT_MAX = 720;
 
 // ─── PRNG ─────────────────────────────────────────────────────────────────────
 
@@ -71,7 +76,7 @@ function computeBBox(ring: Position[]): BBox {
   return { minLng, maxLng, minLat, maxLat };
 }
 
-// ─── Shape builders ────────────────────────────────────────────────────────────
+// ─── Shape builders ───────────────────────────────────────────────────────────
 
 function rotatePoint(dx: number, dy: number, theta: number): [number, number] {
   const c = Math.cos(theta);
@@ -121,7 +126,7 @@ function buildFootprintRing(
         [-1, 0],
       ];
       break;
-    default:
+    default: // square
       offsets = [
         [-1, -1],
         [1, -1],
@@ -138,133 +143,44 @@ function buildFootprintRing(
   return ring;
 }
 
-function pickShape(seed: number): 'square' | 'L' | 'wide' | 'T' {
+// Småhus: low-rise shapes only
+function pickSmahusShape(seed: number): 'square' | 'wide' {
+  return seededFloat(seed) < 0.7 ? 'square' : 'wide';
+}
+
+// Flerbostadshus: more complex footprints to read as city blocks
+function pickFlerboShape(seed: number): 'square' | 'L' | 'T' {
   const v = seededFloat(seed);
   if (v < 0.4) return 'square';
-  if (v < 0.65) return 'L';
-  if (v < 0.85) return 'wide';
+  if (v < 0.7) return 'L';
   return 'T';
 }
 
-// ─── Cluster center finding ────────────────────────────────────────────────────
+// ─── Grid placement ───────────────────────────────────────────────────────────
 
-function findClusterCenters(
+// Returns up to `count` cell centers inside the polygon, seeded-shuffled so
+// the result is deterministic but spatially distributed (not top-to-bottom).
+function generateGridPositions(
   ring: Position[],
   bbox: BBox,
-  nClusters: number,
-  muniSeed: number,
-  fallback: [number, number],
-): [number, number][] {
-  const centers: [number, number][] = [];
-  const lngRange = bbox.maxLng - bbox.minLng;
-  const latRange = bbox.maxLat - bbox.minLat;
-  const bandHeight = latRange / nClusters;
-
-  for (let c = 0; c < nClusters; c++) {
-    const minBandLat = bbox.minLat + c * bandHeight;
-    let found = false;
-
-    for (let attempt = 0; attempt < 150; attempt++) {
-      let lng = bbox.minLng + seededFloat((muniSeed + c * 300 + attempt * 2 + 1) >>> 0) * lngRange;
-      let lat = minBandLat + seededFloat((muniSeed + c * 300 + attempt * 2 + 2) >>> 0) * bandHeight;
-
-      // Pull points heavily towards the centroid to make the clusters more central
-      lng = lng * 0.4 + fallback[0] * 0.6;
-      lat = lat * 0.4 + fallback[1] * 0.6;
-
-      if (pointInRing(lng, lat, ring)) {
-        centers.push([lng, lat]);
-        found = true;
-        break;
-      }
-    }
-
-    if (!found) {
-      const offset = (c - (nClusters - 1) / 2) * 0.01;
-      centers.push([fallback[0] + offset, fallback[1] + offset]);
-    }
-  }
-
-  return centers;
-}
-
-// ─── Position generation ──────────────────────────────────────────────────────
-
-function isOverlapping(
-  lng: number,
-  lat: number,
-  footprintRad: number,
-  occupied: { lng: number; lat: number; rad: number }[],
-): boolean {
-  for (const o of occupied) {
-    const latScale = Math.cos((lat * Math.PI) / 180);
-    const dLng = (lng - o.lng) * latScale; // true distance proxy
-    const dLat = lat - o.lat;
-    const distSq = dLng * dLng + dLat * dLat;
-    const minD = footprintRad + o.rad + 0.00005; // tiny buffer
-    if (distSq < minD * minD) return true;
-  }
-  return false;
-}
-
-function generateClusteredPositions(
-  ring: Position[],
-  clusterCenters: [number, number][],
   count: number,
-  spacing: number,
-  muniSeed: number,
-  typeOffset: number,
-  footprintRad: number,
-  occupied: { lng: number; lat: number; rad: number }[],
+  cellSize: number,
+  seed: number,
 ): [number, number][] {
-  const positions: [number, number][] = [];
-  const nClusters = clusterCenters.length;
-
-  for (let i = 0; i < count; i++) {
-    const clusterIdx = i % nClusters;
-    const posInCluster = Math.floor(i / nClusters);
-    const [cx, cy] = clusterCenters[clusterIdx]!;
-
-    const ringIdx = Math.floor(Math.sqrt(posInCluster));
-    const angleSeed = (muniSeed + typeOffset + i * 7 + 10) >>> 0;
-    const angle = seededFloat(angleSeed) * Math.PI * 2;
-    const baseDx = ringIdx * spacing * Math.cos(angle);
-    const baseDy = ringIdx * spacing * Math.sin(angle);
-
-    const jxSeed = (muniSeed + typeOffset + i * 13 + 20) >>> 0;
-    const jySeed = (muniSeed + typeOffset + i * 13 + 21) >>> 0;
-
-    let placed = false;
-    for (let retry = 0; retry < 50; retry++) {
-      // wider jitter on retry to dodge collisions
-      const jMag = retry === 0 ? 0.3 : retry * 0.2;
-      const jx = (seededFloat((jxSeed + retry * 7) >>> 0) - 0.5) * spacing * jMag;
-      const jy = (seededFloat((jySeed + retry * 7) >>> 0) - 0.5) * spacing * jMag;
-      const lng = cx + baseDx + jx;
-      const lat = cy + baseDy + jy;
-
-      if (pointInRing(lng, lat, ring) && !isOverlapping(lng, lat, footprintRad, occupied)) {
-        positions.push([lng, lat]);
-        occupied.push({ lng, lat, rad: footprintRad });
-        placed = true;
-        break;
-      }
-    }
-
-    if (!placed) {
-      const jx = (seededFloat((jxSeed + 999) >>> 0) - 0.5) * spacing;
-      const jy = (seededFloat((jySeed + 999) >>> 0) - 0.5) * spacing;
-      const fbLng = cx + jx;
-      const fbLat = cy + jy;
-      const [finalLng, finalLat] = pointInRing(fbLng, fbLat, ring)
-        ? [fbLng, fbLat]
-        : [cx, cy];
-      positions.push([finalLng, finalLat]);
-      occupied.push({ lng: finalLng, lat: finalLat, rad: footprintRad });
+  const candidates: [number, number][] = [];
+  for (let lat = bbox.minLat; lat < bbox.maxLat; lat += cellSize) {
+    for (let lng = bbox.minLng; lng < bbox.maxLng; lng += cellSize) {
+      const cx = lng + cellSize / 2;
+      const cy = lat + cellSize / 2;
+      if (pointInRing(cx, cy, ring)) candidates.push([cx, cy]);
     }
   }
-
-  return positions;
+  // Seeded Fisher-Yates shuffle for deterministic but non-sequential ordering
+  for (let i = candidates.length - 1; i > 0; i--) {
+    const j = Math.floor(seededFloat((seed + i * 7919) >>> 0) * (i + 1));
+    [candidates[i], candidates[j]] = [candidates[j]!, candidates[i]!];
+  }
+  return candidates.slice(0, count);
 }
 
 // ─── Feature factory ──────────────────────────────────────────────────────────
@@ -343,13 +259,6 @@ for (const row of rows) {
   const municipality = (row['Kommun'] ?? '').trim();
   if (!municipality) continue;
 
-  const centroid = MUNICIPALITY_CENTROIDS[municipality];
-  if (!centroid) {
-    console.warn(`⚠  No centroid for "${municipality}" — skipping`);
-    warnings++;
-    continue;
-  }
-
   const polyData = municipalityPolygons.get(municipality);
   if (!polyData) {
     console.warn(`⚠  No polygon for "${municipality}" — skipping`);
@@ -360,117 +269,86 @@ for (const row of rows) {
   const { ring, bbox } = polyData;
   const muniSeed = hashStr(municipality);
 
-  const smahus = parseNum(row['Antal småhus']);
-  const flerbostad = parseNum(row['Antal flerbostadshus']);
-  const flerbostad2060 = parseNum(row['Antal flerbostadshus 2060 (hög)']);
-
-  const nSmahus = Math.floor(smahus / SMAHUS_PER_REPRESENTATIVE);
-  const nFler = Math.floor(flerbostad / FLERBOSTADSHUS_PER_REPRESENTATIVE);
+  const nSmahus = Math.floor(parseNum(row['Antal småhus']) / SMAHUS_PER_REPRESENTATIVE);
+  const nFler = Math.floor(
+    parseNum(row['Antal flerbostadshus']) / FLERBOSTADSHUS_PER_REPRESENTATIVE,
+  );
   const nFlerNew = Math.max(
     0,
-    Math.floor((flerbostad2060 - flerbostad) / FLERBOSTADSHUS_PER_REPRESENTATIVE),
+    Math.floor(
+      (parseNum(row['Antal flerbostadshus 2060 (hög)']) - parseNum(row['Antal flerbostadshus'])) /
+        FLERBOSTADSHUS_PER_REPRESENTATIVE,
+    ),
   );
+  const totalFler = nFler + nFlerNew;
 
+  // Polygon area via shoelace formula (degree² units, consistent with cellSize²)
   let polyArea = 0;
   for (let i = 0; i < ring.length - 1; i++) {
-    const p1 = ring[i] as [number, number];
-    const p2 = ring[i + 1] as [number, number];
-    polyArea += p1[0] * p2[1] - p2[0] * p1[1];
+    const [x1, y1] = ring[i] as [number, number];
+    const [x2, y2] = ring[i + 1] as [number, number];
+    polyArea += x1 * y2 - x2 * y1;
   }
   polyArea = Math.abs(polyArea / 2);
-  if (polyArea === 0) {
-    polyArea = (bbox.maxLng - bbox.minLng) * (bbox.maxLat - bbox.minLat);
-  }
+  if (polyArea === 0) polyArea = (bbox.maxLng - bbox.minLng) * (bbox.maxLat - bbox.minLat);
 
-  const totalFler = nFler + nFlerNew;
-  const totalUnits = nSmahus + totalFler;
-  const totalShares = nSmahus * 1 + totalFler * 4;
+  // Weighted total: flerbo units get FLERBO_WEIGHT times more area than smahus units,
+  // reflecting the higher number of actual dwellings each representative building covers.
+  const weightedTotal = nSmahus + totalFler * FLERBO_WEIGHT;
+  const areaPerUnit = weightedTotal > 0 ? (polyArea * TOTAL_COVERAGE) / weightedTotal : 0;
 
-  let smahusHalfSize = SMAHUS_HALF;
-  let flerboHalfSize = FLERBO_HALF;
-  let dynamicSmahusSpacing = SMAHUS_SPACING;
-  let dynamicFlerboSpacing = FLERBO_SPACING;
-  let smahusHeightMod = 1;
-  let flerboHeightMod = 1;
-  let dynamicNClusters = seededFloat((muniSeed + 9999) >>> 0) < 0.5 ? 2 : 3;
+  const smaCellSize = Math.max(0.0001, Math.min(Math.sqrt(areaPerUnit), 0.02));
+  const flerboCellSize = Math.max(0.0002, Math.min(Math.sqrt(areaPerUnit * FLERBO_WEIGHT), 0.06));
+  const smaHalfSize = (smaCellSize * FILL_FACTOR) / 2;
+  const flerHalfSize = (flerboCellSize * FILL_FACTOR) / 2;
 
-  if (totalShares > 0 && polyArea > 0) {
-    // 1) Dynamic footprint scaling to cover ~30% of the polygon's bounding area
-    const TARGET_COVERAGE = 0.3;
-    const areaPerShare = (polyArea * TARGET_COVERAGE) / totalShares;
+  // Heights scale with footprint size, giving automatic visual proportions per municipality
+  const smaBaseHeight = smaHalfSize * AVG_M_PER_DEG * SMAHUS_HEIGHT_RATIO;
+  const flerBaseHeight = flerHalfSize * AVG_M_PER_DEG * FLERBO_HEIGHT_RATIO;
+  const flerNewBaseHeight = flerHalfSize * AVG_M_PER_DEG * FLERBO_NEW_HEIGHT_RATIO;
 
-    smahusHalfSize = Math.sqrt(areaPerShare) / 2;
-    flerboHalfSize = Math.sqrt(areaPerShare * 8) / 2; // 8× share → 2× linear size vs smallhus
-
-    // Optional bounds to prevent vanishing or comically absurd shapes
-    smahusHalfSize = Math.max(0.00005, Math.min(smahusHalfSize, 0.02));
-    flerboHalfSize = Math.max(0.0001, Math.min(flerboHalfSize, 0.06));
-
-    // 2) Spacing: tight for houses, wider for apartment blocks to reduce overlap
-    dynamicSmahusSpacing = smahusHalfSize * 2.05;
-    dynamicFlerboSpacing = flerboHalfSize * 2.5;
-
-    // 3) Proportional height modifiers
-    // Base scale off polygon area so nothing looks ridiculously tall
-    const globalHeightMod = Math.max(0.5, Math.min(Math.sqrt(areaPerShare) / 0.001, 3));
-    smahusHeightMod = globalHeightMod;
-    flerboHeightMod = globalHeightMod;
-
-    // 4) Dynamic cluster counts: use the entire space more evenly by spreading clusters out
-    // Lots of small clusters instead of 2-3 massive clumps
-    dynamicNClusters = Math.max(2, Math.floor(totalUnits / 4));
-    if (dynamicNClusters > 30) dynamicNClusters = 30; // cap to avoid fragmentation in massive towns
-  }
-  const occupied: { lng: number; lat: number; rad: number }[] = [];
-  // ── Flerbostadshus: unified pool so new buildings fill gaps among existing ──
+  // ── Flerbostadshus: unified pool — first nFler positions = current, rest = new 2060
+  //    The shuffle distributes new apartments spatially among existing ones.
   if (totalFler > 0) {
-    const flerClusters = findClusterCenters(
+    const flerGrid = generateGridPositions(
       ring,
       bbox,
-      dynamicNClusters,
-      (muniSeed + 1000) >>> 0,
-      centroid,
-    );
-    const flerPositions = generateClusteredPositions(
-      ring,
-      flerClusters,
       totalFler,
-      dynamicFlerboSpacing,
-      muniSeed,
-      0,
-      flerboHalfSize,
-      occupied,
+      flerboCellSize,
+      (muniSeed + 1000) >>> 0,
     );
 
-    for (let i = 0; i < flerPositions.length; i++) {
-      const [lng, lat] = flerPositions[i]!;
+    for (let i = 0; i < flerGrid.length; i++) {
+      const [cx, cy] = flerGrid[i]!;
       const isNew = i >= nFler;
 
-      const heightSeed = (muniSeed + i * 13 + 200) >>> 0;
-      let baseHeight = isNew
-        ? seededFloat(heightSeed) * (FLERBO_NEW_HEIGHT_MAX - FLERBO_NEW_HEIGHT_MIN) +
-          FLERBO_NEW_HEIGHT_MIN
-        : seededFloat(heightSeed) * (FLERBO_CURRENT_HEIGHT_MAX - FLERBO_CURRENT_HEIGHT_MIN) +
-          FLERBO_CURRENT_HEIGHT_MIN;
+      const jx = (seededFloat((muniSeed + i * 13 + 10) >>> 0) - 0.5) * JITTER * flerboCellSize;
+      const jy = (seededFloat((muniSeed + i * 17 + 11) >>> 0) - 0.5) * JITTER * flerboCellSize;
+      const jLng = cx + jx;
+      const jLat = cy + jy;
+      const inBounds = pointInRing(jLng, jLat, ring);
+      const lng = inBounds ? jLng : cx;
+      const lat = inBounds ? jLat : cy;
 
-      // Scale height relative to the new footprint
-      let height = baseHeight * flerboHeightMod;
-      const clampMin = isNew ? 140 : 120;
-      const clampMax = isNew ? 960 : 800;
-      height = Math.max(clampMin, Math.min(height, clampMax));
+      const variation =
+        1 - HEIGHT_VARIATION / 2 + seededFloat((muniSeed + i * 11 + 200) >>> 0) * HEIGHT_VARIATION;
+      const baseH = isNew ? flerNewBaseHeight : flerBaseHeight;
+      const minH = isNew ? FLERBO_NEW_HEIGHT_MIN : FLERBO_HEIGHT_MIN;
+      const maxH = isNew ? FLERBO_NEW_HEIGHT_MAX : FLERBO_HEIGHT_MAX;
+      const height = Math.max(minH, Math.min(Math.round(baseH * variation), maxH));
 
-      const shape = pickShape((muniSeed + i * 11 + 300) >>> 0);
-      const rotIdx = ((((muniSeed + i * 17 + 400) >>> 0) * 2654435761 + 1013904223) >>> 0) % 4;
+      const shape = pickFlerboShape((muniSeed + i * 7 + 300) >>> 0);
+      const rotIdx = ((((muniSeed + i * 19 + 400) >>> 0) * 2654435761 + 1013904223) >>> 0) % 4;
 
       const props: HousingUnitProperties = {
         id: isNew ? `fb-new-${municipality}-${i}` : `fb-${municipality}-${i}`,
         municipality,
         type: 'flerbostadshus',
         view: isNew ? 'planned' : 'current',
-        height: Math.round(height),
+        height,
       };
 
-      const feature = makeFeature(lng, lat, flerboHalfSize, shape, rotIdx, props);
+      const feature = makeFeature(lng, lat, flerHalfSize, shape, rotIdx, props);
       if (isNew) {
         flerbostadshusNewFeatures.push(feature);
       } else {
@@ -479,39 +357,35 @@ for (const row of rows) {
     }
   }
 
-  // ── Småhus: separate cluster set ──────────────────────────────────────────
+  // ── Småhus ────────────────────────────────────────────────────────────────
   if (nSmahus > 0) {
-    const smaClusters = findClusterCenters(
+    const smaGrid = generateGridPositions(
       ring,
       bbox,
-      dynamicNClusters,
-      (muniSeed + 2000) >>> 0,
-      centroid,
-    );
-    const smaPositions = generateClusteredPositions(
-      ring,
-      smaClusters,
       nSmahus,
-      dynamicSmahusSpacing,
-      muniSeed,
-      50000,
-      smahusHalfSize,
-      occupied,
+      smaCellSize,
+      (muniSeed + 2000) >>> 0,
     );
 
-    for (let i = 0; i < smaPositions.length; i++) {
-      const [lng, lat] = smaPositions[i]!;
+    for (let i = 0; i < smaGrid.length; i++) {
+      const [cx, cy] = smaGrid[i]!;
 
-      const heightSeed = (muniSeed + i * 7 + 600) >>> 0;
-      let baseHeight =
-        seededFloat(heightSeed) * (SMAHUS_HEIGHT_MAX - SMAHUS_HEIGHT_MIN) + SMAHUS_HEIGHT_MIN;
+      const jx = (seededFloat((muniSeed + i * 13 + 500) >>> 0) - 0.5) * JITTER * smaCellSize;
+      const jy = (seededFloat((muniSeed + i * 17 + 501) >>> 0) - 0.5) * JITTER * smaCellSize;
+      const jLng = cx + jx;
+      const jLat = cy + jy;
+      const inBounds = pointInRing(jLng, jLat, ring);
+      const lng = inBounds ? jLng : cx;
+      const lat = inBounds ? jLat : cy;
 
-      let height = baseHeight * smahusHeightMod;
-      height = Math.max(8, Math.min(height, 20));
+      const variation =
+        1 - HEIGHT_VARIATION / 2 + seededFloat((muniSeed + i * 7 + 600) >>> 0) * HEIGHT_VARIATION;
+      const height = Math.max(
+        SMAHUS_HEIGHT_MIN,
+        Math.min(Math.round(smaBaseHeight * variation), SMAHUS_HEIGHT_MAX),
+      );
 
-      // Single-family homes: mostly squares and wide rectangles
-      const shapeVal = seededFloat((muniSeed + i * 5 + 700) >>> 0);
-      const shape: 'square' | 'wide' = shapeVal < 0.65 ? 'square' : 'wide';
+      const shape = pickSmahusShape((muniSeed + i * 5 + 700) >>> 0);
       const rotIdx = ((((muniSeed + i * 19 + 800) >>> 0) * 2654435761 + 1013904223) >>> 0) % 4;
 
       const props: HousingUnitProperties = {
@@ -519,10 +393,10 @@ for (const row of rows) {
         municipality,
         type: 'smahus',
         view: 'both',
-        height: Math.round(height),
+        height,
       };
 
-      smahusFeatures.push(makeFeature(lng, lat, smahusHalfSize, shape, rotIdx, props));
+      smahusFeatures.push(makeFeature(lng, lat, smaHalfSize, shape, rotIdx, props));
     }
   }
 
