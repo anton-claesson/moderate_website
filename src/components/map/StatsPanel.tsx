@@ -10,10 +10,10 @@ function fmt(n: number): string {
 
 export default function StatsPanel({ stats }: StatsPanelProps) {
   const rows = [
-    { label: 'Småhus', value: fmt(stats.smahusCurrent) },
-    { label: 'Lägenheter idag', value: fmt(stats.flerboCurrent) },
-    { label: 'Lägenheter 2060', value: fmt(stats.flerbo2060) },
-    { label: 'Tillväxt', value: `+${stats.growthPct}%` },
+    { label: 'Småhus idag', value: fmt(stats.smahusCurrent) },
+    { label: 'Lägenheter Idag', value: fmt(stats.flerboCurrent) },
+    { label: 'Lägenheter Planerad', value: fmt(stats.flerbo2060) },
+    { label: 'Förtätning', value: `+${stats.growthPct}%` },
   ];
 
   return (

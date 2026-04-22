@@ -7,8 +7,8 @@ interface LayerToggleProps {
 
 export default function LayerToggle({ view, onChange }: LayerToggleProps) {
   return (
-    <div className="flex rounded-lg overflow-hidden shadow-lg border border-white/10">
-      {(['current', '2060'] as HousingView[]).map((v) => (
+    <div className="flex rounded-lg overflow-hidden border border-white/10">
+      {(['current', 'Planerad'] as HousingView[]).map((v) => (
         <button
           key={v}
           onClick={() => onChange(v)}
@@ -18,7 +18,7 @@ export default function LayerToggle({ view, onChange }: LayerToggleProps) {
               : 'bg-header-bg text-text-on-dark/60 hover:text-text-on-dark'
           }`}
         >
-          {v === 'current' ? 'Idag' : '2060'}
+          {v === 'current' ? 'Idag' : 'Planerad'}
         </button>
       ))}
     </div>

@@ -13,18 +13,21 @@ export default function MunicipalityList({
   onSelect,
   onHoverMunicipality,
 }: MunicipalityListProps) {
+  const containerRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   useEffect(() => {
-    if (hoveredMunicipality) {
-      itemRefs.current
-        .get(hoveredMunicipality)
-        ?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    }
+    if (!hoveredMunicipality) return;
+    const container = containerRef.current;
+    const item = itemRefs.current.get(hoveredMunicipality);
+    if (!container || !item) return;
+    const targetScrollTop =
+      item.offsetTop - container.clientHeight / 2 + item.offsetHeight / 2;
+    container.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
   }, [hoveredMunicipality]);
 
   return (
-    <ul>
+    <ul ref={containerRef}>
       {municipalities.map((name) => (
         <li key={name}>
           <button
@@ -35,10 +38,10 @@ export default function MunicipalityList({
             onClick={() => onSelect(name)}
             onMouseEnter={onHoverMunicipality ? () => onHoverMunicipality(name) : undefined}
             onMouseLeave={onHoverMunicipality ? () => onHoverMunicipality(null) : undefined}
-            className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+            className={`w-full text-right px-3 py-2 uppercase tracking-wide transition-all duration-150 origin-right text-white ${
               hoveredMunicipality === name
-                ? 'bg-accent/20 text-accent font-semibold'
-                : 'text-text-on-dark/70 hover:bg-white/5 hover:text-text-on-dark'
+                ? 'font-black scale-[1.15] text-base'
+                : 'font-bold text-sm'
             }`}
           >
             {name}

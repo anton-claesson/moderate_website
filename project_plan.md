@@ -120,26 +120,36 @@ Convert visitors into newsletter subscribers.
 - [x] **F5.3 — GDPR consent & privacy copy.** Required consent checkbox with inline Swedish privacy copy; submit disabled until checked.
 - [x] **F5.4 — Aesthetic refinements.** Font switched to Space Grotesk. Hero headline scaled to display size. Section eyebrow labels removed. ContactForm card removed, inputs styled as bottom-border-only lines, submit button pill-shaped. Footer reduced to single slim bar (copyright, data note, email). Section dividers added between intro/map/videos, removed between videos/contact.
 
-### Phase 6 — Analytics & Observability
+### Phase 6 — Map Visual Redesign
 
-- [ ] **F6.1 — Traffic analytics.** Add lightweight analytics (Vercel Analytics or Plausible). Confirm GDPR-friendly configuration. `[DECISION NEEDED]`: provider.
-- [ ] **F6.2 — Key event tracking.** Track: municipality selections, current/future toggle usage, form submissions, video plays. Keep it minimal.
+- [x] **F6.1 — New building color scheme & data-driven heights.** Blue (existing) / red (new 2060) extrusions. Heights stored per-feature in GeoJSON (20–400 m). Generator script fully rewritten.
+- [x] **F6.2 — Organic building placement.** Seeded PRNG, point-in-polygon rejection, clustered ring layout, 4 footprint shapes (square, L, wide rect, T). New buildings interspersed with existing in shared position pool.
+- [x] **F6.3 — Floating map box layout.** `bg-primary-light` section, narrower padding, `rounded-2xl` overflow-hidden box, shifted overview camera to account for 380 px card.
+- [x] **F6.4 — fitBounds camera & municipality labels.** `fitBounds` on municipality polygon bounds. Centroid-point label source (eliminates tile-boundary duplication). Two symbol layers: all-municipalities (hidden in overview) and selected-only (bold, always-overlap).
+- [x] **F6.5 — Polygon & interaction polish.** Blue hover fill, 3.5 px hover outline, `line-join: 'round'` on boundaries. Pre-init guard on setHighlight.
+- [x] **F6.6 — Municipality card & list UI.** Gray card matching map water color, 2/3-height centered list, scale+size hover zoom, manual scroll centering, white text throughout.
+- [x] **F6.7 — Neighboring regions overlay.** Uppsala, Västmanland, Södermanland municipalities at half opacity, no borders, no interaction. Generated from `okfse/sweden-geojson` via `scripts/generate-neighboring-regions.ts`.
 
-### Phase 7 — Polish & Launch Readiness
+### Phase 7 — Analytics & Observability
 
-- [ ] **F7.1 — Cross-device QA.** Test on real iOS, Android, and desktop browsers. Document and fix issues.
-- [ ] **F7.2 — Accessibility pass.** Keyboard navigation, focus states, color contrast, screen reader labels for non-map content. Document map's accessibility limitations honestly.
-- [ ] **F7.3 — Performance optimization.** Image/video lazy loading, GeoJSON simplification if needed, font subsetting, Lighthouse audit.
-- [ ] **F7.4 — SEO & social sharing.** Meta tags, OG image, favicon, sitemap.
-- [ ] **F7.5 — Launch checklist.** Custom domain, HTTPS, production env vars, analytics live, form recipient confirmed.
+- [ ] **F7.1 — Traffic analytics.** Add lightweight analytics (Vercel Analytics or Plausible). Confirm GDPR-friendly configuration. `[DECISION NEEDED]`: provider.
+- [ ] **F7.2 — Key event tracking.** Track: municipality selections, current/future toggle usage, form submissions, video plays. Keep it minimal.
 
-### Phase 8 — Post-Launch (optional / deferred)
+### Phase 8 — Polish & Launch Readiness
 
-- [ ] **F8.1 — Data update workflow.** Document how to refresh GeoJSON when new construction data is published.
-- [ ] **F8.2 — Additional municipality stats.** Richer info overlay (population, units planned, timelines).
-- [ ] **F8.3 — Time-slider.** Scrub through years to see future stock materialize over time.
-- [ ] **F8.4 — Filtering by attributes.** E.g., by developer, project status, building type.
-- [ ] **F8.5 — Form/newsletter platform review.** Evaluate replacing Formspree with a dedicated newsletter tool (e.g., Buttondown, Brevo, Mailchimp) once subscriber volume and stakeholder requirements are known. Consider subscriber management, double opt-in, unsubscribe flows, and cost at scale.
+- [ ] **F8.1 — Cross-device QA.** Test on real iOS, Android, and desktop browsers. Document and fix issues.
+- [ ] **F8.2 — Accessibility pass.** Keyboard navigation, focus states, color contrast, screen reader labels for non-map content. Document map's accessibility limitations honestly.
+- [ ] **F8.3 — Performance optimization.** Image/video lazy loading, GeoJSON simplification if needed, font subsetting, Lighthouse audit.
+- [ ] **F8.4 — SEO & social sharing.** Meta tags, OG image, favicon, sitemap.
+- [ ] **F8.5 — Launch checklist.** Custom domain, HTTPS, production env vars, analytics live, form recipient confirmed.
+
+### Phase 9 — Post-Launch (optional / deferred)
+
+- [ ] **F9.1 — Data update workflow.** Document how to refresh GeoJSON when new construction data is published.
+- [ ] **F9.2 — Additional municipality stats.** Richer info overlay (population, units planned, timelines).
+- [ ] **F9.3 — Time-slider.** Scrub through years to see future stock materialize over time.
+- [ ] **F9.4 — Filtering by attributes.** E.g., by developer, project status, building type.
+- [ ] **F9.5 — Form/newsletter platform review.** Evaluate replacing Formspree with a dedicated newsletter tool (e.g., Buttondown, Brevo, Mailchimp) once subscriber volume and stakeholder requirements are known. Consider subscriber management, double opt-in, unsubscribe flows, and cost at scale.
 
 ---
 
@@ -189,3 +199,4 @@ _Add an entry each time a feature is completed or scope changes meaningfully._
 | 2026-04-20 | F4.3 | Phase 4 complete. MunicipalityCard (overview/detail states), StatsPanel, bidirectional hover sync with auto-scroll, municipality dim layer, tighter zoom. UI polish: 3px outlines + white hover outline, glassy card (zinc-700/88), flex-1 toggle, floating absolute layout. D5 resolved. | #8 |
 | 2026-04-20 | F5.1–F5.3 | Phase 5 complete. ContactForm component: 4 fields (name, email, phone, zip/municipality), client-side validation, idle/submitting/success/error states. Formspree integration via `NEXT_PUBLIC_FORMSPREE_URL` (no new deps). GDPR consent checkbox with inline Swedish privacy copy. F8.5 added for future platform review. D6 resolved. | #9 |
 | 2026-04-21 | F5.4 | Aesthetic refinements. Font: Geist → Space Grotesk. Headline: uppercase + scaleX(0.9) condensed block style, fluid `clamp(2rem, 9vw, 5rem)` sizing to fill container width. Eyebrow labels removed sitewide. ContactForm: no card wrapper, bottom-border inputs, pill submit button. Footer: single slim bar on bg-primary-light. Section dividers: border-t intro→videos; removed videos→contact. Mobile overflow fixed: `overflow-x: hidden` on html+body, `w-full` on body+main. | #9 |
+| 2026-04-22 | F6.1–F6.7 | Phase 6 complete. Generator rewritten: seeded PRNG, point-in-polygon placement, 4 footprint shapes, data-driven heights (20–400 m), blue/red color scheme. Floating map box with rounded corners. fitBounds camera per municipality. Centroid-point label source (no tile-boundary duplication), labels hidden in overview. Hover: scale+size zoom on list items, manual scroll centering. Card: gray #d3d3d3 water-match background, 2/3-height list, 380 px wide, white text. Round line joins on boundaries. Neighboring regions (Uppsala, Västmanland, Södermanland) at half opacity. | — |

@@ -5,7 +5,7 @@ interface IntroSectionProps {
 export default function IntroSection({ id }: IntroSectionProps) {
   return (
     <section id={id} className="min-h-[50vh] flex items-center bg-primary-light">
-      <div className="mx-auto max-w-3xl w-full px-4 sm:px-6 py-16 sm:py-24">
+      <div className="mx-auto max-w-3xl w-full px-4 sm:px-6 pt-12 pb-8 sm:pt-20 sm:pb-10">
         <h2
           className="font-bold text-center leading-[1.1] mb-8 uppercase"
           style={{

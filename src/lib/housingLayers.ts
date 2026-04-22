@@ -7,8 +7,6 @@ import {
   SMAHUS_COLOR,
   FLERBOSTADSHUS_COLOR,
   FLERBOSTADSHUS_NEW_COLOR,
-  SMAHUS_HEIGHT_M,
-  FLERBOSTADSHUS_HEIGHT_M,
 } from './mapConfig';
 
 const SMAHUS_SOURCE_ID = 'housing-smahus';
@@ -21,13 +19,7 @@ const municipalityFilter = (name: string): mapboxgl.FilterSpecification => [
   name,
 ];
 
-function addExtrusionLayer(
-  map: mapboxgl.Map,
-  layerId: string,
-  sourceId: string,
-  color: string,
-  height: number,
-) {
+function addExtrusionLayer(map: mapboxgl.Map, layerId: string, sourceId: string, color: string) {
   map.addLayer({
     id: layerId,
     type: 'fill-extrusion',
@@ -35,7 +27,7 @@ function addExtrusionLayer(
     filter: ['==', ['get', 'municipality'], ''] as mapboxgl.FilterSpecification,
     paint: {
       'fill-extrusion-color': color,
-      'fill-extrusion-height': height,
+      'fill-extrusion-height': ['get', 'height'] as unknown as number,
       'fill-extrusion-base': 0,
       'fill-extrusion-opacity': 0.85,
     },
@@ -54,20 +46,18 @@ export function initHousingLayers(
   map.addSource(FLERBOSTADSHUS_SOURCE_ID, { type: 'geojson', data: currentData });
   map.addSource(FLERBOSTADSHUS_NEW_SOURCE_ID, { type: 'geojson', data: newData });
 
-  addExtrusionLayer(map, SMAHUS_LAYER_ID, SMAHUS_SOURCE_ID, SMAHUS_COLOR, SMAHUS_HEIGHT_M);
+  addExtrusionLayer(map, SMAHUS_LAYER_ID, SMAHUS_SOURCE_ID, SMAHUS_COLOR);
   addExtrusionLayer(
     map,
     FLERBOSTADSHUS_CURRENT_LAYER_ID,
     FLERBOSTADSHUS_SOURCE_ID,
     FLERBOSTADSHUS_COLOR,
-    FLERBOSTADSHUS_HEIGHT_M,
   );
   addExtrusionLayer(
     map,
     FLERBOSTADSHUS_NEW_LAYER_ID,
     FLERBOSTADSHUS_NEW_SOURCE_ID,
     FLERBOSTADSHUS_NEW_COLOR,
-    FLERBOSTADSHUS_HEIGHT_M,
   );
 }
 

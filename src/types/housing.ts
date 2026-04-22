@@ -6,6 +6,7 @@ export interface HousingUnitProperties {
   municipality: string;
   type: HousingType;
   view: HousingView | 'both';
+  height: number;
 }
 
 export type HousingUnit = GeoJSON.Feature<GeoJSON.Polygon, HousingUnitProperties>;
