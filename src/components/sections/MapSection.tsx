@@ -24,6 +24,9 @@ import {
   MUNICIPALITY_LABELS_SELECTED_LAYER,
 } from '@/lib/mapConfig';
 import MunicipalityCard from '@/components/map/MunicipalityCard';
+import StatsCard from '@/components/map/StatsCard';
+import { HOUSING_STATS } from '@/data/housingStats';
+import type { MunicipalityStats } from '@/data/housingStats';
 
 const MapCanvas = dynamic(() => import('@/components/map/MapCanvas'), {
   ssr: false,
@@ -93,6 +96,14 @@ export default function MapSection({ id }: MapSectionProps) {
 
   const [selected, setSelected] = useState<string | null>(null);
   const [view, setView] = useState<HousingView>('current');
+  const stats = selected != null ? (HOUSING_STATS[selected] ?? null) : null;
+
+  // Retains the last selected municipality's data so StatsCard stays mounted
+  // during the fade-out transition when returning to the list view.
+  const [displayStats, setDisplayStats] = useState<{
+    name: string;
+    stats: MunicipalityStats;
+  } | null>(null);
   const [housingReady, setHousingReady] = useState(false);
   const [hoveredMunicipality, setHoveredMunicipality] = useState<string | null>(null);
 
@@ -137,6 +148,8 @@ export default function MapSection({ id }: MapSectionProps) {
     setSelected(name);
     setView('current');
     setHoveredMunicipality(null);
+    const municipalityStats = HOUSING_STATS[name];
+    if (municipalityStats) setDisplayStats({ name, stats: municipalityStats });
 
     setHighlight(map, name);
 
@@ -392,39 +405,61 @@ export default function MapSection({ id }: MapSectionProps) {
 
   return (
     <section id={id} className="bg-primary-light py-6 px-4 md:px-44 lg:px-60 md:py-8">
-      {/* Mobile card — stacked above map */}
-      <div className="md:hidden mb-2">
-        <MunicipalityCard
-          isMobile={true}
-          municipalities={SORTED_MUNICIPALITIES}
-          selected={selected}
-          view={view}
-          hoveredMunicipality={hoveredMunicipality}
-          onSelect={selectMunicipality}
-          onBack={returnToOverview}
-          onViewChange={setView}
-          onHoverMunicipality={handleListHover}
-        />
-      </div>
+      {/* Mobile list card — above map, hidden when a municipality is selected */}
+      {!selected && (
+        <div className="md:hidden mb-2">
+          <MunicipalityCard
+            isMobile={true}
+            municipalities={SORTED_MUNICIPALITIES}
+            selected={null}
+            view={view}
+            hoveredMunicipality={hoveredMunicipality}
+            onSelect={selectMunicipality}
+            onBack={returnToOverview}
+            onViewChange={setView}
+            onHoverMunicipality={handleListHover}
+          />
+        </div>
+      )}
 
       {/* Map — floating box with rounded corners */}
       <div className="relative h-[70vh] md:h-[85vh] rounded-2xl overflow-hidden shadow-2xl border border-black/10">
         <MapCanvas onMapReady={handleMapReady} />
 
-        <div className="hidden md:block absolute top-0 right-0 h-full z-10 pointer-events-none">
-          <div className="pointer-events-auto w-[270px] h-full">
-            <MunicipalityCard
-              isMobile={false}
-              municipalities={SORTED_MUNICIPALITIES}
-              selected={selected}
+        {/* Desktop list card — always mounted for crossfade; fades out when selected */}
+        <div
+          className={`hidden md:block absolute top-4 right-4 z-10 w-[260px] h-[calc(100%-3rem)] transition-opacity duration-300 ease-in-out ${
+            selected ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+          }`}
+        >
+          <MunicipalityCard
+            isMobile={false}
+            municipalities={SORTED_MUNICIPALITIES}
+            selected={null}
+            view={view}
+            hoveredMunicipality={hoveredMunicipality}
+            onSelect={selectMunicipality}
+            onBack={returnToOverview}
+            onViewChange={setView}
+            onHoverMunicipality={handleListHover}
+          />
+        </div>
+
+        {/* Stats card — always mounted with last-known data for smooth crossfade */}
+        <div
+          className={`absolute top-3 right-3 md:top-4 md:right-4 z-20 w-[220px] md:w-[260px] transition-opacity duration-300 ease-in-out ${
+            selected && stats ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
+        >
+          {displayStats && (
+            <StatsCard
+              selected={displayStats.name}
+              stats={displayStats.stats}
               view={view}
-              hoveredMunicipality={hoveredMunicipality}
-              onSelect={selectMunicipality}
               onBack={returnToOverview}
               onViewChange={setView}
-              onHoverMunicipality={handleListHover}
             />
-          </div>
+          )}
         </div>
       </div>
     </section>

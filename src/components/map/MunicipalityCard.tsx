@@ -22,10 +22,10 @@ interface MunicipalityCardProps {
 
 function ChevronUp() {
   return (
-    <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-75">
+    <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-50">
       <path
         d="M2 16L18 2L34 16"
-        stroke="white"
+        stroke="#5c8b5a"
         strokeWidth="5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -36,10 +36,10 @@ function ChevronUp() {
 
 function ChevronDown() {
   return (
-    <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-75">
+    <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-50">
       <path
         d="M2 2L18 16L34 2"
-        stroke="white"
+        stroke="#5c8b5a"
         strokeWidth="5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -77,8 +77,7 @@ export default function MunicipalityCard({
 
   return (
     <div
-      className={`flex flex-col overflow-hidden ${isMobile ? 'h-[30vh] rounded-none' : 'h-full'}`}
-      style={{ backgroundColor: '#d3d3d3' }}
+      className={`flex flex-col overflow-hidden bg-white rounded-2xl shadow-xl ${isMobile ? 'h-[30vh]' : 'h-full'}`}
     >
       {selected != null ? (
         <>
@@ -87,7 +86,7 @@ export default function MunicipalityCard({
           </div>
           <div className="px-4 py-3 flex-1 overflow-y-auto flex flex-col gap-4 min-h-0">
             <h2 className="text-text-on-dark font-bold text-lg leading-tight">{selected}</h2>
-            {stats && <StatsPanel stats={stats} />}
+            {stats && <StatsPanel stats={stats} view={view} />}
           </div>
           <div className="px-4 pb-4 pt-2 border-t border-white/10 flex-shrink-0">
             <LayerToggle view={view} onChange={onViewChange} />
@@ -95,13 +94,13 @@ export default function MunicipalityCard({
         </>
       ) : (
         <>
-          <div className="flex-[0.4] flex items-end justify-center pb-1 pointer-events-none">
+          <div className="flex-[0.15] flex items-end justify-center pb-2 pointer-events-none">
             {canScrollUp && <ChevronUp />}
           </div>
           <div
             ref={scrollRef}
             onScroll={updateScrollState}
-            className="flex-[4] min-h-0 overflow-y-scroll scrollbar-white"
+            className="flex-[4] min-h-0 overflow-y-scroll scrollbar-green"
           >
             <MunicipalityList
               municipalities={municipalities}
@@ -110,7 +109,7 @@ export default function MunicipalityCard({
               onHoverMunicipality={isMobile ? undefined : onHoverMunicipality}
             />
           </div>
-          <div className="flex-[0.42] flex items-start justify-center pt-1 pointer-events-none">
+          <div className="flex-[0.2] flex items-start justify-center pt-5 pointer-events-none">
             {canScrollDown && <ChevronDown />}
           </div>
         </>

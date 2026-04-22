@@ -53,10 +53,10 @@ export default function MunicipalityList({
             onClick={() => onSelect(name)}
             onMouseEnter={onHoverMunicipality ? () => handleMouseEnter(name) : undefined}
             onMouseLeave={onHoverMunicipality ? handleMouseLeave : undefined}
-            className={`px-3 py-2 uppercase tracking-wide transition-colors ${
+            className={`w-full text-right px-3 py-2 uppercase tracking-wide transition-colors ${
               hoveredMunicipality === name
-                ? 'font-black text-3xl text-[#AAC0AA] bg-white'
-                : 'font-bold text-2xl text-white'
+                ? 'font-black text-3xl text-white bg-[#5c8b5a]'
+                : 'font-bold text-2xl text-[#5c8b5a]'
             }`}
           >
             {name}

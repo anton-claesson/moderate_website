@@ -57,6 +57,16 @@ Phase 3–4 delivered a functional map with green box extrusions and a flat UI c
 - Card width: 380 px; detail view uses `text-text-on-dark` white-variant text throughout
 - **Files:** `src/app/globals.css`, `src/components/map/MunicipalityCard.tsx`, `src/components/map/MunicipalityList.tsx`, `src/components/map/StatsPanel.tsx`, `src/components/map/LayerToggle.tsx`, `src/components/map/BackButton.tsx`
 
+### F6.8 — Stats card redesign, list style alignment & crossfade transition
+
+- **StatsCard** (new component): free-floating white card (`bg-white rounded-2xl shadow-xl`) positioned `top-4 right-4` inside the map container, replacing the full-height sidebar in detail view. Contains back button, municipality heading, StatsPanel, and a light-themed Idag/Planerad toggle.
+- **StatsPanel** 2×2 stat grid: large dark-green (`#3a5c39 font-black text-2xl`) numbers with muted-green (`#AAC0AA`) uppercase tracking-wide labels. Each cell carries an inline SVG icon — house in `SMAHUS_COLOR` (`#4A90D9`), building in `FLERBOSTADSHUS_COLOR` (`#2C5282`), building in `FLERBOSTADSHUS_NEW_COLOR` (`#D64045`) — matching the 3D extrusion colors exactly. Icons imported from `src/lib/mapConfig`.
+- **Housing mix bar chart** (replaces old progress bar): full-width `h-6` stacked bar below the grid, labeled "Bostadsmix". Three segments in map colors — Småhus / Lgh idag / Lgh nytt — sized by their share of the total unit count. The red (Lgh nytt) segment only appears in Planerad view; all three animate via `transition-[width] duration-300` when the toggle changes.
+- **Förtätning data update**: `growthPct` field renamed to `fortattning` in `MunicipalityStats`; all 26 values replaced from the new "Förtätning" column in `public/bostads_data.csv` (integer unit counts, range 41–386). Displayed with `%` suffix in the stat cell.
+- **MunicipalityList**: white floating card (`bg-white rounded-2xl shadow-xl`). List items: full-width buttons, text right-aligned, `text-[#5c8b5a]` at rest. Hover: inverted — `bg-[#5c8b5a] text-white`. Green chevron scroll indicators (`stroke="#5c8b5a"`). `scrollbar-green` CSS utility added.
+- **Crossfade transition**: list card and stats card are always mounted; visibility toggled via `opacity-0/100` + `pointer-events-none/auto` with `transition-opacity duration-300`. `displayStats` state is set in the `selectMunicipality` event handler (never cleared) so StatsCard remains mounted with the last municipality's data during the fade-out, enabling a true bidirectional crossfade.
+- **Files:** `src/app/globals.css`, `src/components/map/MunicipalityCard.tsx`, `src/components/map/MunicipalityList.tsx`, `src/components/map/StatsCard.tsx` (new), `src/components/map/StatsPanel.tsx`, `src/components/sections/MapSection.tsx`, `src/data/housingStats.ts`, `public/bostads_data.csv`
+
 ### F6.7 — Neighboring regions overlay
 - Uppsala, Västmanland, Södermanland municipalities from `okfse/sweden-geojson` filtered by `lan_code` (03, 04, 19)
 - Rendered below Stockholm municipality layers: `fill-color: '#89b6a5', fill-opacity: 0.35` — same hue, half opacity
