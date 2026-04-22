@@ -340,15 +340,66 @@ for (const row of rows) {
     Math.floor((flerbostad2060 - flerbostad) / FLERBOSTADSHUS_PER_REPRESENTATIVE),
   );
 
-  const nClusters = seededFloat((muniSeed + 9999) >>> 0) < 0.5 ? 2 : 3;
+  let polyArea = 0;
+  for (let i = 0; i < ring.length - 1; i++) {
+    const p1 = ring[i] as [number, number];
+    const p2 = ring[i + 1] as [number, number];
+    polyArea += p1[0] * p2[1] - p2[0] * p1[1];
+  }
+  polyArea = Math.abs(polyArea / 2);
+  if (polyArea === 0) {
+    polyArea = (bbox.maxLng - bbox.minLng) * (bbox.maxLat - bbox.minLat);
+  }
+
+  const totalFler = nFler + nFlerNew;
+  const totalUnits = nSmahus + totalFler;
+  const totalShares = nSmahus * 1 + totalFler * 4;
+
+  let smahusHalfSize = SMAHUS_HALF;
+  let flerboHalfSize = FLERBO_HALF;
+  let dynamicSmahusSpacing = SMAHUS_SPACING;
+  let dynamicFlerboSpacing = FLERBO_SPACING;
+  let smahusHeightMod = 1;
+  let flerboHeightMod = 1;
+  let dynamicNClusters = seededFloat((muniSeed + 9999) >>> 0) < 0.5 ? 2 : 3;
+
+  if (totalShares > 0 && polyArea > 0) {
+    // 1) Dynamic footprint scaling to target covering ~8% of the polygon's bounding area
+    const TARGET_COVERAGE = 0.08;
+    const areaPerShare = (polyArea * TARGET_COVERAGE) / totalShares;
+
+    smahusHalfSize = Math.sqrt(areaPerShare) / 2;
+    flerboHalfSize = Math.sqrt(areaPerShare * 4) / 2;
+
+    // Optional bounds to prevent vanishing or comically absurd shapes
+    smahusHalfSize = Math.max(0.00005, Math.min(smahusHalfSize, 0.015));
+    flerboHalfSize = Math.max(0.0001, Math.min(flerboHalfSize, 0.03));
+
+    // 2) Tighter Spacing to encourage the requested "clump" effect
+    dynamicSmahusSpacing = smahusHalfSize * 2.1;
+    dynamicFlerboSpacing = flerboHalfSize * 2.1;
+
+    // 3) Proportional height modifiers
+    smahusHeightMod = smahusHalfSize / SMAHUS_HALF;
+    flerboHeightMod = flerboHalfSize / FLERBO_HALF;
+
+    // 4) Dynamic cluster counts based on total area and density
+    const baseDensity = totalUnits / polyArea; // units per sq degree
+    if (baseDensity > 15000) {
+      dynamicNClusters = 1; // highly urban, single dense mass
+    } else if (baseDensity > 5000) {
+      dynamicNClusters = 2; // suburban towns
+    } else {
+      dynamicNClusters = Math.min(5, Math.max(2, Math.floor(polyArea / 0.02)));
+    }
+  }
 
   // ── Flerbostadshus: unified pool so new buildings fill gaps among existing ──
-  const totalFler = nFler + nFlerNew;
   if (totalFler > 0) {
     const flerClusters = findClusterCenters(
       ring,
       bbox,
-      nClusters,
+      dynamicNClusters,
       (muniSeed + 1000) >>> 0,
       centroid,
     );
@@ -356,7 +407,7 @@ for (const row of rows) {
       ring,
       flerClusters,
       totalFler,
-      FLERBO_SPACING,
+      dynamicFlerboSpacing,
       muniSeed,
       0,
     );
@@ -366,11 +417,15 @@ for (const row of rows) {
       const isNew = i >= nFler;
 
       const heightSeed = (muniSeed + i * 13 + 200) >>> 0;
-      const height = isNew
+      let baseHeight = isNew
         ? seededFloat(heightSeed) * (FLERBO_NEW_HEIGHT_MAX - FLERBO_NEW_HEIGHT_MIN) +
           FLERBO_NEW_HEIGHT_MIN
         : seededFloat(heightSeed) * (FLERBO_CURRENT_HEIGHT_MAX - FLERBO_CURRENT_HEIGHT_MIN) +
           FLERBO_CURRENT_HEIGHT_MIN;
+
+      // Scale height relative to the new footprint
+      let height = baseHeight * flerboHeightMod;
+      height = Math.max(40, Math.min(height, 2000)); // sane clamping
 
       const shape = pickShape((muniSeed + i * 11 + 300) >>> 0);
       const rotIdx = ((((muniSeed + i * 17 + 400) >>> 0) * 2654435761 + 1013904223) >>> 0) % 4;
@@ -383,7 +438,7 @@ for (const row of rows) {
         height: Math.round(height),
       };
 
-      const feature = makeFeature(lng, lat, FLERBO_HALF, shape, rotIdx, props);
+      const feature = makeFeature(lng, lat, flerboHalfSize, shape, rotIdx, props);
       if (isNew) {
         flerbostadshusNewFeatures.push(feature);
       } else {
@@ -397,7 +452,7 @@ for (const row of rows) {
     const smaClusters = findClusterCenters(
       ring,
       bbox,
-      nClusters,
+      dynamicNClusters,
       (muniSeed + 2000) >>> 0,
       centroid,
     );
@@ -405,7 +460,7 @@ for (const row of rows) {
       ring,
       smaClusters,
       nSmahus,
-      SMAHUS_SPACING,
+      dynamicSmahusSpacing,
       muniSeed,
       50000,
     );
@@ -414,8 +469,11 @@ for (const row of rows) {
       const [lng, lat] = smaPositions[i]!;
 
       const heightSeed = (muniSeed + i * 7 + 600) >>> 0;
-      const height =
+      let baseHeight =
         seededFloat(heightSeed) * (SMAHUS_HEIGHT_MAX - SMAHUS_HEIGHT_MIN) + SMAHUS_HEIGHT_MIN;
+
+      let height = baseHeight * smahusHeightMod;
+      height = Math.max(10, Math.min(height, 800));
 
       // Single-family homes: mostly squares and wide rectangles
       const shapeVal = seededFloat((muniSeed + i * 5 + 700) >>> 0);
@@ -430,7 +488,7 @@ for (const row of rows) {
         height: Math.round(height),
       };
 
-      smahusFeatures.push(makeFeature(lng, lat, SMAHUS_HALF, shape, rotIdx, props));
+      smahusFeatures.push(makeFeature(lng, lat, smahusHalfSize, shape, rotIdx, props));
     }
   }
 
