@@ -20,10 +20,10 @@ const FLERBO_SPACING = FLERBO_HALF * 2.5;
 
 const SMAHUS_HEIGHT_MIN = 8;
 const SMAHUS_HEIGHT_MAX = 20;
-const FLERBO_CURRENT_HEIGHT_MIN = 60;
-const FLERBO_CURRENT_HEIGHT_MAX = 180;
-const FLERBO_NEW_HEIGHT_MIN = 70;
-const FLERBO_NEW_HEIGHT_MAX = 220;
+const FLERBO_CURRENT_HEIGHT_MIN = 120;
+const FLERBO_CURRENT_HEIGHT_MAX = 360;
+const FLERBO_NEW_HEIGHT_MIN = 140;
+const FLERBO_NEW_HEIGHT_MAX = 440;
 
 // ─── PRNG ─────────────────────────────────────────────────────────────────────
 
@@ -395,20 +395,20 @@ for (const row of rows) {
   let dynamicNClusters = seededFloat((muniSeed + 9999) >>> 0) < 0.5 ? 2 : 3;
 
   if (totalShares > 0 && polyArea > 0) {
-    // 1) Dynamic footprint scaling to cover ~20% of the polygon's bounding area
-    const TARGET_COVERAGE = 0.2;
+    // 1) Dynamic footprint scaling to cover ~30% of the polygon's bounding area
+    const TARGET_COVERAGE = 0.3;
     const areaPerShare = (polyArea * TARGET_COVERAGE) / totalShares;
 
     smahusHalfSize = Math.sqrt(areaPerShare) / 2;
-    flerboHalfSize = Math.sqrt(areaPerShare * 4) / 2;
+    flerboHalfSize = Math.sqrt(areaPerShare * 8) / 2; // 8× share → 2× linear size vs smallhus
 
     // Optional bounds to prevent vanishing or comically absurd shapes
     smahusHalfSize = Math.max(0.00005, Math.min(smahusHalfSize, 0.02));
-    flerboHalfSize = Math.max(0.0001, Math.min(flerboHalfSize, 0.04));
+    flerboHalfSize = Math.max(0.0001, Math.min(flerboHalfSize, 0.06));
 
-    // 2) Really tight spacing to form cohesive neighborhoods
+    // 2) Spacing: tight for houses, wider for apartment blocks to reduce overlap
     dynamicSmahusSpacing = smahusHalfSize * 2.05;
-    dynamicFlerboSpacing = flerboHalfSize * 2.05;
+    dynamicFlerboSpacing = flerboHalfSize * 2.5;
 
     // 3) Proportional height modifiers
     // Base scale off polygon area so nothing looks ridiculously tall
@@ -455,8 +455,8 @@ for (const row of rows) {
 
       // Scale height relative to the new footprint
       let height = baseHeight * flerboHeightMod;
-      const clampMin = isNew ? 70 : 60;
-      const clampMax = isNew ? 480 : 400;
+      const clampMin = isNew ? 140 : 120;
+      const clampMax = isNew ? 960 : 800;
       height = Math.max(clampMin, Math.min(height, clampMax));
 
       const shape = pickShape((muniSeed + i * 11 + 300) >>> 0);
