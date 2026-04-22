@@ -283,7 +283,7 @@ export default function MapSection({ id }: MapSectionProps) {
         id: 'neighboring-regions-fill',
         type: 'fill',
         source: 'neighboring-regions',
-        paint: { 'fill-color': '#d3d3d3', 'fill-opacity': 0.7 },
+        paint: { 'fill-color': '#f0f0ea', 'fill-opacity': 0.9 }, // Muted surface color, less yellow
       });
 
       // Transparent hit area
@@ -291,7 +291,7 @@ export default function MapSection({ id }: MapSectionProps) {
         id: MUNICIPALITY_FILL_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#DCEED1', 'fill-opacity': 0.7 },
+        paint: { 'fill-color': '#edf4ec', 'fill-opacity': 0.8 }, // Primary light
       });
 
       // Base boundary outlines
@@ -300,7 +300,7 @@ export default function MapSection({ id }: MapSectionProps) {
         type: 'line',
         source: MUNICIPALITY_SOURCE,
         layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: { 'line-color': '#736372', 'line-width': 4, 'line-opacity': 0.8 },
+        paint: { 'line-color': '#8fad8e', 'line-width': 2.5, 'line-opacity': 0.9 }, // Border strong
       });
 
       // Hover/selected fill highlight
@@ -308,7 +308,7 @@ export default function MapSection({ id }: MapSectionProps) {
         id: MUNICIPALITY_HOVER_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#AAC0AA', 'fill-opacity': 0.8 },
+        paint: { 'fill-color': '#5c8b5a', 'fill-opacity': 0.4 }, // Primary color tint
         filter: ['==', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
       });
 
@@ -318,7 +318,7 @@ export default function MapSection({ id }: MapSectionProps) {
         type: 'line',
         source: MUNICIPALITY_SOURCE,
         layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: { 'line-color': '#D6D84F', 'line-width': 3.5, 'line-opacity': 1.0 },
+        paint: { 'line-color': '#e8a838', 'line-width': 4, 'line-opacity': 1.0 }, // Accent
         filter: ['==', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
       });
 
@@ -327,7 +327,7 @@ export default function MapSection({ id }: MapSectionProps) {
         id: MUNICIPALITY_DIM_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#DCEED1', 'fill-opacity': 0.7 },
+        paint: { 'fill-color': '#edf4ec', 'fill-opacity': 0.8 },
         filter: ['!=', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
         layout: { visibility: 'none' },
       });
@@ -340,17 +340,19 @@ export default function MapSection({ id }: MapSectionProps) {
         layout: {
           'text-field': ['get', 'kom_namn'],
           'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
-          'text-size': 11,
+          'text-size': 13,
           'text-anchor': 'center',
           'text-max-width': 8,
           'text-allow-overlap': false,
+          'text-transform': 'uppercase',
+          'text-letter-spacing': 0.1,
           visibility: 'none',
         },
         paint: {
-          'text-color': '#ffffff',
-          'text-opacity': 0.65,
-          'text-halo-color': 'rgba(0,0,0,0.55)',
-          'text-halo-width': 1.5,
+          'text-color': '#3a5c39', // Primary dark
+          'text-opacity': 0.8,
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 2,
         },
       });
 
@@ -363,16 +365,18 @@ export default function MapSection({ id }: MapSectionProps) {
         layout: {
           'text-field': ['get', 'kom_namn'],
           'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
-          'text-size': 18,
+          'text-size': 24,
           'text-anchor': 'center',
           'text-max-width': 8,
           'text-allow-overlap': true,
+          'text-transform': 'uppercase',
+          'text-letter-spacing': 0.15,
         },
         paint: {
-          'text-color': '#ffffff',
+          'text-color': '#3a5c39',
           'text-opacity': 1.0,
-          'text-halo-color': 'rgba(0,0,0,0.75)',
-          'text-halo-width': 2.5,
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 3,
         },
       });
 
