@@ -165,10 +165,13 @@ function findClusterCenters(
     let found = false;
 
     for (let attempt = 0; attempt < 150; attempt++) {
-      const lng =
-        bbox.minLng + seededFloat((muniSeed + c * 300 + attempt * 2 + 1) >>> 0) * lngRange;
-      const lat =
-        minBandLat + seededFloat((muniSeed + c * 300 + attempt * 2 + 2) >>> 0) * bandHeight;
+      let lng = bbox.minLng + seededFloat((muniSeed + c * 300 + attempt * 2 + 1) >>> 0) * lngRange;
+      let lat = minBandLat + seededFloat((muniSeed + c * 300 + attempt * 2 + 2) >>> 0) * bandHeight;
+
+      // Pull points 40% towards the centroid to make the clusters more central
+      lng = lng * 0.6 + fallback[0] * 0.4;
+      lat = lat * 0.6 + fallback[1] * 0.4;
+
       if (pointInRing(lng, lat, ring)) {
         centers.push([lng, lat]);
         found = true;
@@ -364,8 +367,8 @@ for (const row of rows) {
   let dynamicNClusters = seededFloat((muniSeed + 9999) >>> 0) < 0.5 ? 2 : 3;
 
   if (totalShares > 0 && polyArea > 0) {
-    // 1) Dynamic footprint scaling to target covering ~8% of the polygon's bounding area
-    const TARGET_COVERAGE = 0.08;
+    // 1) Dynamic footprint scaling to cover ~18% of the polygon's bounding area
+    const TARGET_COVERAGE = 0.18;
     const areaPerShare = (polyArea * TARGET_COVERAGE) / totalShares;
 
     smahusHalfSize = Math.sqrt(areaPerShare) / 2;
@@ -375,13 +378,15 @@ for (const row of rows) {
     smahusHalfSize = Math.max(0.00005, Math.min(smahusHalfSize, 0.015));
     flerboHalfSize = Math.max(0.0001, Math.min(flerboHalfSize, 0.03));
 
-    // 2) Tighter Spacing to encourage the requested "clump" effect
-    dynamicSmahusSpacing = smahusHalfSize * 2.1;
-    dynamicFlerboSpacing = flerboHalfSize * 2.1;
+    // 2) Wider Spacing to eliminate excessive overlap, but grouped
+    dynamicSmahusSpacing = smahusHalfSize * 2.8;
+    dynamicFlerboSpacing = flerboHalfSize * 2.8;
 
     // 3) Proportional height modifiers
-    smahusHeightMod = smahusHalfSize / SMAHUS_HALF;
-    flerboHeightMod = flerboHalfSize / FLERBO_HALF;
+    // Both scale evenly so that small houses don't balloon taller than apartments
+    const globalHeightMod = Math.sqrt(areaPerShare) / 0.001;
+    smahusHeightMod = globalHeightMod;
+    flerboHeightMod = globalHeightMod;
 
     // 4) Dynamic cluster counts based on total area and density
     const baseDensity = totalUnits / polyArea; // units per sq degree

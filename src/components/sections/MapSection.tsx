@@ -199,16 +199,9 @@ export default function MapSection({ id }: MapSectionProps) {
         const b = bounds as [[number, number], [number, number]];
         const latSpan = b[1][1] - b[0][1];
 
-        // camera.center can be an array [lng, lat] or an object {lng, lat}
-        let centerLng = 0;
-        let centerLat = 0;
-        if (Array.isArray(camera.center)) {
-          centerLng = camera.center[0];
-          centerLat = camera.center[1];
-        } else if (camera.center && 'lng' in camera.center) {
-          centerLng = camera.center.lng;
-          centerLat = camera.center.lat;
-        }
+        // Calculate the geographic center manually to avoid Mapbox LngLat struct ambiguities
+        const centerLng = (b[0][0] + b[1][0]) / 2;
+        const centerLat = (b[0][1] + b[1][1]) / 2;
 
         const newCenter = {
           lng: centerLng,
