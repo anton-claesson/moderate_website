@@ -183,12 +183,53 @@ export default function MapSection({ id }: MapSectionProps) {
     const feature = municipalityFeaturesRef.current.get(name);
     if (feature) {
       const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-      map.fitBounds(computeBounds(feature), {
-        padding: isMobile ? 20 : { top: 40, bottom: 40, left: 60, right: 400 },
+      const bounds = computeBounds(feature);
+      const padding = isMobile ? 20 : { top: 40, bottom: 40, left: 60, right: 400 };
+
+      const camera = map.cameraForBounds(bounds as mapboxgl.LngLatBoundsLike, {
+        padding,
         pitch: DEFAULT_PITCH,
         bearing: DEFAULT_BEARING,
-        duration: 1200,
       });
+
+      if (camera && camera.zoom !== undefined && camera.center) {
+        // Shift the center south (lower latitude) proportionally to the bounds
+        // This ensures the bottom of the municipality stays visible when zooming in tighter,
+        // while allowing the top to crop out, which also compensates for the 55° pitch.
+        const b = bounds as [[number, number], [number, number]];
+        const latSpan = b[1][1] - b[0][1];
+
+        // camera.center can be an array [lng, lat] or an object {lng, lat}
+        let centerLng = 0;
+        let centerLat = 0;
+        if (Array.isArray(camera.center)) {
+          centerLng = camera.center[0];
+          centerLat = camera.center[1];
+        } else if (camera.center && 'lng' in camera.center) {
+          centerLng = camera.center.lng;
+          centerLat = camera.center.lat;
+        }
+
+        const newCenter = {
+          lng: centerLng,
+          lat: centerLat - latSpan * 0.25,
+        };
+
+        map.flyTo({
+          ...camera,
+          center: newCenter,
+          zoom: camera.zoom + 1.3, // Zoom tighter to focus on housing
+          duration: 1200,
+          essential: true,
+        });
+      } else {
+        map.fitBounds(bounds, {
+          padding,
+          pitch: DEFAULT_PITCH,
+          bearing: DEFAULT_BEARING,
+          duration: 1200,
+        });
+      }
     }
   }, []);
 

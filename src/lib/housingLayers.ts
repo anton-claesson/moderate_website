@@ -63,6 +63,7 @@ export function initHousingLayers(
 
 // Show housing for a municipality; defaults to "current" view (new apartments hidden).
 export function showHousingForMunicipality(map: mapboxgl.Map, municipality: string) {
+  if (!map || !map.isStyleLoaded()) return;
   for (const id of [
     SMAHUS_LAYER_ID,
     FLERBOSTADSHUS_CURRENT_LAYER_ID,
@@ -82,6 +83,7 @@ export function showHousingForMunicipality(map: mapboxgl.Map, municipality: stri
 // Hide all housing layers (when returning to overview).
 // Guards against the race where the user navigates back before lazy init completes.
 export function hideHousingLayers(map: mapboxgl.Map) {
+  if (!map || !map.isStyleLoaded()) return;
   for (const id of [
     SMAHUS_LAYER_ID,
     FLERBOSTADSHUS_CURRENT_LAYER_ID,
@@ -94,7 +96,7 @@ export function hideHousingLayers(map: mapboxgl.Map) {
 // "Idag": current apartments visible, new hidden.
 // "2060": current apartments stay visible + new apartments (amber) added.
 export function setLayerView(map: mapboxgl.Map, view: HousingView) {
-  if (!map.getLayer(FLERBOSTADSHUS_CURRENT_LAYER_ID)) return;
+  if (!map || !map.isStyleLoaded() || !map.getLayer(FLERBOSTADSHUS_CURRENT_LAYER_ID)) return;
   map.setLayoutProperty(FLERBOSTADSHUS_CURRENT_LAYER_ID, 'visibility', 'visible');
   map.setLayoutProperty(
     FLERBOSTADSHUS_NEW_LAYER_ID,
