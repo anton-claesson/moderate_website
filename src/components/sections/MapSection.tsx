@@ -39,6 +39,7 @@ const MapCanvas = dynamic(() => import('@/components/map/MapCanvas'), {
 
 interface MapSectionProps {
   id: string;
+  initialMunicipality?: string;
 }
 
 const OVERVIEW_PADDING_DESKTOP = { top: 20, bottom: 20, left: 20, right: 220 };
@@ -84,7 +85,7 @@ async function fetchHousingData(): Promise<
   return [smahus as HousingCollection, current as HousingCollection, newApts as HousingCollection];
 }
 
-export default function MapSection({ id }: MapSectionProps) {
+export default function MapSection({ id, initialMunicipality }: MapSectionProps) {
   const mapRef = useRef<MapboxMap | null>(null);
   const housingDataRef = useRef<[HousingCollection, HousingCollection, HousingCollection] | null>(
     null,
@@ -95,7 +96,7 @@ export default function MapSection({ id }: MapSectionProps) {
   const municipalityFeaturesRef = useRef<Map<string, MunicipalityFeature>>(new Map());
 
   const [selected, setSelected] = useState<string | null>(null);
-  const [view, setView] = useState<HousingView>('current');
+  const [view, setView] = useState<HousingView>('planned');
   const stats = selected != null ? (HOUSING_STATS[selected] ?? null) : null;
 
   // Retains the last selected municipality's data so StatsCard stays mounted
@@ -127,6 +128,12 @@ export default function MapSection({ id }: MapSectionProps) {
         const data = await fetchHousingData();
         housingDataRef.current = data;
         initHousingLayers(map, ...data);
+        // Extrusion layers are added below the existing label layers in the stack —
+        // move labels back to the top so they render above buildings.
+        if (map.getLayer(MUNICIPALITY_LABELS_ALL_LAYER))
+          map.moveLayer(MUNICIPALITY_LABELS_ALL_LAYER);
+        if (map.getLayer(MUNICIPALITY_LABELS_SELECTED_LAYER))
+          map.moveLayer(MUNICIPALITY_LABELS_SELECTED_LAYER);
         setHousingReady(true);
       })();
     }
@@ -134,10 +141,15 @@ export default function MapSection({ id }: MapSectionProps) {
   }
 
   function setHighlight(map: MapboxMap, name: string | null) {
-    if (!map.isStyleLoaded() || !map.getLayer(MUNICIPALITY_HOVER_LAYER)) return;
-    const filter = ['==', ['get', 'kom_namn'], name ?? ''] as mapboxgl.FilterSpecification;
-    map.setFilter(MUNICIPALITY_HOVER_LAYER, filter);
-    map.setFilter(MUNICIPALITY_OUTLINE_HOVER_LAYER, filter);
+    if (!map.isStyleLoaded()) {
+      map.once('idle', () => setHighlight(map, name));
+      return;
+    }
+    if (map.getLayer(MUNICIPALITY_HOVER_LAYER)) {
+      const filter = ['==', ['get', 'kom_namn'], name ?? ''] as mapboxgl.FilterSpecification;
+      map.setFilter(MUNICIPALITY_HOVER_LAYER, filter);
+      map.setFilter(MUNICIPALITY_OUTLINE_HOVER_LAYER, filter);
+    }
   }
 
   const selectMunicipality = useCallback(async (name: string) => {
@@ -146,7 +158,7 @@ export default function MapSection({ id }: MapSectionProps) {
     if (!MUNICIPALITY_CENTROIDS[name]) return;
 
     setSelected(name);
-    setView('current');
+    setView('planned');
     setHoveredMunicipality(null);
     const municipalityStats = HOUSING_STATS[name];
     if (municipalityStats) setDisplayStats({ name, stats: municipalityStats });
@@ -178,7 +190,7 @@ export default function MapSection({ id }: MapSectionProps) {
     }
 
     await ensureHousingReady(map);
-    showHousingForMunicipality(map, name);
+    showHousingForMunicipality(map, name, 'planned');
 
     const feature = municipalityFeaturesRef.current.get(name);
     if (feature) {
@@ -410,7 +422,7 @@ export default function MapSection({ id }: MapSectionProps) {
           'text-color': '#3a5c39',
           'text-opacity': 1.0,
           'text-halo-color': '#ffffff',
-          'text-halo-width': 3,
+          'text-halo-width': 4,
         },
       });
 
@@ -437,31 +449,114 @@ export default function MapSection({ id }: MapSectionProps) {
         const name = e.features?.[0]?.properties?.['kom_namn'] as string | undefined;
         if (name) selectMunicipality(name);
       });
+
+      // Handle gestures (trackpad pinch/scroll out, mobile pinch out) to return to overview
+      const container = map.getContainer();
+      let initialPinchDistance: number | null = null;
+      let isReturning = false;
+
+      const handleWheel = (e: WheelEvent) => {
+        // Trackpad pinch-to-zoom sets ctrlKey=true. Ignore normal scroll.
+        if (e.ctrlKey) {
+          e.preventDefault(); // Stop full-page browser zoom
+          // deltaY > 0 means pinching fingers together (zooming out)
+          if (selectedRef.current && Number(e.deltaY) > 5 && !isReturning) {
+            isReturning = true;
+            returnToOverview();
+            setTimeout(() => {
+              isReturning = false;
+            }, 1000);
+          }
+        }
+      };
+
+      const handleTouchStart = (e: TouchEvent) => {
+        if (e.touches.length === 2 && e.touches[0] && e.touches[1] && selectedRef.current) {
+          initialPinchDistance = Math.hypot(
+            e.touches[0].pageX - e.touches[1].pageX,
+            e.touches[0].pageY - e.touches[1].pageY,
+          );
+        }
+      };
+
+      const handleTouchMove = (e: TouchEvent) => {
+        if (
+          e.touches.length === 2 &&
+          e.touches[0] &&
+          e.touches[1] &&
+          initialPinchDistance !== null &&
+          selectedRef.current
+        ) {
+          const currentDistance = Math.hypot(
+            e.touches[0].pageX - e.touches[1].pageX,
+            e.touches[0].pageY - e.touches[1].pageY,
+          );
+          // Distance decreasing means zooming out (pinching fingers together)
+          if (initialPinchDistance - currentDistance > 30) {
+            if (!isReturning) {
+              isReturning = true;
+              returnToOverview();
+              setTimeout(() => {
+                isReturning = false;
+              }, 1000);
+            }
+            initialPinchDistance = null;
+          }
+        }
+      };
+
+      const handleTouchEnd = () => {
+        initialPinchDistance = null;
+      };
+
+      container.addEventListener('wheel', handleWheel, { passive: false });
+      container.addEventListener('touchstart', handleTouchStart, { passive: true });
+      container.addEventListener('touchmove', handleTouchMove, { passive: true });
+      container.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+      // Handle deep linking on init
+      if (initialMunicipality && initialMunicipality in MUNICIPALITY_CENTROIDS) {
+        selectMunicipality(initialMunicipality);
+      }
     },
-    [selectMunicipality],
+    [selectMunicipality, initialMunicipality, returnToOverview],
   );
 
   return (
     <section id={id} className="bg-primary-light py-6 px-4 md:px-44 lg:px-60 md:py-8">
-      {/* Mobile list card — above map, hidden when a municipality is selected */}
-      {!selected && (
-        <div className="md:hidden mb-2">
-          <MunicipalityCard
-            isMobile={true}
-            municipalities={SORTED_MUNICIPALITIES}
-            selected={null}
-            view={view}
-            hoveredMunicipality={hoveredMunicipality}
-            onSelect={selectMunicipality}
-            onBack={returnToOverview}
-            onViewChange={setView}
-            onHoverMunicipality={handleListHover}
-          />
+      {/* Mobile list card — above map, dropdown selector replaces list */}
+      <div className="md:hidden mt-2 mb-4 relative">
+        <select
+          value={selected || ''}
+          onChange={(e) => {
+            const val = e.target.value;
+            if (val) selectMunicipality(val);
+            else returnToOverview();
+          }}
+          className="w-full p-4 pr-10 rounded-2xl bg-white shadow-xl font-bold tracking-wide text-xl text-[#5c8b5a] appearance-none focus:outline-none focus:ring-2 focus:ring-[#5c8b5a]/50 border-0"
+        >
+          <option value="">Välj kommun...</option>
+          {SORTED_MUNICIPALITIES.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+          <svg width="24" height="12" viewBox="0 0 36 18" fill="none" className="opacity-50">
+            <path
+              d="M2 2L18 16L34 2"
+              stroke="#5c8b5a"
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </div>
-      )}
+      </div>
 
       {/* Map — floating box with rounded corners */}
-      <div className="relative h-[70vh] md:h-[85vh] rounded-2xl overflow-hidden shadow-2xl border border-black/10">
+      <div className="relative h-[60vh] md:h-[85vh] rounded-2xl overflow-hidden shadow-2xl border border-black/10">
         <MapCanvas onMapReady={handleMapReady} />
 
         {/* Desktop list card — always mounted for crossfade; fades out when selected */}
@@ -483,9 +578,9 @@ export default function MapSection({ id }: MapSectionProps) {
           />
         </div>
 
-        {/* Stats card — always mounted with last-known data for smooth crossfade */}
+        {/* Desktop Stats card — hidden on mobile */}
         <div
-          className={`absolute top-3 right-3 md:top-4 md:right-4 z-20 w-[220px] md:w-[260px] transition-opacity duration-300 ease-in-out ${
+          className={`hidden md:block absolute top-4 right-4 z-20 w-[260px] transition-opacity duration-300 ease-in-out ${
             selected && stats ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
           }`}
         >
@@ -500,6 +595,19 @@ export default function MapSection({ id }: MapSectionProps) {
           )}
         </div>
       </div>
+
+      {/* Mobile Stats panel — below map */}
+      {selected && stats && displayStats && (
+        <div className="md:hidden mt-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <StatsCard
+            selected={displayStats.name}
+            stats={displayStats.stats}
+            view={view}
+            onBack={returnToOverview}
+            onViewChange={setView}
+          />
+        </div>
+      )}
     </section>
   );
 }

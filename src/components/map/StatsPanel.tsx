@@ -77,7 +77,7 @@ export default function StatsPanel({ stats, view }: StatsPanelProps) {
         <StatCell value={`${stats.fortattning}%`} label="Förtätning" />
       </div>
 
-      <div className="px-3 pb-2 flex flex-col gap-1.5">
+      <div className="hidden">
         <span className="text-[#AAC0AA] text-[10px] uppercase tracking-widest">Bostadsmix</span>
         <div className="h-6 rounded-full overflow-hidden flex">
           <div

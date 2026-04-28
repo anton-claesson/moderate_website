@@ -62,7 +62,11 @@ export function initHousingLayers(
 }
 
 // Show housing for a municipality; defaults to "current" view (new apartments hidden).
-export function showHousingForMunicipality(map: mapboxgl.Map, municipality: string) {
+export function showHousingForMunicipality(
+  map: mapboxgl.Map,
+  municipality: string,
+  view: HousingView = 'current',
+) {
   for (const id of [
     SMAHUS_LAYER_ID,
     FLERBOSTADSHUS_CURRENT_LAYER_ID,
@@ -76,7 +80,11 @@ export function showHousingForMunicipality(map: mapboxgl.Map, municipality: stri
   map.setFilter(FLERBOSTADSHUS_NEW_LAYER_ID, filter);
   map.setLayoutProperty(SMAHUS_LAYER_ID, 'visibility', 'visible');
   map.setLayoutProperty(FLERBOSTADSHUS_CURRENT_LAYER_ID, 'visibility', 'visible');
-  map.setLayoutProperty(FLERBOSTADSHUS_NEW_LAYER_ID, 'visibility', 'none');
+  map.setLayoutProperty(
+    FLERBOSTADSHUS_NEW_LAYER_ID,
+    'visibility',
+    view === 'planned' ? 'visible' : 'none',
+  );
 }
 
 // Hide all housing layers (when returning to overview).

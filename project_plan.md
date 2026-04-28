@@ -136,13 +136,13 @@ Convert visitors into newsletter subscribers.
 
 Small, isolated cleanup pass on the generator and label rendering.
 
-- [ ] **F7.1 — Rectangular-only building shapes.** Remove L/T shapes from `pickFlerboShape` (rect/square only). Eliminates multi-vertex polygons that can escape the grid cell buffer. Re-generate all three GeoJSON files. **File:** `scripts/generate-housing-geojson.ts`.
-- [ ] **F7.2 — Municipality label always visible above buildings.** After `initHousingLayers`, call `map.moveLayer` on both label layers to bring them above the extrusion stack. Increase `text-halo-width` on selected label from 3→4. **File:** `src/components/sections/MapSection.tsx`.
-- [ ] **F7.3 — Minor size adjustments.** Tuning pass on `TOTAL_COVERAGE`, height clamp constants, after shape change in F7.1. Re-generate GeoJSON. **File:** `scripts/generate-housing-geojson.ts`.
+- [x] **F7.1 — Rectangular-only building shapes.** Remove L/T shapes from `pickFlerboShape` (rect/square only). Eliminates multi-vertex polygons that can escape the grid cell buffer. Re-generate all three GeoJSON files. **File:** `scripts/generate-housing-geojson.ts`.
+- [x] **F7.2 — Municipality label always visible above buildings.** After `initHousingLayers`, call `map.moveLayer` on both label layers to bring them above the extrusion stack. Increase `text-halo-width` on selected label from 3→4. **File:** `src/components/sections/MapSection.tsx`.
+- [x] **F7.3 — Minor size adjustments.** Tuning pass on `TOTAL_COVERAGE`, height clamp constants, after shape change in F7.1. Re-generate GeoJSON. **File:** `scripts/generate-housing-geojson.ts`.
 
 ### Phase 8 — Deep Linking
 
-- [ ] **F8.1 — URL-based municipality selection.** Query param `?m=MunicipalityName` (e.g. `/?m=Nacka`) opens the page with that municipality already selected and zoomed. `page.tsx` (Server Component) reads `searchParams`, passes `initialMunicipality` prop to `MapSection`. On `handleMapReady`, if the prop matches a valid municipality, call `selectMunicipality`. Links are one-way (shared externally; the app does not update the URL on click). **Files:** `src/app/page.tsx`, `src/components/sections/MapSection.tsx`.
+- [x] **F8.1 — URL-based municipality selection.** Query param `?m=MunicipalityName` (e.g. `/?m=Nacka`) opens the page with that municipality already selected and zoomed. `page.tsx` (Server Component) reads `searchParams`, passes `initialMunicipality` prop to `MapSection`. On `handleMapReady`, if the prop matches a valid municipality, call `selectMunicipality`. Links are one-way (shared externally; the app does not update the URL on click). **Files:** `src/app/page.tsx`, `src/components/sections/MapSection.tsx`.
 
 ### Phase 9 — Post-Selection Pan & Zoom
 
@@ -150,12 +150,12 @@ Small, isolated cleanup pass on the generator and label rendering.
 
 ### Phase 10 — Mobile Layout
 
-- [ ] **F10.1 — Dropdown municipality selector on mobile.** Replace the mobile `MunicipalityCard` block (above-map list) with a native `<select>` dropdown. Stays visible even when a municipality is selected (allows direct switching). Hidden on desktop (`md:hidden`). **File:** `src/components/sections/MapSection.tsx`.
-- [ ] **F10.2 — Stats panel below map on mobile.** Move the stats card outside the map `div` on mobile, rendering it below the map. Desktop overlay unchanged. **File:** `src/components/sections/MapSection.tsx`.
+- [x] **F10.1 — Dropdown municipality selector on mobile.** Replace the mobile `MunicipalityCard` block (above-map list) with a native `<select>` dropdown. Stays visible even when a municipality is selected (allows direct switching). Hidden on desktop (`md:hidden`). **File:** `src/components/sections/MapSection.tsx`.
+- [x] **F10.2 — Stats panel below map on mobile.** Move the stats card outside the map `div` on mobile, rendering it below the map. Desktop overlay unchanged. **File:** `src/components/sections/MapSection.tsx`.
 
 ### Phase 11 — Contact Form Updates
 
-- [ ] **F11.1 — Field changes & GDPR note.** Email + Kommun mandatory; Name and Telefon optional. Kommun becomes a `<select>` dropdown (26 municipalities + "Ingen / Vet ej"). Updated Swedish GDPR copy: clarifies data shared with Formspree EU servers only, not third parties, deleted on request. **File:** `src/components/contact/ContactForm.tsx`.
+- [x] **F11.1 — Field changes & GDPR note.** Email + Kommun mandatory; Name and Telefon optional. Kommun becomes a `<select>` dropdown (26 municipalities + "Ingen / Vet ej"). Updated Swedish GDPR copy: clarifies data shared with Formspree EU servers only, not third parties, deleted on request. **File:** `src/components/contact/ContactForm.tsx`.
 
 ### Phase 12 — Visual Alignment
 
