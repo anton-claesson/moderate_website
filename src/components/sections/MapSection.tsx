@@ -39,6 +39,7 @@ const MapCanvas = dynamic(() => import('@/components/map/MapCanvas'), {
 
 interface MapSectionProps {
   id: string;
+  initialMunicipality?: string;
 }
 
 const OVERVIEW_PADDING_DESKTOP = { top: 20, bottom: 20, left: 20, right: 220 };
@@ -84,7 +85,7 @@ async function fetchHousingData(): Promise<
   return [smahus as HousingCollection, current as HousingCollection, newApts as HousingCollection];
 }
 
-export default function MapSection({ id }: MapSectionProps) {
+export default function MapSection({ id, initialMunicipality }: MapSectionProps) {
   const mapRef = useRef<MapboxMap | null>(null);
   const housingDataRef = useRef<[HousingCollection, HousingCollection, HousingCollection] | null>(
     null,
@@ -443,31 +444,39 @@ export default function MapSection({ id }: MapSectionProps) {
         const name = e.features?.[0]?.properties?.['kom_namn'] as string | undefined;
         if (name) selectMunicipality(name);
       });
+
+      // Handle deep linking on init
+      if (initialMunicipality && initialMunicipality in MUNICIPALITY_CENTROIDS) {
+        selectMunicipality(initialMunicipality);
+      }
     },
-    [selectMunicipality],
+    [selectMunicipality, initialMunicipality],
   );
 
   return (
     <section id={id} className="bg-primary-light py-6 px-4 md:px-44 lg:px-60 md:py-8">
-      {/* Mobile list card — above map, hidden when a municipality is selected */}
-      {!selected && (
-        <div className="md:hidden mb-2">
-          <MunicipalityCard
-            isMobile={true}
-            municipalities={SORTED_MUNICIPALITIES}
-            selected={null}
-            view={view}
-            hoveredMunicipality={hoveredMunicipality}
-            onSelect={selectMunicipality}
-            onBack={returnToOverview}
-            onViewChange={setView}
-            onHoverMunicipality={handleListHover}
-          />
-        </div>
-      )}
+      {/* Mobile list card — above map, dropdown selector replaces list */}
+      <div className="md:hidden mt-2 mb-4">
+        <select
+          value={selected || ''}
+          onChange={(e) => {
+            const val = e.target.value;
+            if (val) selectMunicipality(val);
+            else returnToOverview();
+          }}
+          className="w-full p-3 rounded-xl border border-black/10 bg-white shadow-sm font-medium text-[#3a5c39] appearance-none"
+        >
+          <option value="">Välj en kommun...</option>
+          {SORTED_MUNICIPALITIES.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {/* Map — floating box with rounded corners */}
-      <div className="relative h-[70vh] md:h-[85vh] rounded-2xl overflow-hidden shadow-2xl border border-black/10">
+      <div className="relative h-[60vh] md:h-[85vh] rounded-2xl overflow-hidden shadow-2xl border border-black/10">
         <MapCanvas onMapReady={handleMapReady} />
 
         {/* Desktop list card — always mounted for crossfade; fades out when selected */}
@@ -489,9 +498,9 @@ export default function MapSection({ id }: MapSectionProps) {
           />
         </div>
 
-        {/* Stats card — always mounted with last-known data for smooth crossfade */}
+        {/* Desktop Stats card — hidden on mobile */}
         <div
-          className={`absolute top-3 right-3 md:top-4 md:right-4 z-20 w-[220px] md:w-[260px] transition-opacity duration-300 ease-in-out ${
+          className={`hidden md:block absolute top-4 right-4 z-20 w-[260px] transition-opacity duration-300 ease-in-out ${
             selected && stats ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
           }`}
         >
@@ -506,6 +515,19 @@ export default function MapSection({ id }: MapSectionProps) {
           )}
         </div>
       </div>
+
+      {/* Mobile Stats panel — below map */}
+      {selected && stats && displayStats && (
+        <div className="md:hidden mt-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <StatsCard
+            selected={displayStats.name}
+            stats={displayStats.stats}
+            view={view}
+            onBack={returnToOverview}
+            onViewChange={setView}
+          />
+        </div>
+      )}
     </section>
   );
 }
