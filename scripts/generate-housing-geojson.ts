@@ -8,7 +8,7 @@ import type { Feature, Polygon, Position } from 'geojson';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const FILL_FACTOR = 0.7; // footprint occupies this fraction of the grid cell
-const JITTER = 0.; // ±10% position nudge within the grid cell
+const JITTER = 0; // ±10% position nudge within the grid cell
 const TOTAL_COVERAGE = 0.5; // fraction of polygon area allocated to buildings combined
 
 // Flerbo buildings represent 10× more dwellings per unit than smahus,
