@@ -127,6 +127,12 @@ export default function MapSection({ id }: MapSectionProps) {
         const data = await fetchHousingData();
         housingDataRef.current = data;
         initHousingLayers(map, ...data);
+        // Extrusion layers are added below the existing label layers in the stack —
+        // move labels back to the top so they render above buildings.
+        if (map.getLayer(MUNICIPALITY_LABELS_ALL_LAYER))
+          map.moveLayer(MUNICIPALITY_LABELS_ALL_LAYER);
+        if (map.getLayer(MUNICIPALITY_LABELS_SELECTED_LAYER))
+          map.moveLayer(MUNICIPALITY_LABELS_SELECTED_LAYER);
         setHousingReady(true);
       })();
     }
@@ -410,7 +416,7 @@ export default function MapSection({ id }: MapSectionProps) {
           'text-color': '#3a5c39',
           'text-opacity': 1.0,
           'text-halo-color': '#ffffff',
-          'text-halo-width': 3,
+          'text-halo-width': 4,
         },
       });
 
