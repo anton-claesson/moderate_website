@@ -4,17 +4,22 @@ interface IntroSectionProps {
 
 export default function IntroSection({ id }: IntroSectionProps) {
   return (
-    <section id={id} className="min-h-[50vh] flex items-center bg-primary-light">
-      <div className="mx-auto max-w-3xl w-full px-4 sm:px-6 py-16 sm:py-24">
+    <section
+      id={id}
+      className="min-h-[50vh] w-full flex flex-col items-center justify-center bg-primary-light"
+    >
+      <div className="mx-auto max-w-3xl w-full px-4 sm:px-6 pt-12 pb-8 sm:pt-20 sm:pb-10">
         <h2
-          className="font-bold text-center leading-[1.1] mb-8 uppercase"
+          className="font-bold text-center leading-[1.1] mb-8 uppercase w-full flex justify-center"
           style={{
             fontSize: 'clamp(2rem, 9vw, 5rem)',
-            transform: 'scaleX(0.9)',
-            transformOrigin: 'center',
           }}
         >
-          Stoppa <span className="whitespace-nowrap">Miljonprogrammet!</span>
+          <span
+            style={{ display: 'inline-block', transform: 'scaleX(0.9)', transformOrigin: 'center' }}
+          >
+            Stoppa <span className="whitespace-nowrap">Miljonprogrammet!</span>
+          </span>
         </h2>
         <p className="text-xl text-text-muted leading-relaxed mb-6">
           Var byggs det bostäder i Stockholmsregionen — och var planeras det att byggas? Den här

@@ -120,26 +120,63 @@ Convert visitors into newsletter subscribers.
 - [x] **F5.3 — GDPR consent & privacy copy.** Required consent checkbox with inline Swedish privacy copy; submit disabled until checked.
 - [x] **F5.4 — Aesthetic refinements.** Font switched to Space Grotesk. Hero headline scaled to display size. Section eyebrow labels removed. ContactForm card removed, inputs styled as bottom-border-only lines, submit button pill-shaped. Footer reduced to single slim bar (copyright, data note, email). Section dividers added between intro/map/videos, removed between videos/contact.
 
-### Phase 6 — Analytics & Observability
+### Phase 6 — Map Visual Redesign
 
-- [ ] **F6.1 — Traffic analytics.** Add lightweight analytics (Vercel Analytics or Plausible). Confirm GDPR-friendly configuration. `[DECISION NEEDED]`: provider.
-- [ ] **F6.2 — Key event tracking.** Track: municipality selections, current/future toggle usage, form submissions, video plays. Keep it minimal.
+- [x] **F6.1 — New building color scheme & data-driven heights.** Blue (existing) / red (new 2060) extrusions. Heights stored per-feature in GeoJSON (20–400 m). Generator script fully rewritten.
+- [x] **F6.2 — Organic building placement.** Seeded PRNG, point-in-polygon rejection, clustered ring layout, 4 footprint shapes (square, L, wide rect, T). New buildings interspersed with existing in shared position pool.
+- [x] **F6.3 — Floating map box layout.** `bg-primary-light` section, narrower padding, `rounded-2xl` overflow-hidden box, shifted overview camera to account for 380 px card.
+- [x] **F6.4 — fitBounds camera & municipality labels.** `fitBounds` on municipality polygon bounds. Centroid-point label source (eliminates tile-boundary duplication). Two symbol layers: all-municipalities (hidden in overview) and selected-only (bold, always-overlap).
+- [x] **F6.5 — Polygon & interaction polish.** Blue hover fill, 3.5 px hover outline, `line-join: 'round'` on boundaries. Pre-init guard on setHighlight.
+- [x] **F6.6 — Municipality card & list UI.** Gray card matching map water color, 2/3-height centered list, scale+size hover zoom, manual scroll centering, white text throughout.
+- [x] **F6.7 — Neighboring regions overlay.** Uppsala, Västmanland, Södermanland municipalities at half opacity, no borders, no interaction. Generated from `okfse/sweden-geojson` via `scripts/generate-neighboring-regions.ts`.
+- [x] **F6.8 — Stats card redesign, list style alignment & crossfade transition.** Free-floating white `StatsCard` replaces full-height sidebar in detail view. StatsPanel: 2×2 grid with large green numbers, uppercase labels, and inline SVG building icons in the exact map extrusion colors. Housing mix stacked bar chart (Bostadsmix) reacts to Idag/Planerad toggle with 300 ms CSS width transition. Förtätning data from CSV (`fortattning` field, replaces `growthPct`). MunicipalityList: white floating card, green text, full-width inverted hover (green bg / white text). Bidirectional 300 ms opacity crossfade between list and stats views.
+- [x] **F6.9 — Housing generator grid rewrite.** Cluster-based placement replaced by `generateGridPositions` (bbox sweep + `pointInRing` filter + seeded Fisher-Yates shuffle). Buffer = `halfSize × √2` eliminates boundary leakage. `wide` shape offsets scaled to ±1.0 to prevent overlap at `FILL_FACTOR=0.7`. Heights proportional to footprint size (`halfSize × AVG_M_PER_DEG × ratio`), clamped per type. Script shrank from ~547 to ~300 lines. See `project_phases/Phase6_map_visual_redesign.md`.
 
-### Phase 7 — Polish & Launch Readiness
+### Phase 7 — Housing Shape & Label Fixes
 
-- [ ] **F7.1 — Cross-device QA.** Test on real iOS, Android, and desktop browsers. Document and fix issues.
-- [ ] **F7.2 — Accessibility pass.** Keyboard navigation, focus states, color contrast, screen reader labels for non-map content. Document map's accessibility limitations honestly.
-- [ ] **F7.3 — Performance optimization.** Image/video lazy loading, GeoJSON simplification if needed, font subsetting, Lighthouse audit.
-- [ ] **F7.4 — SEO & social sharing.** Meta tags, OG image, favicon, sitemap.
-- [ ] **F7.5 — Launch checklist.** Custom domain, HTTPS, production env vars, analytics live, form recipient confirmed.
+Small, isolated cleanup pass on the generator and label rendering.
 
-### Phase 8 — Post-Launch (optional / deferred)
+- [ ] **F7.1 — Rectangular-only building shapes.** Remove L/T shapes from `pickFlerboShape` (rect/square only). Eliminates multi-vertex polygons that can escape the grid cell buffer. Re-generate all three GeoJSON files. **File:** `scripts/generate-housing-geojson.ts`.
+- [ ] **F7.2 — Municipality label always visible above buildings.** After `initHousingLayers`, call `map.moveLayer` on both label layers to bring them above the extrusion stack. Increase `text-halo-width` on selected label from 3→4. **File:** `src/components/sections/MapSection.tsx`.
+- [ ] **F7.3 — Minor size adjustments.** Tuning pass on `TOTAL_COVERAGE`, height clamp constants, after shape change in F7.1. Re-generate GeoJSON. **File:** `scripts/generate-housing-geojson.ts`.
 
-- [ ] **F8.1 — Data update workflow.** Document how to refresh GeoJSON when new construction data is published.
-- [ ] **F8.2 — Additional municipality stats.** Richer info overlay (population, units planned, timelines).
-- [ ] **F8.3 — Time-slider.** Scrub through years to see future stock materialize over time.
-- [ ] **F8.4 — Filtering by attributes.** E.g., by developer, project status, building type.
-- [ ] **F8.5 — Form/newsletter platform review.** Evaluate replacing Formspree with a dedicated newsletter tool (e.g., Buttondown, Brevo, Mailchimp) once subscriber volume and stakeholder requirements are known. Consider subscriber management, double opt-in, unsubscribe flows, and cost at scale.
+### Phase 8 — Deep Linking
+
+- [ ] **F8.1 — URL-based municipality selection.** Query param `?m=MunicipalityName` (e.g. `/?m=Nacka`) opens the page with that municipality already selected and zoomed. `page.tsx` (Server Component) reads `searchParams`, passes `initialMunicipality` prop to `MapSection`. On `handleMapReady`, if the prop matches a valid municipality, call `selectMunicipality`. Links are one-way (shared externally; the app does not update the URL on click). **Files:** `src/app/page.tsx`, `src/components/sections/MapSection.tsx`.
+
+### Phase 9 — Post-Selection Pan & Zoom
+
+- [ ] **F9.1 — Bounded pan/zoom in detail view.** After `flyTo` completes (`map.once('moveend', ...)`), enable `dragPan`, `scrollZoom`, `doubleClickZoom`, `touchZoomRotate`. Clamp to `STOCKHOLM_BOUNDS` (already defined), `DETAIL_MIN_ZOOM = 9`, `DETAIL_MAX_ZOOM = 16`. On `returnToOverview`, disable all. Two boolean flags in `mapConfig.ts` (`ENABLE_POST_SELECTION_PAN`, `ENABLE_POST_SELECTION_ZOOM`) make it trivial to toggle off. **Files:** `src/lib/mapConfig.ts`, `src/components/sections/MapSection.tsx`.
+
+### Phase 10 — Mobile Layout
+
+- [ ] **F10.1 — Dropdown municipality selector on mobile.** Replace the mobile `MunicipalityCard` block (above-map list) with a native `<select>` dropdown. Stays visible even when a municipality is selected (allows direct switching). Hidden on desktop (`md:hidden`). **File:** `src/components/sections/MapSection.tsx`.
+- [ ] **F10.2 — Stats panel below map on mobile.** Move the stats card outside the map `div` on mobile, rendering it below the map. Desktop overlay unchanged. **File:** `src/components/sections/MapSection.tsx`.
+
+### Phase 11 — Contact Form Updates
+
+- [ ] **F11.1 — Field changes & GDPR note.** Email + Kommun mandatory; Name and Telefon optional. Kommun becomes a `<select>` dropdown (26 municipalities + "Ingen / Vet ej"). Updated Swedish GDPR copy: clarifies data shared with Formspree EU servers only, not third parties, deleted on request. **File:** `src/components/contact/ContactForm.tsx`.
+
+### Phase 12 — Visual Alignment
+
+- [!] **F12.1 — Align static sections with map design.** Update Intro, Videos, Contact, Footer, and Header colors and style to match the map's sage-green / amber / white palette. **[DECISION NEEDED]:** Design direction (specifics TBD — requires user sign-off before implementation). **Files:** `src/components/sections/IntroSection.tsx`, `VideosSection.tsx`, `ContactSection.tsx`, `src/components/Footer.tsx`, `Header.tsx`, `src/app/globals.css`.
+
+### Phase 13 — Cleanup & Launch Readiness
+
+- [ ] **F13.1 — Remove unused code & files.** Delete `scripts/generate-outside-region.ts` and `scripts/smooth-municipalities.ts` (superseded/unused). Remove `SMAHUS_SIZE_DEG` and `FLERBOSTADSHUS_SIZE_DEG` from `mapConfig.ts` (unused since data-driven heights). Run `tsc --noEmit` + ESLint to surface remaining dead code.
+- [ ] **F13.2 — Cross-device QA.** Test on real iOS, Android, and desktop browsers. Document and fix issues. Priority: mobile layout from Phase 10.
+- [ ] **F13.3 — Accessibility pass.** Keyboard navigation, focus states, ARIA labels on map controls, color contrast on stats panel. Document map's accessibility limitations honestly.
+- [ ] **F13.4 — Performance optimization.** Lighthouse audit, GeoJSON size check, font subsetting, image/video lazy loading.
+- [ ] **F13.5 — SEO & social sharing.** Meta tags, OG image, favicon, sitemap.
+- [ ] **F13.6 — Launch checklist.** Custom domain, HTTPS, production env vars, analytics decision (D7), form recipient confirmed.
+
+### Phase 9 — Post-Launch (optional / deferred)
+
+- [ ] **F9.1 — Data update workflow.** Document how to refresh GeoJSON when new construction data is published.
+- [ ] **F9.2 — Additional municipality stats.** Richer info overlay (population, units planned, timelines).
+- [ ] **F9.3 — Time-slider.** Scrub through years to see future stock materialize over time.
+- [ ] **F9.4 — Filtering by attributes.** E.g., by developer, project status, building type.
+- [ ] **F9.5 — Form/newsletter platform review.** Evaluate replacing Formspree with a dedicated newsletter tool (e.g., Buttondown, Brevo, Mailchimp) once subscriber volume and stakeholder requirements are known.
 
 ---
 
@@ -154,8 +191,9 @@ Tracked here so they don't get lost between sessions. Resolve before — or as t
 | D3 | Mapbox style: Studio vs. inline overrides | F2.3 | **Resolved 2026-04-17: Mapbox Studio → exported `style.json` committed to `/public/`.** |
 | D4 | Source datasets for current & future housing | F3.1 | **Resolved 2026-04-18: `/public/bostads_data.csv`. Columns: Antal småhus, Antal flerbostadshus, Antal flerbostadshus 2060 (hög). Script generates static GeoJSON at dev time.** |
 | D5 | Info overlay scope (static vs. per-municipality stats) | F4.3 | **Resolved 2026-04-20: municipality name + småhus + current flerbostadshus + 2060 flerbostadshus + total growth %. Static lookup from CSV. Floating card layout.** |
-| D6 | Form backend provider | F5.2 | **Resolved 2026-04-20: Formspree with EU data storage. Easy to swap via `NEXT_PUBLIC_FORMSPREE_URL`. Platform review deferred to F8.5.** |
-| D7 | Analytics provider | F6.1 | |
+| D6 | Form backend provider | F5.2 | **Resolved 2026-04-20: Formspree with EU data storage. Easy to swap via `NEXT_PUBLIC_FORMSPREE_URL`. Platform review deferred to post-launch.** |
+| D7 | Analytics provider | F13.6 | Open — Vercel Analytics or Plausible. Resolve before launch. |
+| D8 | Visual alignment direction for static sections | F12.1 | Open — requires design brief / color direction from user before implementation. |
 
 ## 7. Risks
 
@@ -187,5 +225,10 @@ _Add an entry each time a feature is completed or scope changes meaningfully._
 | 2026-04-17 | F2.1–F2.4 | Phase 2 complete: Mapbox GL JS integrated, Stockholm camera + pan bounds, Mapbox Studio style exported to `/public/map-style.json`, lazy-loaded via `next/dynamic`. Production Lighthouse score: 68. D3 resolved: Studio export. See `docs/performance-baseline.md`. | #6 |
 | 2026-04-20 | F3.1–F3.6 + F4.1–F4.2 | Phase 3 complete: CSV → GeoJSON generation script, municipality boundaries (okfse/sweden-geojson), monochrome map style, 2D overview with hover highlight, municipality selection (click + list), fitBounds + 3D transition at pitch=45, housing extrusions (småhus/flerbostadshus/new), Idag/2060 toggle, back button. F4.1 and F4.2 merged into Phase 3. Race condition in lazy housing init fixed. D4 resolved. | #7 |
 | 2026-04-20 | F4.3 | Phase 4 complete. MunicipalityCard (overview/detail states), StatsPanel, bidirectional hover sync with auto-scroll, municipality dim layer, tighter zoom. UI polish: 3px outlines + white hover outline, glassy card (zinc-700/88), flex-1 toggle, floating absolute layout. D5 resolved. | #8 |
-| 2026-04-20 | F5.1–F5.3 | Phase 5 complete. ContactForm component: 4 fields (name, email, phone, zip/municipality), client-side validation, idle/submitting/success/error states. Formspree integration via `NEXT_PUBLIC_FORMSPREE_URL` (no new deps). GDPR consent checkbox with inline Swedish privacy copy. F8.5 added for future platform review. D6 resolved. | #9 |
+| 2026-04-20 | F5.1–F5.3 | Phase 5 complete. ContactForm component: 4 fields (name, email, phone, zip/municipality), client-side validation, idle/submitting/success/error states. Formspree integration via `NEXT_PUBLIC_FORMSPREE_URL` (no new deps). GDPR consent checkbox with inline Swedish privacy copy. D6 resolved. | #9 |
 | 2026-04-21 | F5.4 | Aesthetic refinements. Font: Geist → Space Grotesk. Headline: uppercase + scaleX(0.9) condensed block style, fluid `clamp(2rem, 9vw, 5rem)` sizing to fill container width. Eyebrow labels removed sitewide. ContactForm: no card wrapper, bottom-border inputs, pill submit button. Footer: single slim bar on bg-primary-light. Section dividers: border-t intro→videos; removed videos→contact. Mobile overflow fixed: `overflow-x: hidden` on html+body, `w-full` on body+main. | #9 |
+| 2026-04-22 | F6.1–F6.7 | Phase 6 complete. Generator rewritten: seeded PRNG, point-in-polygon placement, 4 footprint shapes, data-driven heights (20–400 m), blue/red color scheme. Floating map box with rounded corners. fitBounds camera per municipality. Centroid-point label source (no tile-boundary duplication), labels hidden in overview. Hover: scale+size zoom on list items, manual scroll centering. Card: gray #d3d3d3 water-match background, 2/3-height list, 380 px wide, white text. Round line joins on boundaries. Neighboring regions (Uppsala, Västmanland, Södermanland) at half opacity. | — |
+| 2026-04-22 | F6.6 | List UI refinements & hover bug fix. Root cause: `onMouseLeave(A)` fires after `onMouseEnter(B)`, causing map highlight to clear when moving directly between adjacent items. Fix: 0 ms debounced leave handler (`leaveTimer` ref + `setTimeout`) lets `onMouseEnter` cancel the clear before it runs. `isListHovering` ref added to skip `scrollIntoView` when hover originates from the list. Font sizes increased to `text-2xl`/`text-3xl`. Hover color: `#AAC0AA` text + `bg-white` background. Items right-aligned. Scroll indicators: up/down chevron SVGs. `.scrollbar-white` CSS utility added. | — |
+| 2026-04-22 | F6.8 | Stats card redesign, list style alignment & crossfade. StatsCard: free-floating white card, auto-height, `top-4 right-4`. StatsPanel: 2×2 grid, dark-green numbers, muted-green uppercase labels, inline SVG icons in map colors. Bostadsmix stacked bar (h-6), animated 300 ms on toggle. Förtätning field (`fortattning`) from CSV. MunicipalityList: white card, `text-[#5c8b5a]`, full-width inverted hover. Crossfade: both cards always mounted, opacity toggled 300 ms. | — |
+| 2026-04-22 | F6.9 | Housing generator rewritten: cluster-based → grid-based (`generateGridPositions`). Buffer = `halfSize×√2` eliminates boundary leakage. `wide` shape offsets scaled to ±1.0 to prevent overlap. Heights proportional to footprint (`halfSize × AVG_M_PER_DEG × ratio`), clamped per type. Script ~300 lines. Typography and layer colors redesigned. See `project_phases/Phase6_map_visual_redesign.md`. | — |
+| 2026-04-28 | Roadmap | Phases 7–13 defined: housing shape fixes, deep linking, post-selection pan/zoom, mobile layout, contact form updates, visual alignment, cleanup & launch. Old Phase 7 (analytics) and Phase 8 (polish) folded in. | — |

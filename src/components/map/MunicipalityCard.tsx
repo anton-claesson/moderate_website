@@ -1,3 +1,6 @@
+'use client';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { HousingView } from '@/types/housing';
 import { HOUSING_STATS } from '@/data/housingStats';
 import MunicipalityList from './MunicipalityList';
@@ -17,6 +20,34 @@ interface MunicipalityCardProps {
   onHoverMunicipality: (name: string | null) => void;
 }
 
+function ChevronUp() {
+  return (
+    <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-50">
+      <path
+        d="M2 16L18 2L34 16"
+        stroke="#5c8b5a"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ChevronDown() {
+  return (
+    <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-50">
+      <path
+        d="M2 2L18 16L34 2"
+        stroke="#5c8b5a"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function MunicipalityCard({
   isMobile,
   municipalities,
@@ -29,12 +60,24 @@ export default function MunicipalityCard({
   onHoverMunicipality,
 }: MunicipalityCardProps) {
   const stats = selected != null ? (HOUSING_STATS[selected] ?? null) : null;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const [canScrollDown, setCanScrollDown] = useState(true);
+
+  const updateScrollState = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollUp(el.scrollTop > 0);
+    setCanScrollDown(el.scrollTop < el.scrollHeight - el.clientHeight - 1);
+  }, []);
+
+  useEffect(() => {
+    updateScrollState();
+  }, [updateScrollState]);
 
   return (
     <div
-      className={`bg-zinc-700/88 backdrop-blur-md border border-white/15 shadow-2xl flex flex-col overflow-hidden ${
-        isMobile ? 'h-[30vh] rounded-none' : 'rounded-xl max-h-[70vh]'
-      }`}
+      className={`flex flex-col overflow-hidden bg-white rounded-2xl shadow-xl ${isMobile ? 'h-[30vh]' : 'h-full'}`}
     >
       {selected != null ? (
         <>
@@ -43,7 +86,7 @@ export default function MunicipalityCard({
           </div>
           <div className="px-4 py-3 flex-1 overflow-y-auto flex flex-col gap-4 min-h-0">
             <h2 className="text-text-on-dark font-bold text-lg leading-tight">{selected}</h2>
-            {stats && <StatsPanel stats={stats} />}
+            {stats && <StatsPanel stats={stats} view={view} />}
           </div>
           <div className="px-4 pb-4 pt-2 border-t border-white/10 flex-shrink-0">
             <LayerToggle view={view} onChange={onViewChange} />
@@ -51,16 +94,23 @@ export default function MunicipalityCard({
         </>
       ) : (
         <>
-          <div className="px-3 py-2 text-xs font-semibold text-text-on-dark/50 uppercase tracking-wider border-b border-white/10 flex-shrink-0">
-            Kommuner
+          <div className="flex-[0.15] flex items-end justify-center pb-2 pointer-events-none">
+            {canScrollUp && <ChevronUp />}
           </div>
-          <div className="flex-1 overflow-y-auto min-h-0">
+          <div
+            ref={scrollRef}
+            onScroll={updateScrollState}
+            className="flex-[4] min-h-0 overflow-y-scroll scrollbar-green"
+          >
             <MunicipalityList
               municipalities={municipalities}
               hoveredMunicipality={hoveredMunicipality}
               onSelect={onSelect}
               onHoverMunicipality={isMobile ? undefined : onHoverMunicipality}
             />
+          </div>
+          <div className="flex-[0.2] flex items-start justify-center pt-5 pointer-events-none">
+            {canScrollDown && <ChevronDown />}
           </div>
         </>
       )}

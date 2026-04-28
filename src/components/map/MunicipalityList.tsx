@@ -13,32 +13,50 @@ export default function MunicipalityList({
   onSelect,
   onHoverMunicipality,
 }: MunicipalityListProps) {
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isListHovering = useRef(false);
   const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   useEffect(() => {
-    if (hoveredMunicipality) {
-      itemRefs.current
-        .get(hoveredMunicipality)
-        ?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    }
+    if (!hoveredMunicipality || isListHovering.current) return;
+    itemRefs.current
+      .get(hoveredMunicipality)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [hoveredMunicipality]);
 
+  const handleMouseEnter = (name: string) => {
+    if (leaveTimer.current !== null) {
+      clearTimeout(leaveTimer.current);
+      leaveTimer.current = null;
+    }
+    isListHovering.current = true;
+    onHoverMunicipality?.(name);
+  };
+
+  const handleMouseLeave = () => {
+    leaveTimer.current = setTimeout(() => {
+      isListHovering.current = false;
+      onHoverMunicipality?.(null);
+      leaveTimer.current = null;
+    }, 0);
+  };
+
   return (
-    <ul>
+    <ul className="pr-3">
       {municipalities.map((name) => (
-        <li key={name}>
+        <li key={name} className="flex justify-end">
           <button
             ref={(el) => {
               if (el) itemRefs.current.set(name, el);
               else itemRefs.current.delete(name);
             }}
             onClick={() => onSelect(name)}
-            onMouseEnter={onHoverMunicipality ? () => onHoverMunicipality(name) : undefined}
-            onMouseLeave={onHoverMunicipality ? () => onHoverMunicipality(null) : undefined}
-            className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+            onMouseEnter={onHoverMunicipality ? () => handleMouseEnter(name) : undefined}
+            onMouseLeave={onHoverMunicipality ? handleMouseLeave : undefined}
+            className={`w-full text-right px-3 py-2 uppercase tracking-wide transition-colors ${
               hoveredMunicipality === name
-                ? 'bg-accent/20 text-accent font-semibold'
-                : 'text-text-on-dark/70 hover:bg-white/5 hover:text-text-on-dark'
+                ? 'font-black text-3xl text-white bg-[#5c8b5a]'
+                : 'font-bold text-2xl text-[#5c8b5a]'
             }`}
           >
             {name}
