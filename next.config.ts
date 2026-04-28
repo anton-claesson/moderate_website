@@ -1,7 +1,15 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return [
+      {
+        // This will match /solna, /Nacka, /Upplands-Bro etc.
+        source: '/:municipality',
+        destination: '/?m=:municipality',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

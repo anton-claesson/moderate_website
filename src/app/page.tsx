@@ -5,6 +5,7 @@ import MapSection from '@/components/sections/MapSection';
 import VideosSection from '@/components/sections/VideosSection';
 import ContactSection from '@/components/sections/ContactSection';
 import DataNoteSection from '@/components/sections/DataNoteSection';
+import { MUNICIPALITY_CENTROIDS } from '@/data/municipalityCentroids';
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -12,7 +13,15 @@ type Props = {
 
 export default async function Home({ searchParams }: Props) {
   const params = await searchParams;
-  const initialMunicipality = typeof params.m === 'string' ? params.m : undefined;
+  let initialMunicipality = typeof params.m === 'string' ? params.m : undefined;
+
+  if (initialMunicipality) {
+    const searchName = decodeURIComponent(initialMunicipality).toLowerCase();
+    const matched = Object.keys(MUNICIPALITY_CENTROIDS).find(
+      (key) => key.toLowerCase() === searchName,
+    );
+    initialMunicipality = matched || undefined;
+  }
 
   return (
     <>

@@ -96,7 +96,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
   const municipalityFeaturesRef = useRef<Map<string, MunicipalityFeature>>(new Map());
 
   const [selected, setSelected] = useState<string | null>(null);
-  const [view, setView] = useState<HousingView>('current');
+  const [view, setView] = useState<HousingView>('planned');
   const stats = selected != null ? (HOUSING_STATS[selected] ?? null) : null;
 
   // Retains the last selected municipality's data so StatsCard stays mounted
@@ -141,10 +141,15 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
   }
 
   function setHighlight(map: MapboxMap, name: string | null) {
-    if (!map.isStyleLoaded() || !map.getLayer(MUNICIPALITY_HOVER_LAYER)) return;
-    const filter = ['==', ['get', 'kom_namn'], name ?? ''] as mapboxgl.FilterSpecification;
-    map.setFilter(MUNICIPALITY_HOVER_LAYER, filter);
-    map.setFilter(MUNICIPALITY_OUTLINE_HOVER_LAYER, filter);
+    if (!map.isStyleLoaded()) {
+      map.once('idle', () => setHighlight(map, name));
+      return;
+    }
+    if (map.getLayer(MUNICIPALITY_HOVER_LAYER)) {
+      const filter = ['==', ['get', 'kom_namn'], name ?? ''] as mapboxgl.FilterSpecification;
+      map.setFilter(MUNICIPALITY_HOVER_LAYER, filter);
+      map.setFilter(MUNICIPALITY_OUTLINE_HOVER_LAYER, filter);
+    }
   }
 
   const selectMunicipality = useCallback(async (name: string) => {
@@ -153,7 +158,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
     if (!MUNICIPALITY_CENTROIDS[name]) return;
 
     setSelected(name);
-    setView('current');
+    setView('planned');
     setHoveredMunicipality(null);
     const municipalityStats = HOUSING_STATS[name];
     if (municipalityStats) setDisplayStats({ name, stats: municipalityStats });
@@ -185,7 +190,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
     }
 
     await ensureHousingReady(map);
-    showHousingForMunicipality(map, name);
+    showHousingForMunicipality(map, name, 'planned');
 
     const feature = municipalityFeaturesRef.current.get(name);
     if (feature) {
@@ -456,7 +461,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
   return (
     <section id={id} className="bg-primary-light py-6 px-4 md:px-44 lg:px-60 md:py-8">
       {/* Mobile list card — above map, dropdown selector replaces list */}
-      <div className="md:hidden mt-2 mb-4">
+      <div className="md:hidden mt-2 mb-4 relative">
         <select
           value={selected || ''}
           onChange={(e) => {
@@ -464,15 +469,26 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
             if (val) selectMunicipality(val);
             else returnToOverview();
           }}
-          className="w-full p-3 rounded-xl border border-black/10 bg-white shadow-sm font-medium text-[#3a5c39] appearance-none"
+          className="w-full p-4 pr-10 rounded-2xl bg-white shadow-xl font-bold tracking-wide text-xl text-[#5c8b5a] appearance-none focus:outline-none focus:ring-2 focus:ring-[#5c8b5a]/50 border-0"
         >
-          <option value="">Välj en kommun...</option>
+          <option value="">Välj kommun...</option>
           {SORTED_MUNICIPALITIES.map((name) => (
             <option key={name} value={name}>
               {name}
             </option>
           ))}
         </select>
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+          <svg width="24" height="12" viewBox="0 0 36 18" fill="none" className="opacity-50">
+            <path
+              d="M2 2L18 16L34 2"
+              stroke="#5c8b5a"
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
       </div>
 
       {/* Map — floating box with rounded corners */}
