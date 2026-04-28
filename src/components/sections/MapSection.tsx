@@ -450,12 +450,76 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         if (name) selectMunicipality(name);
       });
 
+      // Handle gestures (trackpad pinch/scroll out, mobile pinch out) to return to overview
+      const container = map.getContainer();
+      let initialPinchDistance: number | null = null;
+      let isReturning = false;
+
+      const handleWheel = (e: WheelEvent) => {
+        // Trackpad pinch-to-zoom sets ctrlKey=true. Ignore normal scroll.
+        if (e.ctrlKey) {
+          e.preventDefault(); // Stop full-page browser zoom
+          // deltaY > 0 means pinching fingers together (zooming out)
+          if (selectedRef.current && Number(e.deltaY) > 5 && !isReturning) {
+            isReturning = true;
+            returnToOverview();
+            setTimeout(() => {
+              isReturning = false;
+            }, 1000);
+          }
+        }
+      };
+
+      const handleTouchStart = (e: TouchEvent) => {
+        if (e.touches.length === 2 && e.touches[0] && e.touches[1] && selectedRef.current) {
+          initialPinchDistance = Math.hypot(
+            e.touches[0].pageX - e.touches[1].pageX,
+            e.touches[0].pageY - e.touches[1].pageY,
+          );
+        }
+      };
+
+      const handleTouchMove = (e: TouchEvent) => {
+        if (
+          e.touches.length === 2 &&
+          e.touches[0] &&
+          e.touches[1] &&
+          initialPinchDistance !== null &&
+          selectedRef.current
+        ) {
+          const currentDistance = Math.hypot(
+            e.touches[0].pageX - e.touches[1].pageX,
+            e.touches[0].pageY - e.touches[1].pageY,
+          );
+          // Distance decreasing means zooming out (pinching fingers together)
+          if (initialPinchDistance - currentDistance > 30) {
+            if (!isReturning) {
+              isReturning = true;
+              returnToOverview();
+              setTimeout(() => {
+                isReturning = false;
+              }, 1000);
+            }
+            initialPinchDistance = null;
+          }
+        }
+      };
+
+      const handleTouchEnd = () => {
+        initialPinchDistance = null;
+      };
+
+      container.addEventListener('wheel', handleWheel, { passive: false });
+      container.addEventListener('touchstart', handleTouchStart, { passive: true });
+      container.addEventListener('touchmove', handleTouchMove, { passive: true });
+      container.addEventListener('touchend', handleTouchEnd, { passive: true });
+
       // Handle deep linking on init
       if (initialMunicipality && initialMunicipality in MUNICIPALITY_CENTROIDS) {
         selectMunicipality(initialMunicipality);
       }
     },
-    [selectMunicipality, initialMunicipality],
+    [selectMunicipality, initialMunicipality, returnToOverview],
   );
 
   return (
