@@ -8,8 +8,8 @@ import type { Feature, Polygon, Position } from 'geojson';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const FILL_FACTOR = 0.7; // footprint occupies this fraction of the grid cell
-const JITTER = 0.1; // ±10% position nudge within the grid cell
-const TOTAL_COVERAGE = 0.4; // fraction of polygon area allocated to buildings combined
+const JITTER = 0.; // ±10% position nudge within the grid cell
+const TOTAL_COVERAGE = 0.5; // fraction of polygon area allocated to buildings combined
 
 // Flerbo buildings represent 10× more dwellings per unit than smahus,
 // so they get 10× more area → √10 ≈ 3.16× larger linear footprint.
@@ -25,10 +25,10 @@ const FLERBO_HEIGHT_RATIO = 3.5;
 const FLERBO_NEW_HEIGHT_RATIO = 4.2;
 
 // Per-municipality halfSize bounds — only the footprint is clamped; height follows proportionally.
-const SMAHUS_HALF_SIZE_MIN = 0.0003; // ~25 m high (dense urban)
-const SMAHUS_HALF_SIZE_MAX = 0.0012; // ~101 m high (sparse rural)
-const FLERBO_HALF_SIZE_MIN = 0.0008; // ~236 m high
-const FLERBO_HALF_SIZE_MAX = 0.003; // ~883 m high (sparse large municipality)
+const SMAHUS_HALF_SIZE_MIN = 0.0006; // ~25 m high (dense urban)
+const SMAHUS_HALF_SIZE_MAX = 0.0015; // ~101 m high (sparse rural)
+const FLERBO_HALF_SIZE_MIN = 0.001; // ~236 m high
+const FLERBO_HALF_SIZE_MAX = 0.004; // ~883 m high (sparse large municipality)
 
 // ─── PRNG ─────────────────────────────────────────────────────────────────────
 

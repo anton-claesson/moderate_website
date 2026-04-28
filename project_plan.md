@@ -136,9 +136,9 @@ Convert visitors into newsletter subscribers.
 
 Small, isolated cleanup pass on the generator and label rendering.
 
-- [ ] **F7.1 — Rectangular-only building shapes.** Remove L/T shapes from `pickFlerboShape` (rect/square only). Eliminates multi-vertex polygons that can escape the grid cell buffer. Re-generate all three GeoJSON files. **File:** `scripts/generate-housing-geojson.ts`.
-- [ ] **F7.2 — Municipality label always visible above buildings.** After `initHousingLayers`, call `map.moveLayer` on both label layers to bring them above the extrusion stack. Increase `text-halo-width` on selected label from 3→4. **File:** `src/components/sections/MapSection.tsx`.
-- [ ] **F7.3 — Minor size adjustments.** Tuning pass on `TOTAL_COVERAGE`, height clamp constants, after shape change in F7.1. Re-generate GeoJSON. **File:** `scripts/generate-housing-geojson.ts`.
+- [x] **F7.1 — Rectangular-only building shapes.** Remove L/T shapes from `pickFlerboShape` (rect/square only). Eliminates multi-vertex polygons that can escape the grid cell buffer. Re-generate all three GeoJSON files. **File:** `scripts/generate-housing-geojson.ts`.
+- [x] **F7.2 — Municipality label always visible above buildings.** After `initHousingLayers`, call `map.moveLayer` on both label layers to bring them above the extrusion stack. Increase `text-halo-width` on selected label from 3→4. **File:** `src/components/sections/MapSection.tsx`.
+- [x] **F7.3 — Minor size adjustments.** Tuning pass on `TOTAL_COVERAGE`, height clamp constants, after shape change in F7.1. Re-generate GeoJSON. **File:** `scripts/generate-housing-geojson.ts`.
 
 ### Phase 8 — Deep Linking
 
