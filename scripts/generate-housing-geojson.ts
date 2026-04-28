@@ -148,12 +148,9 @@ function pickSmahusShape(seed: number): 'square' | 'wide' {
   return seededFloat(seed) < 0.7 ? 'square' : 'wide';
 }
 
-// Flerbostadshus: more complex footprints to read as city blocks
-function pickFlerboShape(seed: number): 'square' | 'L' | 'T' {
-  const v = seededFloat(seed);
-  if (v < 0.4) return 'square';
-  if (v < 0.7) return 'L';
-  return 'T';
+// Flerbostadshus: rect/square only — L/T vertices escape the √2 buffer and cause boundary leakage
+function pickFlerboShape(seed: number): 'square' | 'wide' {
+  return seededFloat(seed) < 0.6 ? 'square' : 'wide';
 }
 
 // ─── Grid placement ───────────────────────────────────────────────────────────
