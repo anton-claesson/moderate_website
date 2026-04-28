@@ -1,6 +1,6 @@
 # Phase 6 — Map Visual Redesign: Implementation Plan
 
-> Phase 6 — Map Visual Redesign. **Complete — branch `feature/visual-redesign-f6`.**
+> Phase 6 — Map Visual Redesign. **Complete — branch `feature/map-visual-redesign`. Post-F6.8 refinements documented below.**
 
 ---
 
@@ -96,3 +96,56 @@ Phase 3–4 delivered a functional map with green box extrusions and a flat UI c
 | Label source | Centroid point GeoJSON, not polygon source | Eliminates tile-boundary label duplication |
 | Neighboring regions | Municipality-level (not county-level) | Matches polygon detail of Stockholm municipalities |
 | Card background | `#d3d3d3` (map water color) | Card appears to float over the water area of the map |
+
+---
+
+## Post-F6.8 Refinements (F6.9)
+
+Additional work on branch `feature/map-visual-redesign` after F6.8 was shipped.
+
+### Housing generator: cluster → grid algorithm
+
+The original cluster-based placement (find cluster centers → ring-by-ring expansion → collision detection) was replaced with a simpler and more robust grid approach.
+
+**New algorithm (`generateGridPositions`):**
+1. Sweep the municipality bounding box in `cellSize` steps
+2. For each cell center, run four cardinal `pointInRing` checks with a buffer = `halfSize × √2` (covers all diagonal corners of a square footprint)
+3. Seeded Fisher-Yates shuffle the candidates for deterministic but non-sequential spatial ordering
+4. Slice to the requested count
+
+This guarantees no same-type overlap by construction (each building occupies exactly one cell) and no boundary leakage (the diagonal buffer is always sufficient for rectangular footprints).
+
+**Constants introduced:**
+
+| Constant | Value | Purpose |
+|----------|-------|---------|
+| `TOTAL_COVERAGE` | 0.4 | Fraction of polygon area covered by all buildings |
+| `FILL_FACTOR` | 0.7 | Footprint occupies 70% of the grid cell |
+| `JITTER` | 0.1 | ±10% random displacement per building within cell |
+| `FLERBO_WEIGHT` | `FLERBOSTADSHUS_PER_REPRESENTATIVE / SMAHUS_PER_REPRESENTATIVE` | Flerbo buildings get proportionally more area |
+| `AVG_M_PER_DEG` | 84 150 | Average m/° at 59°N, used to convert degree footprint to metres |
+| `SMAHUS_HEIGHT_RATIO` | 1 | Height = halfSize × AVG_M_PER_DEG × ratio |
+| `FLERBO_HEIGHT_RATIO` | 2.5 | — |
+| `FLERBO_NEW_HEIGHT_RATIO` | 3.0 | New 2060 blocks ~1.2× taller |
+| `HEIGHT_VARIATION` | 0.2 | Per-building multiplier in [0.9, 1.1] |
+
+**Clamps per type:**
+
+| Type | Min (m) | Max (m) |
+|------|---------|---------|
+| Småhus | 20 | 60 |
+| Flerbostadshus current | 150 | 600 |
+| Flerbostadshus new 2060 | 180 | 720 |
+
+**Shape fix:** `wide` shape offsets scaled from ±1.5 to ±1.0 of `halfSize`. The 1.5 factor exceeded cell boundaries at `FILL_FACTOR=0.7`, causing adjacent wide buildings to overlap; aspect ratio preserved at 2.5:1.
+
+**Script size:** ~300 lines (down from ~547). Removed: `findClusterCenters`, `generateClusteredPositions`, `isOverlapping`, `globalHeightMod`, `HEIGHT_MIN/MAX` constants, `dynamicNClusters`.
+
+**Files:** `scripts/generate-housing-geojson.ts`, `public/data/housing-*.geojson`
+
+### Other refinements
+
+- Map typography and layer colors redesigned for better contrast
+- `isStyleLoaded` guards removed from housing layer functions (no longer needed after init sequencing was fixed)
+- Manual center calculation for `flyTo` to avoid Null Island edge case
+- Layer toggle view types corrected for planned housing
