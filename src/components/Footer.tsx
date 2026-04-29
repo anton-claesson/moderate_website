@@ -4,7 +4,10 @@ export default function Footer() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-5">
         <div className="flex flex-col sm:flex-row justify-between gap-1 text-m text-text-muted/60">
           <span>Det här är en kampanj från Moderaterna i Region Stockholm.</span>
-          <a href="mailto:stockholm@moderat.se" className="hover:text-text-muted transition-colors underline">
+          <a
+            href="mailto:stockholm@moderat.se"
+            className="hover:text-text-muted transition-colors underline"
+          >
             Kontakta oss
           </a>
           <div className="flex items-center gap-3">

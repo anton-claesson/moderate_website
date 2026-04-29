@@ -67,9 +67,9 @@ export default function IntroSection({ id }: IntroSectionProps) {
             className="sm:text-3xl mt-5 font-bold leading-snug uppercase tracking-wide"
             style={{ fontFamily: 'var(--font-oswald)' }}
           >
-            <span className="inline-block text-red-700">⬇</span>
+            <span className="inline-block text-red-700">{'\u2B07\uFE0E'}</span>
             Se hur de nya miljonprogrammen påverkar din hemkommun
-            <span className="inline-block text-red-700">⬇</span>
+            <span className="inline-block text-red-700">{'\u2B07\uFE0E'}</span>
           </p>
         </div>
       </div>
