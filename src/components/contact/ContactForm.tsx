@@ -54,22 +54,27 @@ export default function ContactForm() {
     setErrorMessage('');
 
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_FORMSPREE_URL!, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/submissions`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
+          Prefer: 'return=minimal',
+        },
         body: JSON.stringify({
-          'E-post': fields.epost,
-          Kommun: fields.kommun,
-          Namn: fields.namn || undefined,
-          Telefon: fields.telefon || undefined,
+          epost: fields.epost,
+          kommun: fields.kommun,
+          namn: fields.namn || null,
+          telefon: fields.telefon || null,
         }),
       });
 
       if (res.ok) {
         setFormState('success');
       } else {
-        const data = (await res.json()) as { error?: string };
-        setErrorMessage(data.error ?? 'Något gick fel. Försök igen senare.');
+        const data = (await res.json()) as { message?: string };
+        setErrorMessage(data.message ?? 'Något gick fel. Försök igen senare.');
         setFormState('error');
       }
     } catch {
@@ -198,9 +203,9 @@ export default function ContactForm() {
               <p>
                 Genom att lämna dina kontaktuppgifter samtycker du till att vi på Moderaterna då och
                 då hör av oss till dig med information om kampanjen och andra nyheter från
-                Moderaterna. Uppgifterna för detta specifika projekt lagras även enbart på
-                Formspree&apos;s EU-servrar, delas ej vidare med tredje part i övrigt, och kan
-                raderas helt från projektets system på begäran via{' '}
+                Moderaterna. Uppgifterna för detta specifika projekt lagras enbart i en databas inom
+                EU, delas ej vidare med tredje part i övrigt, och kan raderas helt från projektets
+                system på begäran via{' '}
                 <a
                   href="mailto:caroline.hellstrom@moderaterna.se"
                   className="underline hover:text-text font-medium"
