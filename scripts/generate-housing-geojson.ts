@@ -213,6 +213,8 @@ function loadZonePolygons(filePath: string): PolyData[] {
 // Returns shuffled grid positions that fall inside a development zone AND inside the municipality.
 // Uses the minimum possible cell size so small zones still yield candidates regardless of the
 // per-municipality flerCellSize. Zones with no bbox overlap are skipped cheaply.
+// maxZones limits how many zone polygons contribute candidates (sorted by count descending),
+// concentrating buildings into fewer visible clusters for large sparse municipalities.
 // The merged list is shuffled with a stable seed; the caller's greedy exclusion pass enforces
 // correct building-to-building spacing.
 const ZONE_CELL_SIZE = (FLERBO_HALF_SIZE_MIN * 2) / FILL_FACTOR;
@@ -222,8 +224,10 @@ function getZoneCandidates(
   muniBBox: BBox,
   zones: PolyData[],
   seed: number,
+  maxZones: number,
 ): [number, number][] {
-  const all: [number, number][] = [];
+  // Collect candidates per zone so we can sort and cap before merging.
+  const perZone: [number, number][][] = [];
   for (let zi = 0; zi < zones.length; zi++) {
     const z = zones[zi]!;
     if (
@@ -243,8 +247,13 @@ function getZoneCandidates(
       (seed + zi * 31) >>> 0,
       0,
     ).filter(([cx, cy]) => pointInRing(cx, cy, muniRing));
-    all.push(...candidates);
+    if (candidates.length > 0) perZone.push(candidates);
   }
+  // Take the largest zones first so buildings cluster in the most prominent development areas.
+  perZone.sort((a, b) => b.length - a.length);
+  const topZones = isFinite(maxZones) ? perZone.slice(0, maxZones) : perZone;
+  const all: [number, number][] = [];
+  for (const candidates of topZones) all.push(...candidates);
   // Shuffle the merged list with a stable municipality-scoped seed.
   for (let i = all.length - 1; i > 0; i--) {
     const j = Math.floor(seededFloat((seed + i * 9973) >>> 0) * (i + 1));
@@ -441,9 +450,12 @@ for (const row of rows) {
   let fromZones = 0;
   let fromFallback = 0;
   if (nFlerNew > 0) {
+    // For large sparse municipalities (few new buildings), concentrate into the 2 largest zones
+    // so red clusters are visually dense rather than scattered across the whole area.
+    const maxZones = nFlerNew < 25 ? 2 : Infinity;
     // Primary candidates from development zones, clipped to municipality boundary.
     // Greedy selection ensures spacing is maintained between all building types.
-    const zoneCandidates = getZoneCandidates(ring, bbox, zones, (muniSeed + 3000) >>> 0);
+    const zoneCandidates = getZoneCandidates(ring, bbox, zones, (muniSeed + 3000) >>> 0, maxZones);
 
     const selectedRed: [number, number][] = [];
 
