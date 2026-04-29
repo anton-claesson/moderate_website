@@ -244,16 +244,34 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
           }
         }
 
+        // Dynamic adjustments based on municipality size (base camera.zoom)
+        // Smaller camera zoom = larger municipality (e.g. ~7.5).
+        // Larger camera zoom = smaller municipality (e.g. ~10.5).
+        const maxZoomDelta = isMobile ? 0.65 : 0.7;
+        const minZoomDelta = isMobile ? 1.1 : 1.1;
+        
+        const zoomProgress = Math.max(0, Math.min(1, (camera.zoom - 7.5) / 3.0));
+        const zoomDelta = minZoomDelta + zoomProgress * (maxZoomDelta - minZoomDelta);
+        
+        // Pitch adjustment: steeper pitch for large municipalities to make buildings pop more.
+        const dynamicPitch = Math.max(DEFAULT_PITCH, Math.min(68, 68 - (camera.zoom - 8.5) * 6));
+
+        // Interpolate target center to prevent pushing the polygon off-screen in large municipalities.
+        const centerMix = Math.max(0.4, Math.min(1.0, (camera.zoom - 8.5) * 0.2 + 0.4));
+        const finalTargetLng = targetLng * centerMix + centerLng * (1 - centerMix);
+        const finalTargetLat = targetLat * centerMix + centerLat * (1 - centerMix);
+
         // Shift south so pitch compensation puts the cluster at the visual centre of the viewport.
         const newCenter = {
-          lng: targetLng,
-          lat: targetLat - latSpan * 0.25,
+          lng: finalTargetLng,
+          lat: finalTargetLat - latSpan * (0.1 * centerMix),
         };
 
         map.flyTo({
           ...camera,
           center: newCenter,
-          zoom: camera.zoom + 1.3,
+          zoom: camera.zoom + zoomDelta,
+          pitch: dynamicPitch,
           duration: 1200,
           essential: true,
         });
@@ -398,6 +416,8 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         filter: ['==', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
       });
 
+      const isMobileMap = typeof window !== 'undefined' && window.innerWidth < 768;
+
       // Dark overlay to dim surrounding municipalities in detail view
       map.addLayer({
         id: MUNICIPALITY_DIM_LAYER,
@@ -416,7 +436,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         layout: {
           'text-field': ['get', 'kom_namn'],
           'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
-          'text-size': 13,
+          'text-size': isMobileMap ? 10 : 13,
           'text-anchor': 'center',
           'text-max-width': 8,
           'text-allow-overlap': false,
@@ -441,7 +461,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         layout: {
           'text-field': ['get', 'kom_namn'],
           'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
-          'text-size': 24,
+          'text-size': isMobileMap ? 14 : 20,
           'text-anchor': 'center',
           'text-max-width': 8,
           'text-allow-overlap': true,
@@ -452,7 +472,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
           'text-color': '#555555',
           'text-opacity': 1.0,
           'text-halo-color': '#ffffff',
-          'text-halo-width': 4,
+          'text-halo-width': isMobileMap ? 2 : 4,
         },
       });
 
