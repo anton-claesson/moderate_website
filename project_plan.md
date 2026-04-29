@@ -116,7 +116,7 @@ UX: 2D overview (all municipalities visible, no pan) → click/select municipali
 Convert visitors into newsletter subscribers.
 
 - [x] **F5.1 — Contact form UI.** Mobile-first form with name, email, phone, zip/municipality fields, client-side validation, success/error states.
-- [x] **F5.2 — Form submission backend.** D6 resolved: Formspree (EU data storage, AJAX mode). `NEXT_PUBLIC_FORMSPREE_URL` env var. No new npm dependencies.
+- [x] **F5.2 — Form submission backend.** D6 re-resolved: Supabase Postgres (Frankfurt, EU). Direct REST API insert via plain `fetch` — no npm dependency. `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY` env vars. RLS restricts anonymous access to INSERT only. CSV export via Supabase table editor.
 - [x] **F5.3 — GDPR consent & privacy copy.** Required consent checkbox with inline Swedish privacy copy; submit disabled until checked.
 - [x] **F5.4 — Aesthetic refinements.** Font switched to Space Grotesk. Hero headline scaled to display size. Section eyebrow labels removed. ContactForm card removed, inputs styled as bottom-border-only lines, submit button pill-shaped. Footer reduced to single slim bar (copyright, data note, email). Section dividers added between intro/map/videos, removed between videos/contact.
 
@@ -144,10 +144,6 @@ Small, isolated cleanup pass on the generator and label rendering.
 
 - [x] **F8.1 — URL-based municipality selection.** Query param `?m=MunicipalityName` (e.g. `/?m=Nacka`) opens the page with that municipality already selected and zoomed. `page.tsx` (Server Component) reads `searchParams`, passes `initialMunicipality` prop to `MapSection`. On `handleMapReady`, if the prop matches a valid municipality, call `selectMunicipality`. Links are one-way (shared externally; the app does not update the URL on click). **Files:** `src/app/page.tsx`, `src/components/sections/MapSection.tsx`.
 
-### Phase 9 — Post-Selection Pan & Zoom
-
-- [ ] **F9.1 — Bounded pan/zoom in detail view.** After `flyTo` completes (`map.once('moveend', ...)`), enable `dragPan`, `scrollZoom`, `doubleClickZoom`, `touchZoomRotate`. Clamp to `STOCKHOLM_BOUNDS` (already defined), `DETAIL_MIN_ZOOM = 9`, `DETAIL_MAX_ZOOM = 16`. On `returnToOverview`, disable all. Two boolean flags in `mapConfig.ts` (`ENABLE_POST_SELECTION_PAN`, `ENABLE_POST_SELECTION_ZOOM`) make it trivial to toggle off. **Files:** `src/lib/mapConfig.ts`, `src/components/sections/MapSection.tsx`.
-
 ### Phase 10 — Mobile Layout
 
 - [x] **F10.1 — Dropdown municipality selector on mobile.** Replace the mobile `MunicipalityCard` block (above-map list) with a native `<select>` dropdown. Stays visible even when a municipality is selected (allows direct switching). Hidden on desktop (`md:hidden`). **File:** `src/components/sections/MapSection.tsx`.
@@ -159,7 +155,7 @@ Small, isolated cleanup pass on the generator and label rendering.
 
 ### Phase 12 — Visual Alignment
 
-- [!] **F12.1 — Align static sections with map design.** Update Intro, Videos, Contact, Footer, and Header colors and style to match the map's sage-green / amber / white palette. **[DECISION NEEDED]:** Design direction (specifics TBD — requires user sign-off before implementation). **Files:** `src/components/sections/IntroSection.tsx`, `VideosSection.tsx`, `ContactSection.tsx`, `src/components/Footer.tsx`, `Header.tsx`, `src/app/globals.css`.
+- [x] **F12.1 — Align static sections with map design.** Full design refresh: neutral palette, Inter (body) + Oswald (display) font stack, Oswald applied globally, wider map layout. Footer cleaned up with social icons. Map info button added. Mapbox overlay opacity reduced. Intro section scaling fixed for mobile. Mobile font sizes decreased. iOS down-arrow glyph fix. **Files:** `src/components/sections/IntroSection.tsx`, `src/components/Footer.tsx`, `src/app/globals.css`.
 
 ### Phase 13 — Cleanup & Launch Readiness
 
@@ -191,9 +187,9 @@ Tracked here so they don't get lost between sessions. Resolve before — or as t
 | D3 | Mapbox style: Studio vs. inline overrides | F2.3 | **Resolved 2026-04-17: Mapbox Studio → exported `style.json` committed to `/public/`.** |
 | D4 | Source datasets for current & future housing | F3.1 | **Resolved 2026-04-18: `/public/bostads_data.csv`. Columns: Antal småhus, Antal flerbostadshus, Antal flerbostadshus 2060 (hög). Script generates static GeoJSON at dev time.** |
 | D5 | Info overlay scope (static vs. per-municipality stats) | F4.3 | **Resolved 2026-04-20: municipality name + småhus + current flerbostadshus + 2060 flerbostadshus + total growth %. Static lookup from CSV. Floating card layout.** |
-| D6 | Form backend provider | F5.2 | **Resolved 2026-04-20: Formspree with EU data storage. Easy to swap via `NEXT_PUBLIC_FORMSPREE_URL`. Platform review deferred to post-launch.** |
+| D6 | Form backend provider | F5.2 | **Re-resolved 2026-04-29: Supabase Postgres (Frankfurt, EU). Plain fetch to REST API, no new npm dep, INSERT-only RLS policy, CSV export from dashboard. Replaces Formspree.** |
 | D7 | Analytics provider | F13.6 | Open — Vercel Analytics or Plausible. Resolve before launch. |
-| D8 | Visual alignment direction for static sections | F12.1 | Open — requires design brief / color direction from user before implementation. |
+| D8 | Visual alignment direction for static sections | F12.1 | **Resolved 2026-04-29: Neutral palette, Inter/Oswald font stack, wider map layout.** |
 
 ## 7. Risks
 
@@ -232,3 +228,5 @@ _Add an entry each time a feature is completed or scope changes meaningfully._
 | 2026-04-22 | F6.8 | Stats card redesign, list style alignment & crossfade. StatsCard: free-floating white card, auto-height, `top-4 right-4`. StatsPanel: 2×2 grid, dark-green numbers, muted-green uppercase labels, inline SVG icons in map colors. Bostadsmix stacked bar (h-6), animated 300 ms on toggle. Förtätning field (`fortattning`) from CSV. MunicipalityList: white card, `text-[#5c8b5a]`, full-width inverted hover. Crossfade: both cards always mounted, opacity toggled 300 ms. | — |
 | 2026-04-22 | F6.9 | Housing generator rewritten: cluster-based → grid-based (`generateGridPositions`). Buffer = `halfSize×√2` eliminates boundary leakage. `wide` shape offsets scaled to ±1.0 to prevent overlap. Heights proportional to footprint (`halfSize × AVG_M_PER_DEG × ratio`), clamped per type. Script ~300 lines. Typography and layer colors redesigned. See `project_phases/Phase6_map_visual_redesign.md`. | — |
 | 2026-04-28 | Roadmap | Phases 7–13 defined: housing shape fixes, deep linking, post-selection pan/zoom, mobile layout, contact form updates, visual alignment, cleanup & launch. Old Phase 7 (analytics) and Phase 8 (polish) folded in. | — |
+| 2026-04-29 | F12.1 | Phase 12 complete. Design refresh: neutral palette, Inter/Oswald font stack, Oswald applied globally, wider map layout, map info button, social icons in footer, footer cleanup, reduced Mapbox overlay opacity, mobile font size + intro scaling fixes, iOS down-arrow glyph fix. Phase 9 (Post-Selection Pan & Zoom) removed from backlog — no longer relevant. D8 resolved. | — |
+| 2026-04-29 | F5.2 | Replaced Formspree with Supabase Postgres (Frankfurt). Plain fetch to Supabase REST API — no new npm dep. INSERT-only RLS policy. CSV export via table editor. GDPR text updated. Env vars: `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY`. D6 re-resolved. | #10 |
