@@ -46,6 +46,7 @@ interface MapSectionProps {
 }
 
 const OVERVIEW_PADDING_DESKTOP = { top: 20, bottom: 20, left: 20, right: 220 };
+const OVERVIEW_PADDING_MOBILE = { top: 20, bottom: 20, left: 0, right: 60 };
 
 const MUNICIPALITY_FILL_LAYER = 'municipalities-fill';
 const MUNICIPALITY_OUTLINE_LAYER = 'municipalities-outline';
@@ -249,10 +250,10 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         // Larger camera zoom = smaller municipality (e.g. ~10.5).
         const maxZoomDelta = isMobile ? 0.65 : 0.7;
         const minZoomDelta = isMobile ? 1.1 : 1.1;
-        
+
         const zoomProgress = Math.max(0, Math.min(1, (camera.zoom - 7.5) / 3.0));
         const zoomDelta = minZoomDelta + zoomProgress * (maxZoomDelta - minZoomDelta);
-        
+
         // Pitch adjustment: steeper pitch for large municipalities to make buildings pop more.
         const dynamicPitch = Math.max(DEFAULT_PITCH, Math.min(68, 68 - (camera.zoom - 8.5) * 6));
 
@@ -311,7 +312,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
 
     const isMobileOverview = typeof window !== 'undefined' && window.innerWidth < 768;
     map.fitBounds(STOCKHOLM_BOUNDS, {
-      padding: isMobileOverview ? 20 : OVERVIEW_PADDING_DESKTOP,
+      padding: isMobileOverview ? OVERVIEW_PADDING_MOBILE : OVERVIEW_PADDING_DESKTOP,
       pitch: OVERVIEW_PITCH,
       bearing: OVERVIEW_BEARING,
       duration: 1200,
@@ -346,7 +347,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
 
       const isMobileInit = typeof window !== 'undefined' && window.innerWidth < 768;
       map.fitBounds(STOCKHOLM_BOUNDS, {
-        padding: isMobileInit ? 20 : OVERVIEW_PADDING_DESKTOP,
+        padding: isMobileInit ? OVERVIEW_PADDING_MOBILE : OVERVIEW_PADDING_DESKTOP,
         duration: 0,
       });
 
