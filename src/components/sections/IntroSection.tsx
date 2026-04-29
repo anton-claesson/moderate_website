@@ -17,14 +17,14 @@ export default function IntroSection({ id }: IntroSectionProps) {
       <div className="mx-auto max-w-6xl w-full px-4 sm:px-6 pt-5 sm:pt-10 sm:pb-6">
         <h2
           className="font-bold text-center leading-[1.1] mb-8 mt-5 sm:mt-5 sm:mb-10 uppercase w-full"
-          style={{ fontSize: 'min(7.5vw, 5rem)', fontFamily: 'var(--font-oswald)' }}
+          style={{ fontSize: 'min(9.5vw, 5rem)', fontFamily: 'var(--font-oswald)' }}
         >
           Stoppa <span className="text-red-700">Miljonprogrammen </span>
           <br className="sm:hidden" /> – Riv Bilagan!
         </h2>
         <div className="mx-auto max-w-5xl sm:px-13 text-slate-900 space-y-2 sm:space-y-5">
           <p
-            className="text-lg sm:text-3xl font-bold leading-snug uppercase tracking-wide mb-4"
+            className="text-xl sm:text-3xl font-bold leading-snug uppercase tracking-wide mb-4"
             style={{ fontFamily: 'var(--font-oswald)' }}
           >
             <span className="text-red-700">Beslutat: </span>
@@ -32,20 +32,20 @@ export default function IntroSection({ id }: IntroSectionProps) {
             där du bor.
           </p>
 
-          <p className="text-sm sm:text-xl leading-relaxed">
+          <p className="sm:text-xl leading-relaxed">
             Planen drivs av Socialdemokraterna i Region Stockholm och har klubbats igenom av
             ordförande Aida Hadzialic (S). I en bilaga målas kommun efter kommun upp för snabb,
             genomgripande förändring – med tät, storskalig bebyggelse.
           </p>
 
-          <p className="text-sm sm:text-xl leading-relaxed">
+          <p className="sm:text-xl leading-relaxed">
             Riv upp bilagan. Ställ de ansvariga till svars.
           </p>
 
           <div>
             <button
               onClick={() => setFaktaOpen((o) => !o)}
-              className="text-sm sm:text-xl font-semibold text-text-muted underline underline-offset-2 focus:outline-none"
+              className="sm:text-xl font-semibold text-text-muted underline underline-offset-2 focus:outline-none"
             >
               {faktaOpen ? 'Dölj fakta' : 'Läs fakta om planen'}
             </button>
@@ -64,7 +64,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
           </div>
 
           <p
-            className="sm:text-3xl mt-5 font-bold leading-snug uppercase tracking-wide"
+            className="text-xl sm:text-3xl mt-5 font-bold leading-snug uppercase tracking-wide"
             style={{ fontFamily: 'var(--font-oswald)' }}
           >
             <span className="inline-block text-red-700">{'\u2B07\uFE0E'}</span>

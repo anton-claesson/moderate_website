@@ -26,7 +26,7 @@ export default async function Home({ searchParams }: Props) {
       <main className="flex flex-col flex-1 w-full">
         <IntroSection id="intro" />
         <MapSection id="map" initialMunicipality={initialMunicipality} />
-        <VideosSection id="videos" />
+        {/* <VideosSection id="videos" /> */}
         <ContactSection id="contact" />
       </main>
       <Footer />
