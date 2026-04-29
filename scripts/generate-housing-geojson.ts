@@ -76,6 +76,36 @@ function computeBBox(ring: Position[]): BBox {
   return { minLng, maxLng, minLat, maxLat };
 }
 
+function distSq(x1: number, y1: number, x2: number, y2: number): number {
+  return (x1 - x2) ** 2 + (y1 - y2) ** 2;
+}
+
+function distToSegmentSq(
+  px: number,
+  py: number,
+  vx: number,
+  vy: number,
+  wx: number,
+  wy: number,
+): number {
+  const l2 = distSq(vx, vy, wx, wy);
+  if (l2 === 0) return distSq(px, py, vx, vy);
+  let t = ((px - vx) * (wx - vx) + (py - vy) * (wy - vy)) / l2;
+  t = Math.max(0, Math.min(1, t));
+  return distSq(px, py, vx + t * (wx - vx), vy + t * (wy - vy));
+}
+
+function distToPolygonSq(px: number, py: number, ring: Position[]): number {
+  let minSq = Infinity;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i] as [number, number];
+    const [xj, yj] = ring[j] as [number, number];
+    const d = distToSegmentSq(px, py, xi, yi, xj, yj);
+    if (d < minSq) minSq = d;
+  }
+  return minSq;
+}
+
 // ─── Shape builders ───────────────────────────────────────────────────────────
 
 function rotatePoint(dx: number, dy: number, theta: number): [number, number] {
@@ -225,9 +255,9 @@ function getZoneCandidates(
   zones: PolyData[],
   seed: number,
   maxZones: number,
-): [number, number][] {
+): { candidates: [number, number][]; activeZones: PolyData[] } {
   // Collect candidates per zone so we can sort and cap before merging.
-  const perZone: [number, number][][] = [];
+  const perZone: { candidates: [number, number][]; zone: PolyData }[] = [];
   for (let zi = 0; zi < zones.length; zi++) {
     const z = zones[zi]!;
     if (
@@ -247,19 +277,19 @@ function getZoneCandidates(
       (seed + zi * 31) >>> 0,
       0,
     ).filter(([cx, cy]) => pointInRing(cx, cy, muniRing));
-    if (candidates.length > 0) perZone.push(candidates);
+    if (candidates.length > 0) perZone.push({ candidates, zone: z });
   }
   // Take the largest zones first so buildings cluster in the most prominent development areas.
-  perZone.sort((a, b) => b.length - a.length);
+  perZone.sort((a, b) => b.candidates.length - a.candidates.length);
   const topZones = isFinite(maxZones) ? perZone.slice(0, maxZones) : perZone;
   const all: [number, number][] = [];
-  for (const candidates of topZones) all.push(...candidates);
+  for (const { candidates } of topZones) all.push(...candidates);
   // Shuffle the merged list with a stable municipality-scoped seed.
   for (let i = all.length - 1; i > 0; i--) {
     const j = Math.floor(seededFloat((seed + i * 9973) >>> 0) * (i + 1));
     [all[i], all[j]] = [all[j]!, all[i]!];
   }
-  return all;
+  return { candidates: all, activeZones: topZones.map((z) => z.zone) };
 }
 
 // ─── CSV helpers ──────────────────────────────────────────────────────────────
@@ -455,7 +485,13 @@ for (const row of rows) {
     const maxZones = nFlerNew < 25 ? 2 : Infinity;
     // Primary candidates from development zones, clipped to municipality boundary.
     // Greedy selection ensures spacing is maintained between all building types.
-    const zoneCandidates = getZoneCandidates(ring, bbox, zones, (muniSeed + 3000) >>> 0, maxZones);
+    const { candidates: zoneCandidates, activeZones } = getZoneCandidates(
+      ring,
+      bbox,
+      zones,
+      (muniSeed + 3000) >>> 0,
+      maxZones,
+    );
 
     const selectedRed: [number, number][] = [];
 
@@ -491,6 +527,30 @@ for (const row of rows) {
         (muniSeed + 4000) >>> 0,
         flerHalfSize * Math.SQRT2,
       );
+
+      if (activeZones.length > 0) {
+        fallback.sort((a, b) => {
+          const [ax, ay] = a;
+          const [bx, by] = b;
+
+          let minDistA = Infinity;
+          let minDistB = Infinity;
+
+          for (const z of activeZones) {
+            const da = distToPolygonSq(ax, ay, z.ring);
+            if (da < minDistA) minDistA = da;
+            const db = distToPolygonSq(bx, by, z.ring);
+            if (db < minDistB) minDistB = db;
+          }
+
+          // Add jitter (up to 20% variance) to distance to make placement more organic
+          const jA = seededFloat(hashStr(`${ax},${ay}`)) * 0.4 - 0.2;
+          const jB = seededFloat(hashStr(`${bx},${by}`)) * 0.4 - 0.2;
+
+          return minDistA * (1 + jA) - minDistB * (1 + jB);
+        });
+      }
+
       for (const [cx, cy] of fallback) {
         if (selectedRed.length >= nFlerNew) break;
         if (tryPlace(cx, cy)) {
