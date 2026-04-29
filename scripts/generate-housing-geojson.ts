@@ -188,6 +188,71 @@ function loadMunicipalityPolygons(filePath: string): Map<string, PolyData> {
   return map;
 }
 
+// ─── Development zone loader ──────────────────────────────────────────────────
+
+// Flattens Polygon and MultiPolygon zone features into a list of exterior rings.
+function loadZonePolygons(filePath: string): PolyData[] {
+  const raw = readFileSync(filePath, 'utf-8');
+  const geojson = JSON.parse(raw) as GeoJSON.FeatureCollection;
+  const result: PolyData[] = [];
+  for (const feature of geojson.features) {
+    const geom = feature.geometry;
+    const rings: Position[][] =
+      geom.type === 'Polygon'
+        ? [(geom as GeoJSON.Polygon).coordinates[0] as Position[]]
+        : geom.type === 'MultiPolygon'
+          ? (geom as GeoJSON.MultiPolygon).coordinates.map((p) => p[0] as Position[])
+          : [];
+    for (const ring of rings) {
+      result.push({ ring, bbox: computeBBox(ring) });
+    }
+  }
+  return result;
+}
+
+// Returns shuffled grid positions that fall inside a development zone AND inside the municipality.
+// Uses the minimum possible cell size so small zones still yield candidates regardless of the
+// per-municipality flerCellSize. Zones with no bbox overlap are skipped cheaply.
+// The merged list is shuffled with a stable seed; the caller's greedy exclusion pass enforces
+// correct building-to-building spacing.
+const ZONE_CELL_SIZE = (FLERBO_HALF_SIZE_MIN * 2) / FILL_FACTOR;
+
+function getZoneCandidates(
+  muniRing: Position[],
+  muniBBox: BBox,
+  zones: PolyData[],
+  seed: number,
+): [number, number][] {
+  const all: [number, number][] = [];
+  for (let zi = 0; zi < zones.length; zi++) {
+    const z = zones[zi]!;
+    if (
+      z.bbox.maxLng < muniBBox.minLng ||
+      z.bbox.minLng > muniBBox.maxLng ||
+      z.bbox.maxLat < muniBBox.minLat ||
+      z.bbox.minLat > muniBBox.maxLat
+    )
+      continue;
+    // buffer=0: only check the center point — the zone boundary just needs to contain the building
+    // center, not a margin. Municipality boundary clipping is handled by the filter below.
+    const candidates = generateGridPositions(
+      z.ring,
+      z.bbox,
+      Infinity,
+      ZONE_CELL_SIZE,
+      (seed + zi * 31) >>> 0,
+      0,
+    ).filter(([cx, cy]) => pointInRing(cx, cy, muniRing));
+    all.push(...candidates);
+  }
+  // Shuffle the merged list with a stable municipality-scoped seed.
+  for (let i = all.length - 1; i > 0; i--) {
+    const j = Math.floor(seededFloat((seed + i * 9973) >>> 0) * (i + 1));
+    [all[i], all[j]] = [all[j]!, all[i]!];
+  }
+  return all;
+}
+
 // ─── CSV helpers ──────────────────────────────────────────────────────────────
 
 function parseCsv(filePath: string): Record<string, string>[] {
@@ -210,11 +275,13 @@ function parseNum(val: string | undefined): number {
 const csvPath = path.resolve(__dirname, '../public/bostads_data.csv');
 const outDir = path.resolve(__dirname, '../public/data');
 const muniPath = path.resolve(__dirname, '../public/data/municipalities.geojson');
+const zonePath = path.resolve(__dirname, '../public/Bebyggelsestruktur_NY_granskning.geojson');
 
 fs.mkdirSync(outDir, { recursive: true });
 
 const rows = parseCsv(csvPath);
 const municipalityPolygons = loadMunicipalityPolygons(muniPath);
+const zones = loadZonePolygons(zonePath);
 
 const smahusFeatures: Feature<Polygon, HousingUnitProperties>[] = [];
 const flerbostadshusFeatures: Feature<Polygon, HousingUnitProperties>[] = [];
@@ -247,7 +314,6 @@ for (const row of rows) {
         FLERBOSTADSHUS_PER_REPRESENTATIVE,
     ),
   );
-  const totalFler = nFler + nFlerNew;
 
   // ── Per-municipality building sizes ──────────────────────────────────────────
   // Polygon area via shoelace formula (degree² units)
@@ -261,6 +327,7 @@ for (const row of rows) {
   if (polyArea === 0) polyArea = (bbox.maxLng - bbox.minLng) * (bbox.maxLat - bbox.minLat);
 
   // Weighted area per unit — flerbo gets FLERBO_WEIGHT times the area of a smahus slot
+  const totalFler = nFler + nFlerNew;
   const weightedTotal = nSmahus + totalFler * FLERBO_WEIGHT;
   const areaPerUnit = weightedTotal > 0 ? (polyArea * TOTAL_COVERAGE) / weightedTotal : 0;
 
@@ -283,27 +350,26 @@ for (const row of rows) {
   const smaCellSize = (smaHalfSize * 2) / FILL_FACTOR;
   const smaHeight = Math.round(smaHalfSize * AVG_M_PER_DEG * SMAHUS_HEIGHT_RATIO);
 
-  // Exclusion buffer between flerbo and smahus centers (per-municipality sizes)
-  const exclusionRadiusSq = (flerHalfSize + smaHalfSize * Math.SQRT2) ** 2;
+  // Exclusion radii for overlap checks
+  const flerSmaExclSq = (flerHalfSize + smaHalfSize * Math.SQRT2) ** 2; // flerbo vs smahus
+  const flerFlerExclSq = flerCellSize ** 2; // flerbo vs flerbo: one full grid cell
 
-  // ── Flerbostadshus: unified pool — first nFler positions = current, rest = new 2060.
-  //    placedFlerPositions is recorded so smahus can exclude overlapping cells.
-  const placedFlerPositions: [number, number][] = [];
+  // ── Phase 1: Blue flerbostadshus (current) — random across municipality ──────
+  const placedBluePositions: [number, number][] = [];
 
-  if (totalFler > 0) {
-    const flerGrid = generateGridPositions(
+  if (nFler > 0) {
+    const blueGrid = generateGridPositions(
       ring,
       bbox,
-      totalFler,
+      nFler,
       flerCellSize,
       (muniSeed + 1000) >>> 0,
       flerHalfSize * Math.SQRT2,
     );
 
-    for (let i = 0; i < flerGrid.length; i++) {
-      const [cx, cy] = flerGrid[i]!;
-      placedFlerPositions.push([cx, cy]);
-      const isNew = i >= nFler;
+    for (let i = 0; i < blueGrid.length; i++) {
+      const [cx, cy] = blueGrid[i]!;
+      placedBluePositions.push([cx, cy]);
 
       const jx = (seededFloat((muniSeed + i * 13 + 10) >>> 0) - 0.5) * JITTER * flerCellSize;
       const jy = (seededFloat((muniSeed + i * 17 + 11) >>> 0) - 0.5) * JITTER * flerCellSize;
@@ -314,24 +380,21 @@ for (const row of rows) {
 
       const rotIdx = ((((muniSeed + i * 19 + 400) >>> 0) * 2654435761 + 1013904223) >>> 0) % 4;
 
-      const props: HousingUnitProperties = {
-        id: isNew ? `fb-new-${municipality}-${i}` : `fb-${municipality}-${i}`,
-        municipality,
-        type: 'flerbostadshus',
-        view: isNew ? 'planned' : 'current',
-        height: isNew ? flerNewHeight : flerHeight,
-      };
-
-      const feature = makeFeature(lng, lat, flerHalfSize, 'wide', rotIdx, props);
-      if (isNew) {
-        flerbostadshusNewFeatures.push(feature);
-      } else {
-        flerbostadshusFeatures.push(feature);
-      }
+      flerbostadshusFeatures.push(
+        makeFeature(lng, lat, flerHalfSize, 'wide', rotIdx, {
+          id: `fb-${municipality}-${i}`,
+          municipality,
+          type: 'flerbostadshus',
+          view: 'current',
+          height: flerHeight,
+        }),
+      );
     }
   }
 
-  // ── Småhus: generate all candidates, exclude those overlapping flerbo footprints, then slice.
+  // ── Phase 2: Småhus — random across municipality, excluding blue flerbo ───────
+  const placedSmaPositions: [number, number][] = [];
+
   if (nSmahus > 0) {
     const smaGrid = generateGridPositions(
       ring,
@@ -342,8 +405,8 @@ for (const row of rows) {
       smaHalfSize * Math.SQRT2,
     )
       .filter(([cx, cy]) => {
-        for (const [fx, fy] of placedFlerPositions) {
-          if ((cx - fx) ** 2 + (cy - fy) ** 2 < exclusionRadiusSq) return false;
+        for (const [fx, fy] of placedBluePositions) {
+          if ((cx - fx) ** 2 + (cy - fy) ** 2 < flerSmaExclSq) return false;
         }
         return true;
       })
@@ -351,6 +414,7 @@ for (const row of rows) {
 
     for (let i = 0; i < smaGrid.length; i++) {
       const [cx, cy] = smaGrid[i]!;
+      placedSmaPositions.push([cx, cy]);
 
       const jx = (seededFloat((muniSeed + i * 13 + 500) >>> 0) - 0.5) * JITTER * smaCellSize;
       const jy = (seededFloat((muniSeed + i * 17 + 501) >>> 0) - 0.5) * JITTER * smaCellSize;
@@ -361,20 +425,97 @@ for (const row of rows) {
 
       const rotIdx = ((((muniSeed + i * 19 + 800) >>> 0) * 2654435761 + 1013904223) >>> 0) % 4;
 
-      const props: HousingUnitProperties = {
-        id: `sm-${municipality}-${i}`,
-        municipality,
-        type: 'smahus',
-        view: 'both',
-        height: smaHeight,
-      };
-
-      smahusFeatures.push(makeFeature(lng, lat, smaHalfSize, 'square', rotIdx, props));
+      smahusFeatures.push(
+        makeFeature(lng, lat, smaHalfSize, 'square', rotIdx, {
+          id: `sm-${municipality}-${i}`,
+          municipality,
+          type: 'smahus',
+          view: 'both',
+          height: smaHeight,
+        }),
+      );
     }
   }
 
+  // ── Phase 3: Red flerbostadshus (new 2060) — zone-biased, no overlap ─────────
+  let fromZones = 0;
+  let fromFallback = 0;
+  if (nFlerNew > 0) {
+    // Primary candidates from development zones, clipped to municipality boundary.
+    // Greedy selection ensures spacing is maintained between all building types.
+    const zoneCandidates = getZoneCandidates(ring, bbox, zones, (muniSeed + 3000) >>> 0);
+
+    const selectedRed: [number, number][] = [];
+
+    const tryPlace = (cx: number, cy: number): boolean => {
+      for (const [fx, fy] of placedBluePositions) {
+        if ((cx - fx) ** 2 + (cy - fy) ** 2 < flerFlerExclSq) return false;
+      }
+      for (const [sx, sy] of placedSmaPositions) {
+        if ((cx - sx) ** 2 + (cy - sy) ** 2 < flerSmaExclSq) return false;
+      }
+      for (const [rx, ry] of selectedRed) {
+        if ((cx - rx) ** 2 + (cy - ry) ** 2 < flerFlerExclSq) return false;
+      }
+      return true;
+    };
+
+    for (const [cx, cy] of zoneCandidates) {
+      if (tryPlace(cx, cy)) {
+        selectedRed.push([cx, cy]);
+        if (selectedRed.length >= nFlerNew) break;
+      }
+    }
+
+    fromZones = selectedRed.length;
+
+    // Fallback: supplement from municipality-wide grid if zones didn't supply enough.
+    if (selectedRed.length < nFlerNew) {
+      const fallback = generateGridPositions(
+        ring,
+        bbox,
+        Infinity,
+        flerCellSize,
+        (muniSeed + 4000) >>> 0,
+        flerHalfSize * Math.SQRT2,
+      );
+      for (const [cx, cy] of fallback) {
+        if (selectedRed.length >= nFlerNew) break;
+        if (tryPlace(cx, cy)) {
+          selectedRed.push([cx, cy]);
+          fromFallback += 1;
+        }
+      }
+    }
+
+    for (let i = 0; i < selectedRed.length; i++) {
+      const [cx, cy] = selectedRed[i]!;
+
+      const jx = (seededFloat((muniSeed + i * 13 + 10) >>> 0) - 0.5) * JITTER * flerCellSize;
+      const jy = (seededFloat((muniSeed + i * 17 + 11) >>> 0) - 0.5) * JITTER * flerCellSize;
+      const jLng = cx + jx;
+      const jLat = cy + jy;
+      const lng = pointInRing(jLng, jLat, ring) ? jLng : cx;
+      const lat = pointInRing(jLng, jLat, ring) ? jLat : cy;
+
+      const rotIdx = ((((muniSeed + i * 19 + 400) >>> 0) * 2654435761 + 1013904223) >>> 0) % 4;
+
+      flerbostadshusNewFeatures.push(
+        makeFeature(lng, lat, flerHalfSize, 'wide', rotIdx, {
+          id: `fb-new-${municipality}-${i}`,
+          municipality,
+          type: 'flerbostadshus',
+          view: 'planned',
+          height: flerNewHeight,
+        }),
+      );
+    }
+  }
+
+  const redInfo =
+    nFlerNew > 0 ? ` [${fromZones ?? 0} zone / ${fromFallback ?? 0} fallback red]` : '';
   console.log(
-    `  ${municipality}: ${nSmahus} småhus, ${nFler} apt (idag), +${nFlerNew} nya apt (2060)`,
+    `  ${municipality}: ${nSmahus} småhus, ${nFler} apt (idag), +${nFlerNew} nya apt (2060)${redInfo}`,
   );
 }
 
