@@ -8,37 +8,46 @@ export default function IntroSection({ id }: IntroSectionProps) {
       id={id}
       className="min-h-[10vh] w-full flex flex-col items-center center bg-primary-light"
     >
-      <div className="mx-auto max-w-8xl w-full px-4 sm:px-6 pt-12 pb-8 sm:pt-20 sm:pb-10">
+      <div className="mx-auto max-w-6xl w-full px-4 sm:px-6 pt-12 pb-8 sm:pt-20 sm:pb-10">
         <h2
-          className="font-bold text-center leading-[1.2] mb-8 uppercase w-full flex justify-center"
+          className="font-bold text-center leading-[1.2] mb-8 uppercase w-full flex justify-center tracking-wider italic"
           style={{
-            fontSize: 'clamp(1.5rem, 6vw, 4rem)',
+            fontSize: 'clamp(2rem, 7vw, 5rem)',
           }}
         >
           <span
             style={{ display: 'inline-block', transform: 'scaleX(0.9)', transformOrigin: 'center' }}
           >
-            <span className="text-[#5c8b5a]">
-              STOPPA NYA MILJONPROGRAMMEN I STOCKHOLMSREGIONEN.
-            </span>
+            <span className="text-red-700">Stoppa Miljonprogrammen – Riv Bilagan!</span>
           </span>
         </h2>
-        <div className="mx-auto max-w-4xl text-justify text-black">
-          <p className="text-xl leading-relaxed mb-6">
-            Socialdemokraterna, Vänsterpartiet, Miljöpartiet och Centerpartiet i Region Stockholm
-            har beslutat om att det ska byggas nära 600 000 nya bostäder över huvudet på dig som
-            invånare. För att deras planer ska bli verklighet kommer kommunerna i länet tvingas till
-            storskaliga bostadsprojekt med förtätning och höga hus som förändrar våra bostadsområden
-            i grunden. Grönytor kommer att försvinna och din röst som invånare riskerar att
-            begränsas. Titta på listan vad planerna kan innebära för din hemkommun.
+        <div className="mx-auto max-w-4xl text-justify text-slate-900 space-y-6">
+          <p className="text-xl leading-relaxed">
+            <span className="font-bold">Beslutat: </span>
+            577 000 nya lägenheter i Region Stockholm. Nya miljonprogram – i parken, vid torget och
+            där du bor.
           </p>
-          <p className="text-base text-text-muted leading-relaxed mb-6">
-            Fakta: Region Stockholm har fattat beslut om en ny regional utvecklingsplan. I planen
-            finns en bilaga tillhörande en lista över hur många bostäder varje kommun måste bygga på
-            en mindre yta. Det innebär i praktiken att kommunerna kommer att tvingas behöva bygga
-            högt och tätt i redan byggda områden för att uppnå regionens målsättning. Grönytor,
-            småhusområden och befintliga bostadsområden kommer att tas i anspråk om detta går
-            igenom.
+
+          <p className="text-xl leading-relaxed">
+            Planen drivs av Socialdemokraterna i Region Stockholm och har klubbats igenom av
+            ordförande Aida Hadzialic (S). I en bilaga målas kommun efter kommun upp för snabb,
+            genomgripande förändring – med tät, storskalig bebyggelse.
+          </p>
+
+          <p className="text-xl leading-relaxed">Riv upp bilagan. Ställ de ansvariga till svars.</p>
+
+          <p className="text-xl leading-relaxed">
+            👉 Se hur de nya miljonprogrammen påverkar din hemkommun!
+          </p>
+          <p className="text-base text-text-muted leading-relaxed">
+            <strong>Fakta: </strong>
+            Socialdemokraterna, Vänsterpartiet, Miljöpartiet och Centerpartiet i Region Stockholm
+            har beslutat om en ny regional utvecklingsplan. I planen ingår en bilaga som fastställer
+            hur många bostäder varje kommun ska bygga – på begränsad yta. I praktiken innebär det
+            att kommuner pressas att bygga högt och tätt i redan bebyggda områden för att nå målen.
+            Konsekvensen är att grönytor, småhusområden och befintliga bostadsmiljöer tas i anspråk.
+            Kommuner som inte följer planen hotas bli utan investeringar i kollektivtrafik,
+            infrastruktur och vård.
           </p>
         </div>
       </div>

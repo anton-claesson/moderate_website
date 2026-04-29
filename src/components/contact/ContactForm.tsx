@@ -202,10 +202,10 @@ export default function ContactForm() {
                 Formspree&apos;s EU-servrar, delas ej vidare med tredje part i övrigt, och kan
                 raderas helt från projektets system på begäran via{' '}
                 <a
-                  href="mailto:kontakt@moderaterna.se"
+                  href="mailto:stockholm@moderat.se"
                   className="underline hover:text-text font-medium"
                 >
-                  kontakt@moderaterna.se
+                  stockholm@moderat.se√
                 </a>
                 .
               </p>

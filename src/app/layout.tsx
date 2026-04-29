@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Space_Grotesk, Geist_Mono } from 'next/font/google';
+import { Space_Grotesk, Geist_Mono, Oswald } from 'next/font/google';
 import './globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -12,10 +12,15 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const oswald = Oswald({
+  variable: '--font-oswald',
+  subsets: ['latin'],
+  weight: '500',
+});
+
 export const metadata: Metadata = {
-  title: 'Stockholm Housing Stock Visualizer',
-  description:
-    'An interactive 3D visualization of current and planned housing stock across the Stockholm Region.',
+  title: 'Stoppa miljonprogrammen',
+  description: 'Se hur de nya miljonprogrammen påverkar din hemkommun!',
 };
 
 export default function RootLayout({
@@ -26,7 +31,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${geistMono.variable} h-full w-full antialiased`}
+      className={`${spaceGrotesk.variable} ${geistMono.variable} ${oswald.variable} h-full w-full antialiased`}
     >
       <body className="min-h-full w-full flex flex-col">{children}</body>
     </html>

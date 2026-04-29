@@ -3,7 +3,7 @@
 :root {
   /* Brand */
   --color-primary: #5c8b5a;
-  --color-primary-light: #edf4ec;
+  --color-primary-light: #f5f5dc;
   --color-primary-dark: #3a5c39;
   --color-accent: #e8a838;
   --color-accent-light: #fdf3dc;
@@ -43,7 +43,7 @@
   --color-text-on-dark: var(--color-text-on-dark);
   --color-border: var(--color-border);
   --color-border-strong: var(--color-border-strong);
-  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-sans: var(--font-oswald), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
@@ -99,5 +99,17 @@ html {
 body {
   background-color: var(--color-surface);
   color: var(--color-text);
+  font-family: var(--font-sans);
   overflow-x: hidden;
+}
+
+.mapboxgl-ctrl-logo,
+.mapboxgl-ctrl-attrib {
+  opacity: 0.05 !important;
+  transition: opacity 0.2s;
+}
+
+.mapboxgl-ctrl-logo:hover,
+.mapboxgl-ctrl-attrib:hover {
+  opacity: 0.5 !important;
 }

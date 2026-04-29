@@ -22,6 +22,9 @@ import {
   MUNICIPALITY_DIM_LAYER,
   MUNICIPALITY_LABELS_ALL_LAYER,
   MUNICIPALITY_LABELS_SELECTED_LAYER,
+  SMAHUS_COLOR,
+  FLERBOSTADSHUS_COLOR,
+  FLERBOSTADSHUS_NEW_COLOR,
 } from '@/lib/mapConfig';
 import MunicipalityCard from '@/components/map/MunicipalityCard';
 import StatsCard from '@/components/map/StatsCard';
@@ -97,6 +100,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
 
   const [selected, setSelected] = useState<string | null>(null);
   const [view, setView] = useState<HousingView>('planned');
+  const [infoOpen, setInfoOpen] = useState(false);
   const stats = selected != null ? (HOUSING_STATS[selected] ?? null) : null;
 
   // Retains the last selected municipality's data so StatsCard stays mounted
@@ -523,7 +527,10 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
   );
 
   return (
-    <section id={id} className="bg-primary-light py-6 px-4 md:px-44 lg:px-60 md:py-8">
+    <section
+      id={id}
+      className="bg-primary-light py-6 px-4 md:px-44 lg:px-60 md:py-8 [font-family:system-ui,sans-serif]"
+    >
       {/* Mobile list card — above map, dropdown selector replaces list */}
       <div className="md:hidden mt-2 mb-4 relative">
         <select
@@ -558,6 +565,69 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
       {/* Map — floating box with rounded corners */}
       <div className="relative h-[60vh] md:h-[85vh] rounded-2xl overflow-hidden shadow-2xl border border-black/10">
         <MapCanvas onMapReady={handleMapReady} />
+
+        {/* Info button + panel — bottom left */}
+        <div className="absolute bottom-3 left-3 z-10 flex flex-col items-start gap-2">
+          {infoOpen && (
+            <div className="bg-white rounded-xl shadow-lg p-3 w-64 text-xs text-[#3a5c39]">
+              <p className="font-bold uppercase tracking-wide text-[10px] text-[#AAC0AA] mb-2">
+                Teckenförklaring
+              </p>
+              <div className="flex flex-col gap-1.5 mb-3">
+                <div className="flex items-center gap-2">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                    <path d="M2 9L9 2L16 9V16H12V11H6V16H2V9Z" fill={SMAHUS_COLOR} />
+                  </svg>
+                  <span>= 100 småhus</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
+                    <rect x="0" y="2" width="15" height="16" rx="0.5" fill={FLERBOSTADSHUS_COLOR} />
+                    <rect x="2" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                    <rect x="6" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                    <rect x="10" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                    <rect x="2" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                    <rect x="6" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                    <rect x="10" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                  </svg>
+                  <span>= 1 000 lägenheter (idag)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
+                    <rect
+                      x="0"
+                      y="2"
+                      width="15"
+                      height="16"
+                      rx="0.5"
+                      fill={FLERBOSTADSHUS_NEW_COLOR}
+                    />
+                    <rect x="2" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                    <rect x="6" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                    <rect x="10" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                    <rect x="2" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                    <rect x="6" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                    <rect x="10" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                  </svg>
+                  <span>= 1 000 lägenheter (planerade)</span>
+                </div>
+              </div>
+              <div className="border-t border-gray-100 pt-2 text-[#5a6b5a] leading-relaxed">
+                Enheterna är representativa och visar inte exakta adresser för befintliga bostäder.
+                Planerad nybyggnation baseras på RUFS Bebyggelsestruktur.
+              </div>
+            </div>
+          )}
+          <button
+            onClick={() => setInfoOpen((o) => !o)}
+            aria-label="Visa information om kartan"
+            className="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-[#5c8b5a] hover:bg-white transition-colors"
+          >
+            <svg width="25" height="25" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+            </svg>
+          </button>
+        </div>
 
         {/* Desktop list card — always mounted for crossfade; fades out when selected */}
         <div
