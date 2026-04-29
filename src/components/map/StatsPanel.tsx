@@ -37,12 +37,12 @@ function StatCell({ value, label, icon }: { value: string; label: string; icon?:
   return (
     <div className="p-3 flex flex-col">
       <div className="flex items-start justify-between gap-1">
-        <span className="text-[#3a5c39] font-black text-2xl tabular-nums leading-none">
+        <span className="text-[#111111] font-black text-2xl tabular-nums leading-none">
           {value}
         </span>
         {icon && <div className="mt-0.5 flex-shrink-0">{icon}</div>}
       </div>
-      <span className="text-[#AAC0AA] text-xs uppercase tracking-wide mt-1.5 leading-tight">
+      <span className="text-gray-500 text-xs uppercase tracking-wide mt-1.5 leading-tight">
         {label}
       </span>
     </div>

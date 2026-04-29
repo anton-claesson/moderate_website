@@ -93,7 +93,7 @@ export default function ContactForm() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <label htmlFor="epost" className="block text-sm text-text-muted mb-1">
-            E-post <span className="text-accent">*</span>
+            E-post <span className="text-red-700">*</span>
           </label>
           <input
             id="epost"
@@ -109,7 +109,7 @@ export default function ContactForm() {
         </div>
         <div>
           <label htmlFor="kommun" className="block text-sm text-text-muted mb-1">
-            Kommun <span className="text-accent">*</span>
+            Kommun <span className="text-red-700">*</span>
           </label>
           <select
             id="kommun"
@@ -188,7 +188,7 @@ export default function ContactForm() {
           <button
             type="button"
             onClick={() => setIsGdprExpanded((p) => !p)}
-            className="text-xs font-semibold text-accent hover:text-accent/80 transition-colors underline focus:outline-none focus:ring-2 focus:ring-accent/50 rounded-sm"
+            className="text-xs font-semibold text-red-700 hover:text-red-800 transition-colors underline focus:outline-none focus:ring-2 focus:ring-red-700/50 rounded-sm"
           >
             {isGdprExpanded ? 'Visa färre detaljer' : 'Läs mer om hur vi hanterar dina uppgifter'}
           </button>
@@ -249,7 +249,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={!fields.gdprConsent || formState === 'submitting'}
-        className="w-full sm:w-auto px-8 py-2.5 rounded-full bg-accent text-white text-sm font-semibold hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full sm:w-auto px-8 py-2.5 rounded-full bg-red-700 text-white text-sm font-semibold hover:bg-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {formState === 'submitting' ? 'Skickar…' : 'Skicka'}
       </button>

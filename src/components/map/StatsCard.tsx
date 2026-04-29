@@ -16,13 +16,13 @@ export default function StatsCard({ selected, stats, view, onBack, onViewChange 
       <div className="hidden md:flex px-4 pt-3 pb-2 border-b border-gray-100 items-center order-none md:order-1">
         <button
           onClick={onBack}
-          className="text-[#5c8b5a] hover:text-[#3a5c39] text-sm font-bold transition-colors"
+          className="text-gray-500 hover:text-gray-900 text-sm font-bold transition-colors"
         >
           ← Alla kommuner
         </button>
       </div>
       <div className="px-4 pt-3 pb-1 order-2 md:order-2">
-        <h2 className="text-[#3a5c39] font-black text-xl leading-tight">{selected}</h2>
+        <h2 className="text-[#111111] font-black text-xl leading-tight">{selected}</h2>
       </div>
       <div className="pb-2 order-3 md:order-3">
         <StatsPanel stats={stats} view={view} />
@@ -35,8 +35,8 @@ export default function StatsCard({ selected, stats, view, onBack, onViewChange 
               onClick={() => onViewChange(v)}
               className={`flex-1 min-h-[40px] px-3 text-sm font-medium transition-colors ${
                 view === v
-                  ? 'bg-[#5c8b5a] text-white'
-                  : 'bg-gray-50 text-[#5c8b5a]/60 hover:text-[#5c8b5a]'
+                  ? 'bg-[#b91c1c] text-white'
+                  : 'bg-gray-50 text-gray-400 hover:text-gray-700'
               }`}
             >
               {v === 'current' ? 'Idag' : 'Planerad'}

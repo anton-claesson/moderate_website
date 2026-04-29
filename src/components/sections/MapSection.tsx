@@ -333,7 +333,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         id: 'neighboring-regions-fill',
         type: 'fill',
         source: 'neighboring-regions',
-        paint: { 'fill-color': '#f0f0ea', 'fill-opacity': 0.9 }, // Muted surface color, less yellow
+        paint: { 'fill-color': '#e8e4de', 'fill-opacity': 0.85 },
       });
 
       // Transparent hit area
@@ -341,7 +341,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         id: MUNICIPALITY_FILL_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#edf4ec', 'fill-opacity': 0.8 }, // Primary light
+        paint: { 'fill-color': '#f0ece6', 'fill-opacity': 0.75 },
       });
 
       // Base boundary outlines
@@ -350,7 +350,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         type: 'line',
         source: MUNICIPALITY_SOURCE,
         layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: { 'line-color': '#8fad8e', 'line-width': 2.5, 'line-opacity': 0.9 }, // Border strong
+        paint: { 'line-color': '#555555', 'line-width': 1.5, 'line-opacity': 0.8 },
       });
 
       // Hover/selected fill highlight
@@ -358,7 +358,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         id: MUNICIPALITY_HOVER_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#5c8b5a', 'fill-opacity': 0.4 }, // Primary color tint
+        paint: { 'fill-color': '#1a1a1a', 'fill-opacity': 0.15 },
         filter: ['==', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
       });
 
@@ -368,7 +368,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         type: 'line',
         source: MUNICIPALITY_SOURCE,
         layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: { 'line-color': '#e8a838', 'line-width': 4, 'line-opacity': 1.0 }, // Accent
+        paint: { 'line-color': '#b91c1c', 'line-width': 3, 'line-opacity': 1.0 },
         filter: ['==', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
       });
 
@@ -377,7 +377,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         id: MUNICIPALITY_DIM_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#edf4ec', 'fill-opacity': 0.8 },
+        paint: { 'fill-color': '#f0ece6', 'fill-opacity': 0.7 },
         filter: ['!=', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
         layout: { visibility: 'none' },
       });
@@ -399,7 +399,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
           visibility: 'none',
         },
         paint: {
-          'text-color': '#3a5c39', // Primary dark
+          'text-color': '#555555',
           'text-opacity': 0.8,
           'text-halo-color': '#ffffff',
           'text-halo-width': 2,
@@ -423,7 +423,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
           'text-letter-spacing': 0.15,
         },
         paint: {
-          'text-color': '#3a5c39',
+          'text-color': '#555555',
           'text-opacity': 1.0,
           'text-halo-color': '#ffffff',
           'text-halo-width': 4,
@@ -527,12 +527,9 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
   );
 
   return (
-    <section
-      id={id}
-      className="bg-primary-light py-6 px-4 md:px-44 lg:px-60 md:py-8 [font-family:system-ui,sans-serif]"
-    >
+    <section id={id} className="bg-primary-light py-6 px-4 md:px-48 lg:px-70 md:py-8">
       {/* Mobile list card — above map, dropdown selector replaces list */}
-      <div className="md:hidden mt-2 mb-4 relative">
+      <div className="md:hidden mb-4 relative">
         <select
           value={selected || ''}
           onChange={(e) => {
@@ -540,7 +537,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
             if (val) selectMunicipality(val);
             else returnToOverview();
           }}
-          className="w-full p-4 pr-10 rounded-2xl bg-white shadow-xl font-bold tracking-wide text-xl text-[#5c8b5a] appearance-none focus:outline-none focus:ring-2 focus:ring-[#5c8b5a]/50 border-0"
+          className="w-full p-4 pr-10 rounded-2xl bg-white shadow-xl font-bold tracking-wide text-xl text-[#111111] appearance-none focus:outline-none focus:ring-2 focus:ring-black/20 border-0"
         >
           <option value="">Välj kommun...</option>
           {SORTED_MUNICIPALITIES.map((name) => (
@@ -553,7 +550,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
           <svg width="24" height="12" viewBox="0 0 36 18" fill="none" className="opacity-50">
             <path
               d="M2 2L18 16L34 2"
-              stroke="#5c8b5a"
+              stroke="#9ca3af"
               strokeWidth="5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -566,11 +563,14 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
       <div className="relative h-[60vh] md:h-[85vh] rounded-2xl overflow-hidden shadow-2xl border border-black/10">
         <MapCanvas onMapReady={handleMapReady} />
 
+        {/* Transparent overlay to block Mapbox attribution clicks, sits behind info button */}
+        <div className="absolute bottom-0 left-0 w-72 h-10 z-[9] bg-transparent" />
+
         {/* Info button + panel — bottom left */}
         <div className="absolute bottom-3 left-3 z-10 flex flex-col items-start gap-2">
           {infoOpen && (
-            <div className="bg-white rounded-xl shadow-lg p-3 w-64 text-xs text-[#3a5c39]">
-              <p className="font-bold uppercase tracking-wide text-[10px] text-[#AAC0AA] mb-2">
+            <div className="bg-white rounded-xl shadow-lg p-3 w-64 text-xs text-[#111111]">
+              <p className="font-bold uppercase tracking-wide text-[10px] text-gray-400 mb-2">
                 Teckenförklaring
               </p>
               <div className="flex flex-col gap-1.5 mb-3">
@@ -612,7 +612,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
                   <span>= 1 000 lägenheter (planerade)</span>
                 </div>
               </div>
-              <div className="border-t border-gray-100 pt-2 text-[#5a6b5a] leading-relaxed">
+              <div className="border-t border-gray-100 pt-2 text-gray-500 leading-relaxed">
                 Enheterna är representativa och visar inte exakta adresser för befintliga bostäder.
                 Planerad nybyggnation baseras på RUFS Bebyggelsestruktur.
               </div>
@@ -621,7 +621,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
           <button
             onClick={() => setInfoOpen((o) => !o)}
             aria-label="Visa information om kartan"
-            className="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-[#5c8b5a] hover:bg-white transition-colors"
+            className="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-[#555555] hover:bg-white transition-colors"
           >
             <svg width="25" height="25" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />

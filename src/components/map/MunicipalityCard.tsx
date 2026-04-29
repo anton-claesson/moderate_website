@@ -22,10 +22,10 @@ interface MunicipalityCardProps {
 
 function ChevronUp() {
   return (
-    <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-50">
+    <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-40">
       <path
         d="M2 16L18 2L34 16"
-        stroke="#5c8b5a"
+        stroke="#9ca3af"
         strokeWidth="5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -36,10 +36,10 @@ function ChevronUp() {
 
 function ChevronDown() {
   return (
-    <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-50">
+    <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-40">
       <path
         d="M2 2L18 16L34 2"
-        stroke="#5c8b5a"
+        stroke="#9ca3af"
         strokeWidth="5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -100,7 +100,7 @@ export default function MunicipalityCard({
           <div
             ref={scrollRef}
             onScroll={updateScrollState}
-            className="flex-[4] min-h-0 overflow-y-scroll scrollbar-green"
+            className="flex-[4] min-h-0 overflow-y-scroll scrollbar-dark"
           >
             <MunicipalityList
               municipalities={municipalities}

@@ -55,8 +55,8 @@ export default function MunicipalityList({
             onMouseLeave={onHoverMunicipality ? handleMouseLeave : undefined}
             className={`w-full text-right px-3 py-2 uppercase tracking-wide transition-colors ${
               hoveredMunicipality === name
-                ? 'font-black text-3xl text-white bg-[#5c8b5a]'
-                : 'font-bold text-2xl text-[#5c8b5a]'
+                ? 'font-black text-3xl text-white bg-[#b91c1c]'
+                : 'font-bold text-2xl text-[#111111]'
             }`}
           >
             {name}
