@@ -128,10 +128,10 @@ function buildFootprintRing(
   const offsets: [number, number][] =
     shapeType === 'wide'
       ? [
-          [-0.8, -0.4],
-          [0.8, -0.4],
-          [0.8, 0.4],
-          [-0.8, 0.4],
+          [-0.7, -0.4],
+          [0.7, -0.4],
+          [0.7, 0.4],
+          [-0.7, 0.4],
         ]
       : [
           [-1, -1],
