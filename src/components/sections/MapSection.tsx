@@ -200,6 +200,8 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
     if (feature) {
       const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
       const bounds = computeBounds(feature);
+      // Desktop: reserve right side for the 260px stats panel (+140px buffer).
+      // Mobile: stats panel is below the map, so uniform padding.
       const padding = isMobile ? 20 : { top: 40, bottom: 40, left: 60, right: 400 };
 
       const camera = map.cameraForBounds(bounds as mapboxgl.LngLatBoundsLike, {
@@ -209,25 +211,49 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
       });
 
       if (camera && camera.zoom !== undefined && camera.center) {
-        // Shift the center south (lower latitude) proportionally to the bounds
-        // This ensures the bottom of the municipality stays visible when zooming in tighter,
-        // while allowing the top to crop out, which also compensates for the 55° pitch.
         const b = bounds as [[number, number], [number, number]];
         const latSpan = b[1][1] - b[0][1];
-
-        // Calculate the geographic center manually to avoid Mapbox LngLat struct ambiguities
         const centerLng = (b[0][0] + b[1][0]) / 2;
         const centerLat = (b[0][1] + b[1][1]) / 2;
 
+        // Compute the centroid of planned (red) buildings for this municipality so the
+        // camera centers on the cluster rather than the municipality bounding-box midpoint.
+        // Falls back to the bbox midpoint when no red buildings exist.
+        let targetLng = centerLng;
+        let targetLat = centerLat;
+        const housingNew = housingDataRef.current?.[2];
+        if (housingNew) {
+          const redFeatures = housingNew.features.filter((f) => f.properties.municipality === name);
+          if (redFeatures.length > 0) {
+            let sumLng = 0;
+            let sumLat = 0;
+            for (const f of redFeatures) {
+              const ring = f.geometry.coordinates[0]!;
+              const n = ring.length - 1;
+              let rLng = 0;
+              let rLat = 0;
+              for (let i = 0; i < n; i++) {
+                rLng += ring[i]![0] ?? 0;
+                rLat += ring[i]![1] ?? 0;
+              }
+              sumLng += rLng / n;
+              sumLat += rLat / n;
+            }
+            targetLng = sumLng / redFeatures.length;
+            targetLat = sumLat / redFeatures.length;
+          }
+        }
+
+        // Shift south so pitch compensation puts the cluster at the visual centre of the viewport.
         const newCenter = {
-          lng: centerLng,
-          lat: centerLat - latSpan * 0.25,
+          lng: targetLng,
+          lat: targetLat - latSpan * 0.25,
         };
 
         map.flyTo({
           ...camera,
           center: newCenter,
-          zoom: camera.zoom + 1.3, // Zoom tighter to focus on housing
+          zoom: camera.zoom + 1.3,
           duration: 1200,
           essential: true,
         });
