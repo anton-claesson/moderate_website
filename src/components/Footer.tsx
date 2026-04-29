@@ -5,7 +5,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row justify-between gap-1 text-m text-text-muted/60">
           <span>Det här är en kampanj från Moderaterna i Region Stockholm.</span>
           <a
-            href="mailto:stockholm@moderat.se"
+            href="mailto:caroline.hellstrom@moderaterna.se"
             className="hover:text-text-muted transition-colors underline"
           >
             Kontakta oss
