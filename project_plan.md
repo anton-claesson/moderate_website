@@ -159,8 +159,8 @@ Small, isolated cleanup pass on the generator and label rendering.
 
 ### Phase 13 — Cleanup & Launch Readiness
 
-- [ ] **F13.1 — Remove unused code & files.** Delete `scripts/generate-outside-region.ts` and `scripts/smooth-municipalities.ts` (superseded/unused). Remove `SMAHUS_SIZE_DEG` and `FLERBOSTADSHUS_SIZE_DEG` from `mapConfig.ts` (unused since data-driven heights). Run `tsc --noEmit` + ESLint to surface remaining dead code.
-- [ ] **F13.2 — Cross-device QA.** Test on real iOS, Android, and desktop browsers. Document and fix issues. Priority: mobile layout from Phase 10.
+- [x] **F13.1 — Remove unused code & files.** Deleted `scripts/generate-outside-region.ts`, `scripts/smooth-municipalities.ts`, outdated GeoJSON files (`outside-region`, `housing-flerbostadshus-2060`), and removed dead constants from `mapConfig.ts`. Removed commented out obsolete sections except `VideosSection`. Fixed ESLint warnings.
+- [x] **F13.2 — Cross-device QA & Bug Fixes.** Resolved map interaction bugs (polygon hover fill issues during camera animations, housing layers persisting when navigating back to overview) and generator bugs (fixed Täby/MultiPolygon support and building shape aspect ratios scaling incorrectly with latitude). Added generator validation summary.
 - [ ] **F13.3 — Accessibility pass.** Keyboard navigation, focus states, ARIA labels on map controls, color contrast on stats panel. Document map's accessibility limitations honestly.
 - [ ] **F13.4 — Performance optimization.** Lighthouse audit, GeoJSON size check, font subsetting, image/video lazy loading.
 - [ ] **F13.5 — SEO & social sharing.** Meta tags, OG image, favicon, sitemap.

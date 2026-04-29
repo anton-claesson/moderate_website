@@ -23,7 +23,3 @@ export const FLERBOSTADSHUS_NEW_COLOR = '#D64045';
 
 export const SMAHUS_PER_REPRESENTATIVE = 100;
 export const FLERBOSTADSHUS_PER_REPRESENTATIVE = 1000;
-
-// Footprint half-sizes in degrees (~55m and ~110m at Stockholm latitude)
-export const SMAHUS_SIZE_DEG = 0.0001;
-export const FLERBOSTADSHUS_SIZE_DEG = 0.002;

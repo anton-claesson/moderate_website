@@ -122,7 +122,8 @@ function buildFootprintRing(
   rotIdx: number,
 ): Position[] {
   const theta = (rotIdx % 4) * (Math.PI / 2);
-  const s = halfSize;
+  const sLat = halfSize;
+  const sLng = halfSize / Math.cos((centerLat * Math.PI) / 180);
 
   const offsets: [number, number][] =
     shapeType === 'wide'
@@ -141,7 +142,7 @@ function buildFootprintRing(
 
   const ring: Position[] = offsets.map(([dx, dy]) => {
     const [rdx, rdy] = rotatePoint(dx, dy, theta);
-    return [centerLng + rdx * s, centerLat + rdy * s];
+    return [centerLng + rdx * sLng, centerLat + rdy * sLat];
   });
   ring.push(ring[0]!);
   return ring;
@@ -209,10 +210,19 @@ function loadMunicipalityPolygons(filePath: string): Map<string, PolyData> {
   const geojson = JSON.parse(raw) as GeoJSON.FeatureCollection;
   const map = new Map<string, PolyData>();
   for (const feature of geojson.features) {
-    if (feature.geometry.type !== 'Polygon') continue;
+    const geom = feature.geometry;
+    if (!['Polygon', 'MultiPolygon'].includes(geom.type)) continue;
     const name = feature.properties?.['kom_namn'] as string;
     if (!name) continue;
-    const ring = (feature.geometry as GeoJSON.Polygon).coordinates[0] as Position[];
+
+    // Flatten rings and pick the largest one by bounding box (or just the first outer ring)
+    const ring = (
+      geom.type === 'Polygon'
+        ? (geom as GeoJSON.Polygon).coordinates[0]
+        : (geom as GeoJSON.MultiPolygon).coordinates[0]?.[0]
+    ) as Position[];
+
+    if (!ring) continue;
     map.set(name, { ring, bbox: computeBBox(ring) });
   }
   return map;
@@ -600,6 +610,17 @@ function writeCollection(filePath: string, features: Feature<Polygon, HousingUni
 writeCollection(path.join(outDir, 'housing-smahus.geojson'), smahusFeatures);
 writeCollection(path.join(outDir, 'housing-flerbostadshus.geojson'), flerbostadshusFeatures);
 writeCollection(path.join(outDir, 'housing-flerbostadshus-new.geojson'), flerbostadshusNewFeatures);
+
+console.log('\n─── GENERATION SUMMARY ───────────────────────────────');
+console.log(`✓ Generated ${smahusFeatures.length} småhus features`);
+console.log(`✓ Generated ${flerbostadshusFeatures.length} flerbostadshus (current)`);
+console.log(`✓ Generated ${flerbostadshusNewFeatures.length} flerbostadshus (planned 2060)`);
+console.log(`─────────────────────────────────────────────────────`);
+if (warnings > 0) {
+  console.warn(`⚠  ${warnings} municipality/municipalities skipped.`);
+} else {
+  console.log(`✓ All municipalities processed successfully.`);
+}
 
 if (warnings > 0) {
   console.warn(`\n${warnings} municipalities had no data and were skipped.`);

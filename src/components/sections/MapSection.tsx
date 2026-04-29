@@ -89,6 +89,18 @@ async function fetchHousingData(): Promise<
   return [smahus as HousingCollection, current as HousingCollection, newApts as HousingCollection];
 }
 
+function setHighlight(map: MapboxMap, name: string | null) {
+  if (!map.isStyleLoaded()) {
+    map.once('idle', () => setHighlight(map, name));
+    return;
+  }
+  if (map.getLayer(MUNICIPALITY_HOVER_LAYER)) {
+    const filter = ['==', ['get', 'kom_namn'], name ?? ''] as mapboxgl.FilterSpecification;
+    map.setFilter(MUNICIPALITY_HOVER_LAYER, filter);
+    map.setFilter(MUNICIPALITY_OUTLINE_HOVER_LAYER, filter);
+  }
+}
+
 export default function MapSection({ id, initialMunicipality }: MapSectionProps) {
   const mapRef = useRef<MapboxMap | null>(null);
   const housingDataRef = useRef<[HousingCollection, HousingCollection, HousingCollection] | null>(
@@ -145,23 +157,12 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
     await housingReadyPromiseRef.current;
   }
 
-  function setHighlight(map: MapboxMap, name: string | null) {
-    if (!map.isStyleLoaded()) {
-      map.once('idle', () => setHighlight(map, name));
-      return;
-    }
-    if (map.getLayer(MUNICIPALITY_HOVER_LAYER)) {
-      const filter = ['==', ['get', 'kom_namn'], name ?? ''] as mapboxgl.FilterSpecification;
-      map.setFilter(MUNICIPALITY_HOVER_LAYER, filter);
-      map.setFilter(MUNICIPALITY_OUTLINE_HOVER_LAYER, filter);
-    }
-  }
-
   const selectMunicipality = useCallback(async (name: string) => {
     const map = mapRef.current;
     if (!map) return;
     if (!MUNICIPALITY_CENTROIDS[name]) return;
 
+    selectedRef.current = name;
     setSelected(name);
     setView('planned');
     setHoveredMunicipality(null);
@@ -195,6 +196,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
     }
 
     await ensureHousingReady(map);
+    if (selectedRef.current !== name) return; // User navigated away before loading finished
     showHousingForMunicipality(map, name, 'planned');
 
     const feature = municipalityFeaturesRef.current.get(name);
@@ -290,7 +292,10 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
   const returnToOverview = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
+
+    selectedRef.current = null;
     setSelected(null);
+    setView('planned');
     setHoveredMunicipality(null);
     hideHousingLayers(map);
 
@@ -403,7 +408,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         id: MUNICIPALITY_HOVER_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#1a1a1a', 'fill-opacity': 0.15 },
+        paint: { 'fill-color': '#1a1a1a', 'fill-opacity': 0.25 },
         filter: ['==', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
       });
 
