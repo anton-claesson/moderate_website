@@ -19,26 +19,26 @@ export default function IntroSection({ id }: IntroSectionProps) {
           </span>
         </h2>
         <div className="mx-auto max-w-4xl text-justify text-slate-900 space-y-3 sm:space-y-6">
-          <p className="text-base sm:text-xl leading-relaxed">
+          <p className="text-sm sm:text-xl leading-relaxed">
             <span className="font-bold">Beslutat: </span>
             577 000 nya lägenheter i Region Stockholm. Nya miljonprogram – i parken, vid torget och
             där du bor.
           </p>
 
-          <p className="text-base sm:text-xl leading-relaxed">
+          <p className="text-sm sm:text-xl leading-relaxed">
             Planen drivs av Socialdemokraterna i Region Stockholm och har klubbats igenom av
             ordförande Aida Hadzialic (S). I en bilaga målas kommun efter kommun upp för snabb,
             genomgripande förändring – med tät, storskalig bebyggelse.
           </p>
 
-          <p className="text-base sm:text-xl leading-relaxed">
+          <p className="text-sm sm:text-xl leading-relaxed">
             Riv upp bilagan. Ställ de ansvariga till svars.
           </p>
 
-          <p className="text-base sm:text-xl leading-relaxed">
+          <p className="text-sm sm:text-xl leading-relaxed">
             👉 Se hur de nya miljonprogrammen påverkar din hemkommun!
           </p>
-          <p className="text-sm sm:text-base text-text-muted leading-relaxed">
+          <p className="text-xs sm:text-base text-text-muted leading-relaxed">
             <strong>Fakta: </strong>
             Socialdemokraterna, Vänsterpartiet, Miljöpartiet och Centerpartiet i Region Stockholm
             har beslutat om en ny regional utvecklingsplan. I planen ingår en bilaga som fastställer
