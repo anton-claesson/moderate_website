@@ -105,7 +105,7 @@ body {
 
 .mapboxgl-ctrl-logo,
 .mapboxgl-ctrl-attrib {
-  opacity: 0.05 !important;
+  opacity: 0.01 !important;
   transition: opacity 0.2s;
 }
 
