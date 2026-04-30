@@ -3,22 +3,23 @@ import type { HousingView } from '@/types/housing';
 interface LayerToggleProps {
   view: HousingView;
   onChange: (view: HousingView) => void;
+  className?: string;
 }
 
-export default function LayerToggle({ view, onChange }: LayerToggleProps) {
+export default function LayerToggle({ view, onChange, className = '' }: LayerToggleProps) {
   return (
-    <div className="flex rounded-lg overflow-hidden border border-white/10">
+    <div className={`flex w-full p-1 rounded-2xl bg-gray-100 shadow-xl ${className}`}>
       {(['current', 'planned'] as HousingView[]).map((v) => (
         <button
           key={v}
           onClick={() => onChange(v)}
-          className={`flex-1 min-h-[44px] px-4 text-sm font-medium transition-colors ${
+          className={`flex-1 py-4 px-6 text-xl font-bold tracking-wide text-center rounded-xl transition-all duration-150 ${
             view === v
-              ? 'bg-accent text-text-on-dark'
-              : 'bg-header-bg text-text-on-dark/60 hover:text-text-on-dark'
+              ? 'bg-[#b91c1c] text-white shadow-md'
+              : 'text-[#111111]/40 hover:text-[#111111]/70'
           }`}
         >
-          {v === 'current' ? 'Idag' : 'Planerad'}
+          {v === 'current' ? 'IDAG' : 'PLANERAD'}
         </button>
       ))}
     </div>

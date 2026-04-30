@@ -28,6 +28,7 @@ import {
 } from '@/lib/mapConfig';
 import MunicipalityCard from '@/components/map/MunicipalityCard';
 import StatsCard from '@/components/map/StatsCard';
+import LayerToggle from '@/components/map/LayerToggle';
 import { HOUSING_STATS } from '@/data/housingStats';
 import type { MunicipalityStats } from '@/data/housingStats';
 
@@ -618,6 +619,11 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         {/* Transparent overlay to block Mapbox attribution clicks, sits behind info button */}
         <div className="absolute bottom-0 left-0 w-72 h-10 z-[9] bg-transparent" />
 
+        {/* Desktop toggle — top-left of map, always visible */}
+        <div className="hidden md:block absolute top-4 left-4 z-10 w-80">
+          <LayerToggle view={view} onChange={setView} />
+        </div>
+
         {/* Info button + panel — bottom left */}
         <div className="absolute bottom-3 left-3 z-10 flex flex-col items-start gap-2">
           {infoOpen && (
@@ -712,10 +718,14 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
               stats={displayStats.stats}
               view={view}
               onBack={returnToOverview}
-              onViewChange={setView}
             />
           )}
         </div>
+      </div>
+
+      {/* Mobile toggle — always visible below map, full width to match the dropdown above */}
+      <div className="md:hidden mt-3">
+        <LayerToggle view={view} onChange={setView} className="w-full" />
       </div>
 
       {/* Mobile Stats panel — below map */}
@@ -726,7 +736,6 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
             stats={displayStats.stats}
             view={view}
             onBack={returnToOverview}
-            onViewChange={setView}
           />
         </div>
       )}
