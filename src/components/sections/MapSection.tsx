@@ -643,7 +643,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
                     <path d="M2 9L9 2L16 9V16H12V11H6V16H2V9Z" fill={SMAHUS_COLOR} />
                   </svg>
-                  <span>= 100 småhus</span>
+                  <span>= 50 småhus</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
@@ -655,7 +655,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
                     <rect x="6" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
                     <rect x="10" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
                   </svg>
-                  <span>= 1 000 lägenheter (idag)</span>
+                  <span>= 500 lägenheter (idag)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
@@ -674,7 +674,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
                     <rect x="6" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
                     <rect x="10" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
                   </svg>
-                  <span>= 1 000 lägenheter (planerade)</span>
+                  <span>= 500 lägenheter (planerade)</span>
                 </div>
               </div>
               <div className="border-t border-gray-100 pt-2 text-gray-500 leading-relaxed">

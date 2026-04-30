@@ -20,9 +20,9 @@ const AVG_M_PER_DEG = 84150;
 
 // Fixed height-to-footprint ratios — applied to per-municipality halfSize.
 // Height is always derived from the (clamped) footprint, so proportions stay constant.
-const SMAHUS_HEIGHT_RATIO = 1;
-const FLERBO_HEIGHT_RATIO = 3.5;
-const FLERBO_NEW_HEIGHT_RATIO = 4.2;
+const SMAHUS_HEIGHT_RATIO = 1.4;
+const FLERBO_HEIGHT_RATIO = 5.0;
+const FLERBO_NEW_HEIGHT_RATIO = 6.0;
 
 // Per-municipality halfSize bounds — only the footprint is clamped; height follows proportionally.
 const SMAHUS_HALF_SIZE_MIN = 0.0006; // ~25 m high (dense urban)
@@ -128,10 +128,10 @@ function buildFootprintRing(
   const offsets: [number, number][] =
     shapeType === 'wide'
       ? [
-          [-0.7, -0.4],
-          [0.7, -0.4],
-          [0.7, 0.4],
-          [-0.7, 0.4],
+          [-0.6, -0.4],
+          [0.6, -0.4],
+          [0.6, 0.4],
+          [-0.6, 0.4],
         ]
       : [
           [-1, -1],
