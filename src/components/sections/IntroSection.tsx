@@ -14,13 +14,13 @@ export default function IntroSection({ id }: IntroSectionProps) {
       id={id}
       className="min-h-[10vh] w-full flex flex-col items-center center bg-primary-light"
     >
-      <div className="mx-auto max-w-6xl w-full px-4 sm:px-6 pt-5 sm:pt-10 sm:pb-6">
+      <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 pt-5 sm:pt-10 sm:pb-6">
         <h2
           className="font-bold text-center leading-[1.1] mb-8 mt-5 sm:mt-5 sm:mb-10 uppercase w-full"
-          style={{ fontSize: 'min(9.5vw, 5rem)', fontFamily: 'var(--font-oswald)' }}
+          style={{ fontSize: 'min(9.5vw, 4.8rem)', fontFamily: 'var(--font-oswald)' }}
         >
-          Stoppa <span className="text-red-700">Miljonprogrammen </span>
-          <br className="sm:hidden" /> – Riv Bilagan!
+          Stoppa de nya <span className="text-red-700">miljonprogrammen </span>
+          <br /> – riv upp planen!
         </h2>
         <div className="mx-auto max-w-5xl sm:px-13 text-slate-900 space-y-2 sm:space-y-5">
           <p
