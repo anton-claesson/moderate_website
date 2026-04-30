@@ -8,8 +8,8 @@ import type { HousingCollection, HousingView } from '@/types/housing';
 import { MUNICIPALITY_CENTROIDS } from '@/data/municipalityCentroids';
 import {
   initHousingLayers,
+  showAllHousingLayers,
   showHousingForMunicipality,
-  hideHousingLayers,
   setLayerView,
 } from '@/lib/housingLayers';
 import {
@@ -298,7 +298,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
     setSelected(null);
     setView('planned');
     setHoveredMunicipality(null);
-    hideHousingLayers(map);
+    showAllHousingLayers(map, 'planned');
 
     setHighlight(map, null);
     map.setLayoutProperty(MUNICIPALITY_DIM_LAYER, 'visibility', 'none');
@@ -337,8 +337,11 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
   }, []);
 
   useEffect(() => {
-    if (mapRef.current && selected && housingReady) {
+    if (!mapRef.current || !housingReady) return;
+    if (selected) {
       setLayerView(mapRef.current, view);
+    } else {
+      showAllHousingLayers(mapRef.current, view);
     }
   }, [view, selected, housingReady]);
 
@@ -570,6 +573,10 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
       container.addEventListener('touchstart', handleTouchStart, { passive: true });
       container.addEventListener('touchmove', handleTouchMove, { passive: true });
       container.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+      // Eagerly load housing so buildings appear in the overview immediately.
+      // setHousingReady(true) fires inside ensureHousingReady and triggers the effect above.
+      void ensureHousingReady(map);
 
       // Handle deep linking on init
       if (initialMunicipality && initialMunicipality in MUNICIPALITY_CENTROIDS) {
