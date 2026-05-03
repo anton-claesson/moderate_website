@@ -14,9 +14,7 @@ export default function LayerToggle({ view, onChange, className = '' }: LayerTog
           key={v}
           onClick={() => onChange(v)}
           className={`flex-1 py-4 px-6 text-xl font-bold tracking-wide text-center rounded-xl transition-all duration-150 ${
-            view === v
-              ? 'bg-[#b91c1c] text-white shadow-md'
-              : 'text-[#111111]/40 hover:text-[#111111]/70'
+            view === v ? 'bg-[#b91c1c] text-white shadow-md' : 'text-text-muted hover:text-primary'
           }`}
         >
           {v === 'current' ? 'IDAG' : 'PLANERAD'}

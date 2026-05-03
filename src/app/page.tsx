@@ -1,7 +1,6 @@
 import Footer from '@/components/Footer';
 import IntroSection from '@/components/sections/IntroSection';
 import MapSection from '@/components/sections/MapSection';
-import VideosSection from '@/components/sections/VideosSection';
 import ContactSection from '@/components/sections/ContactSection';
 import { MUNICIPALITY_CENTROIDS } from '@/data/municipalityCentroids';
 

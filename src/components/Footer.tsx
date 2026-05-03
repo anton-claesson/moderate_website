@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer className="w-full bg-primary-light border-t border-border">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-5">
-        <div className="flex flex-col sm:flex-row justify-between gap-1 text-m text-text-muted/60">
+        <div className="flex flex-col sm:flex-row justify-between gap-1 text-m text-text-muted">
           <span>Det här är en kampanj från Moderaterna i Region Stockholm.</span>
           <a
             href="mailto:caroline.hellstrom@moderaterna.se"
