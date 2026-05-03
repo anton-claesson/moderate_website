@@ -103,6 +103,26 @@ function setHighlight(map: MapboxMap, name: string | null) {
 }
 
 export default function MapSection({ id, initialMunicipality }: MapSectionProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [shouldLoadMap, setShouldLoadMap] = useState(Boolean(initialMunicipality));
+
+  useEffect(() => {
+    if (shouldLoadMap) return;
+    const el = sectionRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setShouldLoadMap(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin: '300px' },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [shouldLoadMap]);
+
   const mapRef = useRef<MapboxMap | null>(null);
   const housingDataRef = useRef<[HousingCollection, HousingCollection, HousingCollection] | null>(
     null,
@@ -587,10 +607,15 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
   );
 
   return (
-    <section id={id} className="bg-primary-light py-6 px-4 md:px-48 lg:px-70 md:py-8">
+    <section
+      ref={sectionRef}
+      id={id}
+      className="bg-primary-light py-6 px-4 md:px-48 lg:px-70 md:py-8"
+    >
       {/* Mobile list card — above map, dropdown selector replaces list */}
       <div className="md:hidden mb-4 relative">
         <select
+          aria-label="Välj kommun"
           value={selected || ''}
           onChange={(e) => {
             const val = e.target.value;
@@ -621,7 +646,13 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
 
       {/* Map — floating box with rounded corners */}
       <div className="relative h-[60vh] md:h-[85vh] rounded-2xl overflow-hidden shadow-2xl border border-black/10">
-        <MapCanvas onMapReady={handleMapReady} />
+        {shouldLoadMap ? (
+          <MapCanvas onMapReady={handleMapReady} />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-text-on-dark/40 text-sm">Loading map…</span>
+          </div>
+        )}
 
         {/* Transparent overlay to block Mapbox attribution clicks, sits behind info button */}
         <div className="absolute bottom-0 left-0 w-72 h-10 z-[9] bg-transparent" />

@@ -30,9 +30,14 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="sv"
       className={`${inter.variable} ${geistMono.variable} ${oswald.variable} h-full w-full antialiased`}
     >
+      <head>
+        <link rel="preconnect" href="https://api.mapbox.com" />
+        <link rel="preconnect" href="https://events.mapbox.com" />
+        <link rel="dns-prefetch" href="https://tiles.mapbox.com" />
+      </head>
       <body className="min-h-full w-full flex flex-col">{children}</body>
     </html>
   );
