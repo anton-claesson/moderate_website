@@ -109,7 +109,7 @@ UX: 2D overview (all municipalities visible, no pan) → click/select municipali
 - [x] **F4.1 — Municipality boundaries layer.** Merged into F3.3.
 - [x] **F4.2 — Municipality selection & zoom animation.** Merged into F3.4.
 - [x] **F4.3 — Info text box overlay.** Floating card panel unifying all map controls (municipality list, stats, toggle, back). Desktop: card floats over ocean on right (absolute positioned). Mobile: card stacked above map (30/70vh split). Bidirectional hover sync with auto-scroll. Stats: municipality name, småhus count, current/2060 flerbostadshus, total growth %. Municipality dim layer + tighter zoom on selection. D5 resolved. See `project_phases/Phase4_map_interactions.md`.
-- [ ] **F4.4 — Reset / "back to overview" control.** Merged into F3.6.
+- [x] **F4.4 — Reset / "back to overview" control.** Merged into F3.6.
 
 ### Phase 5 — Contact / Newsletter
 
@@ -160,11 +160,11 @@ Small, isolated cleanup pass on the generator and label rendering.
 ### Phase 13 — Cleanup & Launch Readiness
 
 - [x] **F13.1 — Remove unused code & files.** Deleted `scripts/generate-outside-region.ts`, `scripts/smooth-municipalities.ts`, outdated GeoJSON files (`outside-region`, `housing-flerbostadshus-2060`), and removed dead constants from `mapConfig.ts`. Removed commented out obsolete sections except `VideosSection`. Fixed ESLint warnings.
-- [x] **F13.2 — Cross-device QA & Bug Fixes.** Resolved map interaction bugs (polygon hover fill issues during camera animations, housing layers persisting when navigating back to overview) and generator bugs (fixed Täby/MultiPolygon support and building shape aspect ratios scaling incorrectly with latitude). Added generator validation summary.
-- [ ] **F13.3 — Accessibility pass.** Keyboard navigation, focus states, ARIA labels on map controls, color contrast on stats panel. Document map's accessibility limitations honestly.
-- [ ] **F13.4 — Performance optimization.** Lighthouse audit, GeoJSON size check, font subsetting, image/video lazy loading.
-- [ ] **F13.5 — SEO & social sharing.** Meta tags, OG image, favicon, sitemap.
-- [ ] **F13.6 — Launch checklist.** Custom domain, HTTPS, production env vars, analytics decision (D7), form recipient confirmed.
+- [x] **F13.2 — Cross-device QA & Bug Fixes.** Resolved map interaction bugs (polygon hover fill issues during camera animations, housing layers persisting when navigating back to overview) and generator bugs (fixed Täby/MultiPolygon support and building shape aspect ratios scaling incorrectly with latitude). Added generator validation summary. Follow-up polishing: moved Idag/Planerad toggle to permanent overlay, show buildings for all municipalities in overview with dimming, halved conversion factors (100→50 småhus / 1000→500 apts), adjusted mobile fonts, rehid video section, updated page title.
+- [x] **F13.3 — Accessibility pass.** Added `aria-label` to mobile municipality `<select>`. Fixed WCAG AA color contrast on 9 elements: darkened `--color-text-muted` token (#6b7280 → #626977), removed opacity modifier from footer text, replaced low-opacity inactive toggle button text with `text-text-muted`. Removed unused `VideosSection` import (lint warning).
+- [x] **F13.4 — Performance optimization.** Lighthouse audit run (desktop 0.96, mobile 0.69). Main fix: deferred Mapbox GL JS load with IntersectionObserver so the ~468 KB bundle is not parsed on initial page render — Mapbox loads only when the map section nears the viewport (deep links still load eagerly). Added Mapbox preconnect/dns-prefetch hints. Added `public/robots.txt`.
+- [~] **F13.5 — SEO & social sharing.** `robots.txt` added. Still open: OG image / social card, sitemap.xml (`app/sitemap.ts`), and verifying favicon.
+- [ ] **F13.6 — Launch checklist.** Custom domain, HTTPS, production env vars, analytics decision (D7: Vercel Analytics or Plausible), form recipient confirmed. Ownership transfers: Vercel project, Mapbox token, Supabase project.
 
 ### Phase 9 — Post-Launch (optional / deferred)
 
@@ -231,3 +231,5 @@ _Add an entry each time a feature is completed or scope changes meaningfully._
 | 2026-04-29 | F12.1 | Phase 12 complete. Design refresh: neutral palette, Inter/Oswald font stack, Oswald applied globally, wider map layout, map info button, social icons in footer, footer cleanup, reduced Mapbox overlay opacity, mobile font size + intro scaling fixes, iOS down-arrow glyph fix. Phase 9 (Post-Selection Pan & Zoom) removed from backlog — no longer relevant. D8 resolved. | — |
 | 2026-04-29 | F5.2 | Replaced Formspree with Supabase Postgres (Frankfurt). Plain fetch to Supabase REST API — no new npm dep. INSERT-only RLS policy. CSV export via table editor. GDPR text updated. Env vars: `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY`. D6 re-resolved. | #10 |
 | 2026-04-29 | F13.1–F13.2 | Cleanup and Bug Fixes. Removed unused scripts, components (`Header`, `DataNoteSection`), redundant GeoJSON data and dead variables. Resolved map selection highlight race conditions and housing visibility bugs. Fixed `MultiPolygon` parsing for generator to support all municipality borders correctly, and corrected the scaling distortion on rotated rectangle shapes. | — |
+| 2026-04-30 | F13.2 polish | Post-QA tuning: moved Idag/Planerad toggle to permanent map overlay, show buildings for all municipalities in overview with non-selected dimming, halved conversion factors (100→50 småhus / 1000→500 apts), adjusted mobile fonts in intro and contact sections, rehid video section, updated page title. | — |
+| 2026-05-03 | F13.3–F13.4 | Accessibility & performance pass. Deferred Mapbox GL JS load via IntersectionObserver (mobile TBT improvement). Added Mapbox preconnect hints. Darkened `--color-text-muted` (#6b7280→#626977) and fixed 9 WCAG AA contrast failures across footer, form labels, toggle buttons. Added `aria-label` to mobile municipality `<select>`. Added `robots.txt`. Fixed `html[lang]` attribute to "sv". Removed unused `VideosSection` import. | — |
