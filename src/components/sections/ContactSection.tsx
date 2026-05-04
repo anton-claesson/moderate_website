@@ -9,7 +9,7 @@ export default function ContactSection({ id }: ContactSectionProps) {
     <section id={id} className="bg-primary-light">
       <div className="mx-auto max-w-3xl w-full px-4 sm:px-6 py-8 sm:py-24">
         <h2 className="text-2xl sm:text-4xl font-bold text-text leading-tight mb-3 text-center">
-          Stoppa miljonprogrammen.<br></br> Riv bilagan! <br></br>Din röst behövs.
+          Stoppa miljonprogrammen!<br></br> Din röst behövs.
         </h2>
         <p className="text-base text-text-muted leading-relaxed mb-8 text-center">
           Lämna dina kontaktuppgifter så hör vi av oss när information tillkommer.

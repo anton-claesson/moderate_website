@@ -19,8 +19,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
           className="font-bold text-center leading-[1.1] mb-8 mt-5 sm:mt-5 sm:mb-10 uppercase w-full"
           style={{ fontSize: 'min(9.5vw, 4.8rem)', fontFamily: 'var(--font-oswald)' }}
         >
-          Stoppa de nya <span className="text-red-700">miljonprogrammen </span>
-          <br /> – riv upp planen!
+          Stoppa de nya <span className="text-red-700">miljonprogrammen</span>!
         </h2>
         <div className="mx-auto max-w-5xl sm:px-13 text-slate-900 space-y-2 sm:space-y-5">
           <p
@@ -28,12 +27,13 @@ export default function IntroSection({ id }: IntroSectionProps) {
             style={{ fontFamily: 'var(--font-oswald)' }}
           >
             <span className="text-red-700">Beslutat: </span>
-            577 000 nya lägenheter i Region Stockholm. Nya miljonprogram – i parken, vid torget och
-            där du bor.
+            577 000 nya lägenheter i Region Stockholm.
+            <br />
+            Nya miljonprogram – i parken, vid torget och där du bor.
           </p>
 
           <p className="sm:text-xl leading-relaxed">
-            Planen drivs av Socialdemokraterna i Region Stockholm och har klubbats igenom av
+            Planen drivs av Socialdemokraterna Stockholms Regionen och har klubbats igenom av
             ordförande Aida Hadzialic (S). I en bilaga målas kommun efter kommun upp för snabb,
             genomgripande förändring – med tät, storskalig bebyggelse.
           </p>
@@ -68,7 +68,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
             style={{ fontFamily: 'var(--font-oswald)' }}
           >
             <span className="inline-block text-red-700">{'\u2B07\uFE0E'}</span>
-            Se hur de nya miljonprogrammen påverkar din hemkommun
+            Se hur de nya miljonprogrammen påverkar din kommun
             <span className="inline-block text-red-700">{'\u2B07\uFE0E'}</span>
           </p>
         </div>
