@@ -1,6 +1,6 @@
 # Stockholm Housing Stock Visualizer
 
-A static, mobile-first web application visualizing current and planned housing construction across the Stockholm Region.
+A static, mobile-first web application visualizing current and planned housing construction across the Stockholm Region. Aesthetic target: "Google Maps × The Sims" — stylized 3D representations of housing density rather than architectural accuracy.
 
 Built with Next.js, Mapbox GL JS, and static GeoJSON. Deployed on Vercel.
 
