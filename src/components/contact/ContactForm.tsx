@@ -86,7 +86,7 @@ export default function ContactForm() {
   if (formState === 'success') {
     return (
       <div className="py-8 text-center">
-        <p className="text-2xl font-bold text-text">
+        <p className="text-2xl font-bold text-on-canvas">
           Tack! Vi hör av oss när projektet uppdateras.
         </p>
       </div>
@@ -97,8 +97,8 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit} noValidate>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
-          <label htmlFor="epost" className="block text-sm text-text-muted mb-1">
-            E-post <span className="text-red-700">*</span>
+          <label htmlFor="epost" className="block text-sm text-on-canvas/60 mb-1">
+            E-post <span className="text-accent">*</span>
           </label>
           <input
             id="epost"
@@ -108,13 +108,13 @@ export default function ContactForm() {
             autoComplete="email"
             value={fields.epost}
             onChange={handleChange}
-            className="w-full border-0 border-b border-border bg-transparent px-0 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-0 focus:border-primary"
+            className="w-full border-0 border-b border-on-canvas/20 bg-transparent px-0 py-2 text-sm text-on-canvas placeholder:text-on-canvas/35 focus:outline-none focus:ring-0 focus:border-on-canvas/50 focus:bg-on-canvas/5 transition-[border-color,background-color] duration-200"
             placeholder="anna@exempel.se"
           />
         </div>
         <div>
-          <label htmlFor="kommun" className="block text-sm text-text-muted mb-1">
-            Kommun <span className="text-red-700">*</span>
+          <label htmlFor="kommun" className="block text-sm text-on-canvas/60 mb-1">
+            Kommun <span className="text-accent">*</span>
           </label>
           <select
             id="kommun"
@@ -122,7 +122,7 @@ export default function ContactForm() {
             required
             value={fields.kommun}
             onChange={handleChange}
-            className="w-full border-0 border-b border-border bg-transparent px-0 py-2 text-sm text-text focus:outline-none focus:ring-0 focus:border-primary appearance-none cursor-pointer"
+            className="w-full border-0 border-b border-on-canvas/20 bg-transparent px-0 py-2 text-sm text-on-canvas focus:outline-none focus:ring-0 focus:border-on-canvas/50 focus:bg-on-canvas/5 appearance-none cursor-pointer transition-[border-color,background-color] duration-200"
           >
             <option value="" disabled className="text-text-muted">
               Välj en kommun...
@@ -136,7 +136,7 @@ export default function ContactForm() {
           </select>
         </div>
         <div>
-          <label htmlFor="namn" className="block text-sm text-text-muted mb-1">
+          <label htmlFor="namn" className="block text-sm text-on-canvas/60 mb-1">
             Namn
           </label>
           <input
@@ -146,12 +146,12 @@ export default function ContactForm() {
             autoComplete="name"
             value={fields.namn}
             onChange={handleChange}
-            className="w-full border-0 border-b border-border bg-transparent px-0 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-0 focus:border-primary"
+            className="w-full border-0 border-b border-on-canvas/20 bg-transparent px-0 py-2 text-sm text-on-canvas placeholder:text-on-canvas/35 focus:outline-none focus:ring-0 focus:border-on-canvas/50 focus:bg-on-canvas/5 transition-[border-color,background-color] duration-200"
             placeholder="Anna Svensson (frivilligt)"
           />
         </div>
         <div>
-          <label htmlFor="telefon" className="block text-sm text-text-muted mb-1">
+          <label htmlFor="telefon" className="block text-sm text-on-canvas/60 mb-1">
             Telefon
           </label>
           <input
@@ -161,14 +161,14 @@ export default function ContactForm() {
             autoComplete="tel"
             value={fields.telefon}
             onChange={handleChange}
-            className="w-full border-0 border-b border-border bg-transparent px-0 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-0 focus:border-primary"
+            className="w-full border-0 border-b border-on-canvas/20 bg-transparent px-0 py-2 text-sm text-on-canvas placeholder:text-on-canvas/35 focus:outline-none focus:ring-0 focus:border-on-canvas/50 focus:bg-on-canvas/5 transition-[border-color,background-color] duration-200"
             placeholder="070-000 00 00 (frivilligt)"
           />
         </div>
       </div>
 
       {formState === 'error' && (
-        <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2 mb-4">
+        <p className="text-sm text-accent bg-accent/15 border border-accent/30 rounded-md px-3 py-2 mb-4">
           {errorMessage}
         </p>
       )}
@@ -181,9 +181,9 @@ export default function ContactForm() {
             required
             checked={fields.gdprConsent}
             onChange={handleChange}
-            className="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-border accent-primary focus:ring-primary/50"
+            className="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-on-canvas/30 accent-accent focus:ring-accent/50"
           />
-          <span className="text-[13px] text-text mt-px leading-[1.4]">
+          <span className="text-[13px] text-on-canvas mt-px leading-[1.4]">
             Jag samtycker till att Moderaterna sparar mina uppgifter och kontaktar mig med
             information om kampanjen.
           </span>
@@ -193,13 +193,13 @@ export default function ContactForm() {
           <button
             type="button"
             onClick={() => setIsGdprExpanded((p) => !p)}
-            className="text-xs font-semibold text-red-700 hover:text-red-800 transition-colors underline focus:outline-none focus:ring-2 focus:ring-red-700/50 rounded-sm"
+            className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors duration-150 underline underline-offset-2 focus:outline-none focus:ring-2 focus:ring-accent/50 rounded-sm"
           >
             {isGdprExpanded ? 'Visa färre detaljer' : 'Läs mer om hur vi hanterar dina uppgifter'}
           </button>
 
           {isGdprExpanded && (
-            <div className="mt-3 text-xs text-text-muted/90 leading-relaxed space-y-3 border-l-2 border-gray-100 pl-3">
+            <div className="mt-3 text-xs text-on-canvas/55 leading-relaxed space-y-3 border-l-2 border-accent/20 pl-3">
               <p>
                 Genom att lämna dina kontaktuppgifter samtycker du till att vi på Moderaterna då och
                 då hör av oss till dig med information om kampanjen och andra nyheter från
@@ -254,7 +254,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={!fields.gdprConsent || formState === 'submitting'}
-        className="w-full sm:w-auto px-8 py-2.5 rounded-full bg-red-700 text-white text-sm font-semibold hover:bg-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full sm:w-auto px-10 py-3 rounded-full bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {formState === 'submitting' ? 'Skickar…' : 'Skicka'}
       </button>

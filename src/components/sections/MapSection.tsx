@@ -11,6 +11,7 @@ import {
   showAllHousingLayers,
   showHousingForMunicipality,
   setLayerView,
+  HOUSING_HIGHLIGHT_LAYER_IDS,
 } from '@/lib/housingLayers';
 import {
   STOCKHOLM_BOUNDS,
@@ -46,8 +47,8 @@ interface MapSectionProps {
   initialMunicipality?: string;
 }
 
-const OVERVIEW_PADDING_DESKTOP = { top: 20, bottom: 20, left: 20, right: 220 };
-const OVERVIEW_PADDING_MOBILE = { top: 20, bottom: 20, left: 0, right: 60 };
+const OVERVIEW_PADDING_DESKTOP = { top: 70, bottom: 30, left: 20, right: 360 };
+const OVERVIEW_PADDING_MOBILE = { top: 60, bottom: 60, left: 50, right: 110 };
 
 const MUNICIPALITY_FILL_LAYER = 'municipalities-fill';
 const MUNICIPALITY_OUTLINE_LAYER = 'municipalities-outline';
@@ -124,6 +125,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
   }, [shouldLoadMap]);
 
   const mapRef = useRef<MapboxMap | null>(null);
+  const overviewCameraRef = useRef<{ center: [number, number]; zoom: number } | null>(null);
   const housingDataRef = useRef<[HousingCollection, HousingCollection, HousingCollection] | null>(
     null,
   );
@@ -166,12 +168,17 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         const data = await fetchHousingData();
         housingDataRef.current = data;
         initHousingLayers(map, ...data);
-        // Extrusion layers are added below the existing label layers in the stack —
-        // move labels back to the top so they render above buildings.
-        if (map.getLayer(MUNICIPALITY_LABELS_ALL_LAYER))
-          map.moveLayer(MUNICIPALITY_LABELS_ALL_LAYER);
-        if (map.getLayer(MUNICIPALITY_LABELS_SELECTED_LAYER))
-          map.moveLayer(MUNICIPALITY_LABELS_SELECTED_LAYER);
+        // Housing layers are appended to the end of the stack, pushing municipality
+        // outlines/labels below circles and extrusions. Move them back to the top.
+        for (const id of [
+          MUNICIPALITY_OUTLINE_LAYER,
+          MUNICIPALITY_HOVER_LAYER,
+          MUNICIPALITY_OUTLINE_HOVER_LAYER,
+          MUNICIPALITY_LABELS_ALL_LAYER,
+          MUNICIPALITY_LABELS_SELECTED_LAYER,
+        ]) {
+          if (map.getLayer(id)) map.moveLayer(id);
+        }
         setHousingReady(true);
       })();
     }
@@ -219,6 +226,18 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
     await ensureHousingReady(map);
     if (selectedRef.current !== name) return; // User navigated away before loading finished
     showHousingForMunicipality(map, name, 'planned');
+
+    // Detail view: outline renders first, then highlight extrusions float above it.
+    for (const id of [
+      MUNICIPALITY_OUTLINE_LAYER,
+      MUNICIPALITY_HOVER_LAYER,
+      MUNICIPALITY_OUTLINE_HOVER_LAYER,
+      ...HOUSING_HIGHLIGHT_LAYER_IDS,
+      MUNICIPALITY_LABELS_ALL_LAYER,
+      MUNICIPALITY_LABELS_SELECTED_LAYER,
+    ]) {
+      if (map.getLayer(id)) map.moveLayer(id);
+    }
 
     const feature = municipalityFeaturesRef.current.get(name);
     if (feature) {
@@ -320,6 +339,15 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
     setHoveredMunicipality(null);
     showAllHousingLayers(map, 'planned');
 
+    // Overview: restore outlines above all housing layers (highlights are now hidden).
+    for (const id of [
+      MUNICIPALITY_OUTLINE_LAYER,
+      MUNICIPALITY_HOVER_LAYER,
+      MUNICIPALITY_OUTLINE_HOVER_LAYER,
+    ]) {
+      if (map.getLayer(id)) map.moveLayer(id);
+    }
+
     setHighlight(map, null);
     map.setLayoutProperty(MUNICIPALITY_DIM_LAYER, 'visibility', 'none');
 
@@ -337,12 +365,23 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
     }
 
     const isMobileOverview = typeof window !== 'undefined' && window.innerWidth < 768;
-    map.fitBounds(STOCKHOLM_BOUNDS, {
-      padding: isMobileOverview ? OVERVIEW_PADDING_MOBILE : OVERVIEW_PADDING_DESKTOP,
-      pitch: OVERVIEW_PITCH,
-      bearing: OVERVIEW_BEARING,
-      duration: 1200,
-    });
+
+    if (overviewCameraRef.current) {
+      map.easeTo({
+        center: overviewCameraRef.current.center,
+        zoom: overviewCameraRef.current.zoom,
+        pitch: OVERVIEW_PITCH,
+        bearing: OVERVIEW_BEARING,
+        duration: 1200,
+      });
+    } else {
+      map.fitBounds(STOCKHOLM_BOUNDS, {
+        padding: isMobileOverview ? OVERVIEW_PADDING_MOBILE : OVERVIEW_PADDING_DESKTOP,
+        pitch: OVERVIEW_PITCH,
+        bearing: OVERVIEW_BEARING,
+        duration: 1200,
+      });
+    }
   }, []);
 
   const handleListHover = useCallback((name: string | null) => {
@@ -377,8 +416,13 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
       const isMobileInit = typeof window !== 'undefined' && window.innerWidth < 768;
       map.fitBounds(STOCKHOLM_BOUNDS, {
         padding: isMobileInit ? OVERVIEW_PADDING_MOBILE : OVERVIEW_PADDING_DESKTOP,
+        pitch: OVERVIEW_PITCH,
+        bearing: OVERVIEW_BEARING,
         duration: 0,
       });
+      // Save exact camera state so returnToOverview can replay it precisely.
+      const c = map.getCenter();
+      overviewCameraRef.current = { center: [c.lng, c.lat], zoom: map.getZoom() };
 
       map.addSource(MUNICIPALITY_SOURCE, {
         type: 'geojson',
@@ -407,24 +451,34 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         id: 'neighboring-regions-fill',
         type: 'fill',
         source: 'neighboring-regions',
-        paint: { 'fill-color': '#e8e4de', 'fill-opacity': 0.85 },
+        paint: { 'fill-color': '#000000', 'fill-opacity': 1.0 },
       });
 
-      // Transparent hit area
+      // Hit area + warm fill so polygons read clearly on the dark bg
       map.addLayer({
         id: MUNICIPALITY_FILL_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#f0ece6', 'fill-opacity': 0.75 },
+        paint: { 'fill-color': '#787878', 'fill-opacity': 1.0 },
       });
 
-      // Base boundary outlines
+      // Dim overlay added before the outline so borders remain visible above it in detail view
+      map.addLayer({
+        id: MUNICIPALITY_DIM_LAYER,
+        type: 'fill',
+        source: MUNICIPALITY_SOURCE,
+        paint: { 'fill-color': '#000000', 'fill-opacity': 0.72 },
+        filter: ['!=', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
+        layout: { visibility: 'none' },
+      });
+
+      // Base boundary outlines — rendered above the dim layer so they stay legible when dimmed
       map.addLayer({
         id: MUNICIPALITY_OUTLINE_LAYER,
         type: 'line',
         source: MUNICIPALITY_SOURCE,
         layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: { 'line-color': '#555555', 'line-width': 1.5, 'line-opacity': 0.8 },
+        paint: { 'line-color': '#a0a0a0', 'line-width': 2.0, 'line-opacity': 1.0 },
       });
 
       // Hover/selected fill highlight
@@ -448,16 +502,6 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
 
       const isMobileMap = typeof window !== 'undefined' && window.innerWidth < 768;
 
-      // Dark overlay to dim surrounding municipalities in detail view
-      map.addLayer({
-        id: MUNICIPALITY_DIM_LAYER,
-        type: 'fill',
-        source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#f0ece6', 'fill-opacity': 0.7 },
-        filter: ['!=', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
-        layout: { visibility: 'none' },
-      });
-
       // All municipality labels — hidden in overview, shown in detail view
       map.addLayer({
         id: MUNICIPALITY_LABELS_ALL_LAYER,
@@ -475,9 +519,9 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
           visibility: 'none',
         },
         paint: {
-          'text-color': '#555555',
+          'text-color': '#b0a89e',
           'text-opacity': 0.8,
-          'text-halo-color': '#ffffff',
+          'text-halo-color': '#000000',
           'text-halo-width': 2,
         },
       });
@@ -499,9 +543,9 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
           'text-letter-spacing': 0.15,
         },
         paint: {
-          'text-color': '#555555',
+          'text-color': '#f2f0eb',
           'text-opacity': 1.0,
-          'text-halo-color': '#ffffff',
+          'text-halo-color': '#000000',
           'text-halo-width': isMobileMap ? 2 : 4,
         },
       });
@@ -607,11 +651,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
   );
 
   return (
-    <section
-      ref={sectionRef}
-      id={id}
-      className="bg-primary-light py-6 px-4 md:px-48 lg:px-70 md:py-8"
-    >
+    <section ref={sectionRef} id={id} className="bg-canvas pb-6 overflow-hidden">
       {/* Mobile list card — above map, dropdown selector replaces list */}
       <div className="md:hidden mb-4 relative">
         <select
@@ -622,7 +662,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
             if (val) selectMunicipality(val);
             else returnToOverview();
           }}
-          className="w-full p-4 pr-10 rounded-2xl bg-white shadow-xl font-bold tracking-wide text-xl text-[#111111] appearance-none focus:outline-none focus:ring-2 focus:ring-black/20 border-0"
+          className="w-full p-4 pr-10 rounded-2xl bg-[#1a1a18] shadow-xl font-bold tracking-wide text-xl text-on-canvas appearance-none focus:outline-none focus:ring-2 focus:ring-white/20 border border-white/10"
         >
           <option value="">Välj kommun...</option>
           {SORTED_MUNICIPALITIES.map((name) => (
@@ -644,8 +684,8 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         </div>
       </div>
 
-      {/* Map — floating box with rounded corners */}
-      <div className="relative h-[60vh] md:h-[85vh] rounded-2xl overflow-hidden shadow-2xl border border-black/10">
+      {/* Map — seamless, no card border */}
+      <div className="relative h-[85vh] md:h-[120vh] overflow-hidden">
         {shouldLoadMap ? (
           <MapCanvas onMapReady={handleMapReady} />
         ) : (
@@ -657,16 +697,25 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         {/* Transparent overlay to block Mapbox attribution clicks, sits behind info button */}
         <div className="absolute bottom-0 left-0 w-72 h-10 z-[9] bg-transparent" />
 
-        {/* Desktop toggle — top-left of map, always visible */}
-        <div className="hidden md:block absolute top-4 left-4 z-10 w-80">
-          <LayerToggle view={view} onChange={setView} />
+        {/* Desktop toggle — top-centre of map */}
+        <div className="hidden md:flex absolute top-4 left-75 z-10">
+          <LayerToggle view={view} onChange={setView} variant="map" />
         </div>
 
-        {/* Info button + panel — bottom left */}
-        <div className="absolute bottom-3 left-3 z-10 flex flex-col items-start gap-2">
+        {/* Info button + panel — top-left on mobile, shifted right on desktop */}
+        <div className="absolute top-4 left-4 md:left-60 z-10 flex flex-col items-start gap-2">
+          <button
+            onClick={() => setInfoOpen((o) => !o)}
+            aria-label="Visa information om kartan"
+            className="w-14 h-14 rounded-full bg-canvas/80 backdrop-blur-sm border border-white/10 flex items-center justify-center text-on-canvas/60 hover:text-on-canvas transition-colors"
+          >
+            <svg className="w-12 h-12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+            </svg>
+          </button>
           {infoOpen && (
-            <div className="bg-white rounded-xl shadow-lg p-3 w-64 text-xs text-[#111111]">
-              <p className="font-bold uppercase tracking-wide text-[10px] text-gray-400 mb-2">
+            <div className="bg-canvas/90 backdrop-blur-md rounded-xl border border-white/[0.07] p-3 w-64 text-xs text-on-canvas">
+              <p className="font-bold uppercase tracking-wide text-[10px] text-on-canvas/40 mb-2">
                 Teckenförklaring
               </p>
               <div className="flex flex-col gap-1.5 mb-3">
@@ -708,26 +757,17 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
                   <span>= 500 lägenheter (planerade)</span>
                 </div>
               </div>
-              <div className="border-t border-gray-100 pt-2 text-gray-500 leading-relaxed">
+              <div className="border-t border-white/[0.07] pt-2 text-on-canvas/50 leading-relaxed">
                 Enheterna är representativa och visar inte exakta adresser för befintliga bostäder.
                 Planerad nybyggnation baseras på RUFS Bebyggelsestruktur.
               </div>
             </div>
           )}
-          <button
-            onClick={() => setInfoOpen((o) => !o)}
-            aria-label="Visa information om kartan"
-            className="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-[#555555] hover:bg-white transition-colors"
-          >
-            <svg width="25" height="25" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-            </svg>
-          </button>
         </div>
 
         {/* Desktop list card — always mounted for crossfade; fades out when selected */}
         <div
-          className={`hidden md:block absolute top-4 right-4 z-10 w-[260px] h-[calc(100%-3rem)] transition-opacity duration-300 ease-in-out ${
+          className={`hidden md:block absolute top-4 right-60 z-10 w-[260px] h-[calc(100%-3rem)] transition-opacity duration-300 ease-in-out ${
             selected ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
           }`}
         >
@@ -746,7 +786,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
 
         {/* Desktop Stats card — hidden on mobile */}
         <div
-          className={`hidden md:block absolute top-4 right-4 z-20 w-[260px] transition-opacity duration-300 ease-in-out ${
+          className={`hidden md:block absolute top-4 right-60 z-20 w-[260px] transition-opacity duration-300 ease-in-out ${
             selected && stats ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
           }`}
         >
@@ -761,9 +801,9 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         </div>
       </div>
 
-      {/* Mobile toggle — always visible below map, full width to match the dropdown above */}
-      <div className="md:hidden mt-3">
-        <LayerToggle view={view} onChange={setView} className="w-full" />
+      {/* Mobile toggle — below map on dark bg */}
+      <div className="md:hidden mt-4 flex justify-center">
+        <LayerToggle view={view} onChange={setView} variant="map" />
       </div>
 
       {/* Mobile Stats panel — below map */}

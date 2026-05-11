@@ -33,16 +33,30 @@ function BuildingIcon({ color }: { color: string }) {
   );
 }
 
-function StatCell({ value, label, icon }: { value: string; label: string; icon?: ReactNode }) {
+function StatCell({
+  value,
+  label,
+  icon,
+  borderRight,
+  borderBottom,
+}: {
+  value: string;
+  label: string;
+  icon?: ReactNode;
+  borderRight?: boolean;
+  borderBottom?: boolean;
+}) {
   return (
-    <div className="p-3 flex flex-col">
+    <div
+      className={`p-3 flex flex-col ${borderRight ? 'border-r border-white/[0.07]' : ''} ${borderBottom ? 'border-b border-white/[0.07]' : ''}`}
+    >
       <div className="flex items-start justify-between gap-1">
-        <span className="text-[#111111] font-black text-2xl tabular-nums leading-none">
+        <span className="text-on-canvas font-black text-2xl tabular-nums leading-none">
           {value}
         </span>
         {icon && <div className="mt-0.5 flex-shrink-0">{icon}</div>}
       </div>
-      <span className="text-gray-500 text-xs uppercase tracking-wide mt-1.5 leading-tight">
+      <span className="text-on-canvas/50 text-xs uppercase tracking-wide mt-1.5 leading-tight">
         {label}
       </span>
     </div>
@@ -62,17 +76,25 @@ export default function StatsPanel({ stats, view }: StatsPanelProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-2 gap-px bg-gray-100">
-        <StatCell value={fmt(stats.smahusCurrent)} label="Småhus idag" icon={<HouseIcon />} />
+      <div className="grid grid-cols-2">
+        <StatCell
+          value={fmt(stats.smahusCurrent)}
+          label="Småhus idag"
+          icon={<HouseIcon />}
+          borderRight
+          borderBottom
+        />
         <StatCell
           value={fmt(stats.flerboCurrent)}
           label="Lägenheter idag"
           icon={<BuildingIcon color={FLERBOSTADSHUS_COLOR} />}
+          borderBottom
         />
         <StatCell
           value={fmt(stats.flerbo2060)}
           label="Lgh 2060"
           icon={<BuildingIcon color={FLERBOSTADSHUS_NEW_COLOR} />}
+          borderRight
         />
         <StatCell value={`${stats.fortattning}%`} label="Förtätning" />
       </div>

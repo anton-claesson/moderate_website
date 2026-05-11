@@ -1,7 +1,7 @@
 export const STOCKHOLM_CENTER: [number, number] = [18.07, 59.33];
 export const STOCKHOLM_BOUNDS: [[number, number], [number, number]] = [
-  [17.2, 58.8],
-  [19.3, 60.1],
+  [17.5, 58.65],
+  [19.1, 60.25],
 ];
 export const OVERVIEW_PITCH = 0;
 export const OVERVIEW_BEARING = 0;

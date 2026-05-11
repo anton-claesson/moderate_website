@@ -1,0 +1,16 @@
+{
+  "version": 8,
+  "name": "Moderate-Minimal",
+  "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+  "sprite": "mapbox://sprites/mapbox/empty-v9",
+  "sources": {},
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#000000"
+      }
+    }
+  ]
+}

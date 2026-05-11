@@ -11,7 +11,7 @@ interface MapCanvasProps {
 }
 
 export default function MapCanvas({
-  style = '/map-style/monochrome-map-style.json',
+  style = '/map-style/minimal-map-style.json',
   onMapReady,
 }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -43,5 +43,5 @@ export default function MapCanvas({
     };
   }, [style, onMapReady]);
 
-  return <div ref={containerRef} className="w-full h-full" />;
+  return <div ref={containerRef} className="w-full h-full" style={{ background: '#000000' }} />;
 }

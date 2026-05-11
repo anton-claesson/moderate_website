@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Geist_Mono, Oswald } from 'next/font/google';
+import { Inter, Geist_Mono, Oswald, DM_Serif_Display } from 'next/font/google';
 import './globals.css';
 
 const inter = Inter({
@@ -18,6 +18,12 @@ const oswald = Oswald({
   weight: ['500', '700'],
 });
 
+const dmSerifDisplay = DM_Serif_Display({
+  variable: '--font-dm-serif',
+  subsets: ['latin'],
+  weight: ['400'],
+});
+
 export const metadata: Metadata = {
   title: 'Stoppa miljonprogrammen',
   description: 'Se hur de nya miljonprogrammen påverkar din hemkommun!',
@@ -31,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="sv"
-      className={`${inter.variable} ${geistMono.variable} ${oswald.variable} h-full w-full antialiased`}
+      className={`${inter.variable} ${geistMono.variable} ${oswald.variable} ${dmSerifDisplay.variable} h-full w-full antialiased`}
     >
       <head>
         <link rel="preconnect" href="https://api.mapbox.com" />
