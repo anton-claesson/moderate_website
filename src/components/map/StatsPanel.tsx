@@ -51,7 +51,7 @@ function StatCell({
       className={`p-3 flex flex-col ${borderRight ? 'border-r border-white/[0.07]' : ''} ${borderBottom ? 'border-b border-white/[0.07]' : ''}`}
     >
       <div className="flex items-start justify-between gap-1">
-        <span className="text-on-canvas font-black text-2xl tabular-nums leading-none">
+        <span className="text-on-canvas font-ui font-black text-2xl tabular-nums leading-none">
           {value}
         </span>
         {icon && <div className="mt-0.5 flex-shrink-0">{icon}</div>}

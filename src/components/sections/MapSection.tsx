@@ -741,8 +741,8 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
             </svg>
           </button>
           {infoOpen && (
-            <div className="absolute top-full left-0 mt-2 z-50 bg-canvas/90 backdrop-blur-md rounded-xl border border-white/[0.07] p-3 w-64 text-xs text-on-canvas">
-              <p className="font-bold uppercase tracking-wide text-[10px] text-on-canvas/40 mb-2">
+            <div className="font-ui absolute top-full left-0 mt-2 z-50 bg-canvas/90 backdrop-blur-md rounded-xl border border-white/[0.07] p-3 w-64 text-xs text-on-canvas">
+              <p className="font-ui font-bold uppercase tracking-wide text-[10px] text-on-canvas/40 mb-2">
                 Teckenförklaring
               </p>
               <div className="flex flex-col gap-1.5 mb-3">
@@ -794,7 +794,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
               if (val) selectMunicipality(val);
               else returnToOverview();
             }}
-            className="w-full p-4 pr-10 rounded-2xl bg-[#1a1a18] shadow-xl font-bold tracking-wide text-xl text-on-canvas appearance-none focus:outline-none focus:ring-2 focus:ring-white/20 border border-white/10"
+            className="w-full p-4 pr-10 rounded-2xl bg-[#1a1a18] shadow-xl font-ui font-bold tracking-wide text-xl text-on-canvas appearance-none focus:outline-none focus:ring-2 focus:ring-white/20 border border-white/10"
           >
             <option value="">Välj kommun...</option>
             {SORTED_MUNICIPALITIES.map((name) => (
@@ -857,8 +857,8 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
             </svg>
           </button>
           {infoOpen && (
-            <div className="bg-canvas/90 backdrop-blur-md rounded-xl border border-white/[0.07] p-3 w-64 text-xs text-on-canvas">
-              <p className="font-bold uppercase tracking-wide text-[10px] text-on-canvas/40 mb-2">
+            <div className="font-ui bg-canvas/90 backdrop-blur-md rounded-xl border border-white/[0.07] p-3 w-64 text-xs text-on-canvas">
+              <p className="font-ui font-bold uppercase tracking-wide text-[10px] text-on-canvas/40 mb-2">
                 Teckenförklaring
               </p>
               <div className="flex flex-col gap-1.5 mb-3">

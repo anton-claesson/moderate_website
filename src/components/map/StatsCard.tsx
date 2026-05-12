@@ -15,7 +15,7 @@ export default function StatsCard({ selected, stats, view, onBack }: StatsCardPr
       <div className="hidden md:flex px-4 pt-3 pb-2 border-b border-white/[0.07] items-center">
         <button
           onClick={onBack}
-          className="flex items-center gap-1 text-on-canvas/50 hover:text-on-canvas text-sm font-bold transition-colors duration-150"
+          className="flex items-center gap-1 text-on-canvas/50 hover:text-on-canvas text-sm font-ui font-bold transition-colors duration-150"
         >
           <svg
             width="18"
@@ -34,7 +34,7 @@ export default function StatsCard({ selected, stats, view, onBack }: StatsCardPr
         </button>
       </div>
       <div className="px-4 pt-3 pb-1">
-        <h2 className="text-on-canvas font-black text-2xl leading-tight uppercase tracking-wide">
+        <h2 className="text-on-canvas font-ui font-black text-2xl leading-tight uppercase tracking-wide">
           {selected}
         </h2>
       </div>

@@ -57,6 +57,8 @@
   --font-mono: var(--font-geist-mono), monospace;
   --font-heading: var(--font-oswald), system-ui, sans-serif;
   --font-display: var(--font-dm-serif), Georgia, serif;
+  --font-body: var(--font-lora), Georgia, serif;
+  --font-ui: var(--font-dm-sans), system-ui, sans-serif;
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);

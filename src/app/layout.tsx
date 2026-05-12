@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Geist_Mono, Oswald, DM_Serif_Display } from 'next/font/google';
+import { Inter, Geist_Mono, DM_Serif_Display, Lora, DM_Sans } from 'next/font/google';
 import './globals.css';
 
 const inter = Inter({
@@ -12,16 +12,22 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-const oswald = Oswald({
-  variable: '--font-oswald',
-  subsets: ['latin'],
-  weight: ['500', '700'],
-});
-
 const dmSerifDisplay = DM_Serif_Display({
   variable: '--font-dm-serif',
   subsets: ['latin'],
   weight: ['400'],
+});
+
+const lora = Lora({
+  variable: '--font-lora',
+  subsets: ['latin'],
+  weight: ['400', '600'],
+});
+
+const dmSans = DM_Sans({
+  variable: '--font-dm-sans',
+  subsets: ['latin'],
+  weight: ['500', '700'],
 });
 
 export const metadata: Metadata = {
@@ -37,7 +43,7 @@ export default function RootLayout({
   return (
     <html
       lang="sv"
-      className={`${inter.variable} ${geistMono.variable} ${oswald.variable} ${dmSerifDisplay.variable} h-full w-full antialiased`}
+      className={`${inter.variable} ${geistMono.variable} ${dmSerifDisplay.variable} ${lora.variable} ${dmSans.variable} h-full w-full antialiased`}
     >
       <head>
         <link rel="preconnect" href="https://api.mapbox.com" />

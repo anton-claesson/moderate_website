@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer className="w-full bg-canvas" style={{ borderTop: '1px solid rgba(242,240,235,0.08)' }}>
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-sm">
+        <div className="font-ui flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-sm">
           <span className="text-on-canvas/40">
             Det här är en kampanj från Moderaterna i Region Stockholm
           </span>

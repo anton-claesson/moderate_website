@@ -22,7 +22,7 @@ export default function LayerToggle({
           <button
             key={v}
             onClick={() => onChange(v)}
-            className={`px-8 py-2.5 text-xl font-bold uppercase tracking-widest rounded-full transition-all duration-200 ${
+            className={`font-ui px-8 py-2.5 text-xl font-bold uppercase tracking-widest rounded-full transition-all duration-200 ${
               view === v ? 'bg-accent text-white shadow-sm' : 'text-white/50 hover:text-white/80'
             }`}
           >
@@ -39,7 +39,7 @@ export default function LayerToggle({
         <button
           key={v}
           onClick={() => onChange(v)}
-          className={`flex-1 py-4 px-6 text-xl font-bold tracking-wide text-center rounded-xl transition-all duration-200 ${
+          className={`font-ui flex-1 py-4 px-6 text-xl font-bold tracking-wide text-center rounded-xl transition-all duration-200 ${
             view === v ? 'bg-accent text-white shadow-md' : 'text-text-muted hover:text-primary'
           }`}
         >

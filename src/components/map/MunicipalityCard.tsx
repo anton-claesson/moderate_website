@@ -69,7 +69,7 @@ export default function MunicipalityCard({
             <BackButton onClick={onBack} />
           </div>
           <div className="px-4 py-3 flex-1 overflow-y-auto flex flex-col gap-4 min-h-0">
-            <h2 className="text-on-canvas font-bold text-lg leading-tight">{selected}</h2>
+            <h2 className="text-on-canvas font-ui font-bold text-lg leading-tight">{selected}</h2>
             {stats && <StatsPanel stats={stats} view={view} />}
           </div>
           <div className="px-4 pb-4 pt-2 border-t border-white/[0.07] flex-shrink-0">
@@ -83,7 +83,7 @@ export default function MunicipalityCard({
             onScroll={updateScrollState}
             className="flex-[4] min-h-0 overflow-y-scroll scrollbar-white"
           >
-            <p className="px-4 pt-3 pb-3 text-xl font-bold text-on-canvas/70 border-b border-white/[0.07]">
+            <p className="px-4 pt-3 pb-3 text-xl font-ui font-bold text-on-canvas/70 border-b border-white/[0.07]">
               Välj kommun
             </p>
             <MunicipalityList

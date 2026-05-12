@@ -86,7 +86,7 @@ export default function ContactForm() {
   if (formState === 'success') {
     return (
       <div className="py-8 text-center">
-        <p className="text-2xl font-bold text-on-canvas">
+        <p className="font-body text-2xl font-bold text-on-canvas">
           Tack! Vi hör av oss när projektet uppdateras.
         </p>
       </div>
@@ -94,7 +94,7 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
+    <form onSubmit={handleSubmit} noValidate className="font-ui">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <label htmlFor="epost" className="block text-sm text-on-canvas/60 mb-1">
@@ -183,7 +183,7 @@ export default function ContactForm() {
             onChange={handleChange}
             className="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-on-canvas/30 accent-accent focus:ring-accent/50"
           />
-          <span className="text-[13px] text-on-canvas mt-px leading-[1.4]">
+          <span className="font-body text-[13px] text-on-canvas mt-px leading-[1.4]">
             Jag samtycker till att Moderaterna sparar mina uppgifter och kontaktar mig med
             information om kampanjen.
           </span>
@@ -193,13 +193,13 @@ export default function ContactForm() {
           <button
             type="button"
             onClick={() => setIsGdprExpanded((p) => !p)}
-            className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors duration-150 underline underline-offset-2 focus:outline-none focus:ring-2 focus:ring-accent/50 rounded-sm"
+            className="font-body text-xs font-semibold text-accent hover:text-accent-hover transition-colors duration-150 underline underline-offset-2 focus:outline-none focus:ring-2 focus:ring-accent/50 rounded-sm"
           >
             {isGdprExpanded ? 'Visa färre detaljer' : 'Läs mer om hur vi hanterar dina uppgifter'}
           </button>
 
           {isGdprExpanded && (
-            <div className="mt-3 text-xs text-on-canvas/55 leading-relaxed space-y-3 border-l-2 border-accent/20 pl-3">
+            <div className="font-body mt-3 text-xs text-on-canvas/55 leading-relaxed space-y-3 border-l-2 border-accent/20 pl-3">
               <p>
                 Genom att lämna dina kontaktuppgifter samtycker du till att vi på Moderaterna då och
                 då hör av oss till dig med information om kampanjen och andra nyheter från
