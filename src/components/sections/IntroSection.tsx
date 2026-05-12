@@ -12,12 +12,12 @@ export default function IntroSection({ id }: IntroSectionProps) {
   return (
     <section
       id={id}
-      className="relative min-h-[80vh] w-full flex flex-col bg-canvas overflow-hidden"
+      className="relative w-full flex flex-col bg-canvas overflow-hidden"
     >
       {/* Grain texture */}
       <div className="hero-grain" aria-hidden="true" />
 
-      <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-10 flex flex-col flex-1 justify-center py-10 sm:py-20">
+      <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-10 flex flex-col flex-1 justify-center pb-10 pt-10 sm:py-20">
         {/* Red bar above title */}
         <div
           className="animate-fade-up w-16 h-px bg-accent mb-6"

@@ -83,7 +83,7 @@ export default function MunicipalityCard({
             onScroll={updateScrollState}
             className="flex-[4] min-h-0 overflow-y-scroll scrollbar-white"
           >
-            <p className="px-4 pt-3 pb-3 text-base font-bold text-on-canvas/70 border-b border-white/[0.07]">
+            <p className="px-4 pt-3 pb-3 text-xl font-bold text-on-canvas/70 border-b border-white/[0.07]">
               Välj kommun
             </p>
             <MunicipalityList
