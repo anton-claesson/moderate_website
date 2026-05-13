@@ -29,7 +29,7 @@ export default function VideosSection({ id }: VideosSectionProps) {
             <div className="space-y-4 pt-8">
               <p
                 className="font-body text-base sm:text-lg leading-relaxed"
-                style={{ color: 'rgba(242,240,235,0.55)' }}
+                style={{ color: 'rgba(242,240,235,0.75)' }}
               >
                 Det sade Socialdemokraternas företrädare under Stockholms regionfullmäktige den 11
                 november 2025, när den regionala utvecklingsplanen och den nya inriktningen för
@@ -37,7 +37,7 @@ export default function VideosSection({ id }: VideosSectionProps) {
               </p>
               <p
                 className="font-body text-base sm:text-lg leading-relaxed"
-                style={{ color: 'rgba(242,240,235,0.55)' }}
+                style={{ color: 'rgba(242,240,235,0.75)' }}
               >
                 När stockholmarna ber om ett äppelträd i bakgården placerar Socialdemokraterna där i
                 stället ett regionalt miljonprogram — och de drar sig inte för att berätta om det.
