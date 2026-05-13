@@ -95,9 +95,9 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="font-ui">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className="max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
-          <label htmlFor="epost" className="block text-sm text-on-canvas/60 mb-1">
+          <label htmlFor="epost" className="block text-sm text-on-canvas/80 mb-1">
             E-post <span className="text-accent">*</span>
           </label>
           <input
@@ -113,7 +113,7 @@ export default function ContactForm() {
           />
         </div>
         <div>
-          <label htmlFor="kommun" className="block text-sm text-on-canvas/60 mb-1">
+          <label htmlFor="kommun" className="block text-sm text-on-canvas/80 mb-1">
             Kommun <span className="text-accent">*</span>
           </label>
           <select
@@ -136,7 +136,7 @@ export default function ContactForm() {
           </select>
         </div>
         <div>
-          <label htmlFor="namn" className="block text-sm text-on-canvas/60 mb-1">
+          <label htmlFor="namn" className="block text-sm text-on-canvas/80 mb-1">
             Namn
           </label>
           <input
@@ -151,7 +151,7 @@ export default function ContactForm() {
           />
         </div>
         <div>
-          <label htmlFor="telefon" className="block text-sm text-on-canvas/60 mb-1">
+          <label htmlFor="telefon" className="block text-sm text-on-canvas/80 mb-1">
             Telefon
           </label>
           <input
@@ -199,7 +199,7 @@ export default function ContactForm() {
           </button>
 
           {isGdprExpanded && (
-            <div className="font-body mt-3 text-xs text-on-canvas/55 leading-relaxed space-y-3 border-l-2 border-accent/20 pl-3">
+            <div className="font-body mt-3 text-xs text-on-canvas/70 leading-relaxed space-y-3 border-l-2 border-accent/20 pl-3">
               <p>
                 Genom att lämna dina kontaktuppgifter samtycker du till att vi på Moderaterna då och
                 då hör av oss till dig med information om kampanjen och andra nyheter från

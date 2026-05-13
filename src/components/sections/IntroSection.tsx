@@ -10,10 +10,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
   const [faktaOpen, setFaktaOpen] = useState(false);
 
   return (
-    <section
-      id={id}
-      className="relative w-full flex flex-col bg-canvas overflow-hidden"
-    >
+    <section id={id} className="relative w-full flex flex-col bg-canvas overflow-hidden">
       {/* Grain texture */}
       <div className="hero-grain" aria-hidden="true" />
 
@@ -29,9 +26,9 @@ export default function IntroSection({ id }: IntroSectionProps) {
           className="animate-fade-up font-display text-on-canvas leading-[0.95] mb-8"
           style={{ fontSize: 'min(10vw, 6.5rem)', animationDelay: '80ms' }}
         >
-          Stoppa de nya
+          STOPPA (S) NYA
           <br />
-          <span className="text-accent">miljonprogrammen!</span>
+          <span className="text-accent">MILJONPROGRAM</span>
         </h1>
 
         {/* Red rule */}
@@ -42,49 +39,62 @@ export default function IntroSection({ id }: IntroSectionProps) {
 
         {/* Subheading */}
         <p
-          className="animate-fade-up font-body font-bold uppercase tracking-wide text-xl sm:text-2xl mb-6 max-w-4xl"
+          className="animate-fade-up font-body font-bold uppercase tracking-wide text-xl sm:text-2xl mb-6 max-w-5xl"
           style={{ color: 'rgba(242,240,235,0.75)', animationDelay: '280ms' }}
         >
-          <span className="text-accent">Beslutat:</span> 577 000 nya lägenheter i Region Stockholm.
+          <span className="text-accent">Beslutat:</span> 580 000 nya bostäder i Stockholmsregionen.
           <br />
-          Nya miljonprogram – i parken, vid torget och där du bor.
+          Förtätningar och försämringar i din trädgård och på ditt torg.
         </p>
 
         {/* Body text */}
         <div
-          className="animate-fade-up max-w-2xl space-y-3 mb-8"
+          className="animate-fade-up max-w-4xl space-y-3 mb-8"
           style={{ animationDelay: '360ms' }}
         >
-          <p className="font-body sm:text-lg leading-relaxed" style={{ color: 'rgba(242,240,235,0.55)' }}>
-            Planen drivs av Socialdemokraterna Stockholms Regionen och har klubbats igenom av
-            ordförande Aida Hadzialic (S). I en bilaga målas kommun efter kommun upp för snabb,
-            genomgripande förändring – med tät, storskalig bebyggelse.
+          <p
+            className="font-body sm:text-lg leading-relaxed"
+            style={{ color: 'rgba(242,240,235,0.75)' }}
+          >
+            Socialdemokraterna, med regionstyrelsens ordförande Aida Hadžialić i spetsen, har drivit
+            igenom en ny bostadspolitik i Region Stockholm. Alla Stockholms kommuner ska förtätas
+            med storskalig höghusbebyggelse.
           </p>
-          <p className="font-body sm:text-lg leading-relaxed" style={{ color: 'rgba(242,240,235,0.55)' }}>
-            Riv upp bilagan. Ställ de ansvariga till svars.
+          <p
+            className="font-body sm:text-lg leading-relaxed"
+            style={{ color: 'rgba(242,240,235,0.75)' }}
+          >
+            Stoppa miljonprogramsplanerna.{' '}
+            <span className="text-accent font-bold">
+              Rösta bort Socialdemokraterna den 13 september.
+            </span>
           </p>
         </div>
 
         {/* Fakta accordion */}
-        <div className="animate-fade-up mb-10 max-w-2xl" style={{ animationDelay: '440ms' }}>
+        <div className="animate-fade-up mb-10 max-w-3xl" style={{ animationDelay: '440ms' }}>
           <button
             onClick={() => setFaktaOpen((o) => !o)}
             className="font-body text-sm sm:text-base font-semibold underline underline-offset-4 transition-colors duration-150 focus:outline-none"
             style={{ color: 'rgba(242,240,235,0.45)' }}
           >
-            {faktaOpen ? 'Dölj fakta' : 'Läs fakta om planen'}
+            {faktaOpen ? 'Dölj fakta' : 'Fakta om planen'}
           </button>
           {faktaOpen && (
             <div className="mt-3 border-l-2 border-accent/20 pl-4">
-              <p className="font-body text-sm leading-relaxed" style={{ color: 'rgba(242,240,235,0.45)' }}>
+              <p
+                className="font-body text-sm leading-relaxed"
+                style={{ color: 'rgba(242,240,235,0.45)' }}
+              >
                 <strong style={{ color: 'rgba(242,240,235,0.7)' }}>Fakta: </strong>
                 Socialdemokraterna, Vänsterpartiet, Miljöpartiet och Centerpartiet i Region
-                Stockholm har beslutat om en ny regional utvecklingsplan. I planen ingår en bilaga
-                som fastställer hur många bostäder varje kommun ska bygga – på begränsad yta. I
-                praktiken innebär det att kommuner pressas att bygga högt och tätt i redan bebyggda
-                områden för att nå målen. Konsekvensen är att grönytor, småhusområden och befintliga
-                bostadsmiljöer tas i anspråk. Kommuner som inte följer planen hotas bli utan
-                investeringar i kollektivtrafik, infrastruktur och vård.
+                Stockholm har beslutat om en ny regional utvecklingsplan. I planen fastställs hur
+                många bostäder varje kommun ska bygga och på vilka ytor. I praktiken innebär detta
+                att kommuner pressas att bygga högt och tätt i redan bebyggda områden för att leva
+                upp till regionens krav. Konsekvensen är att grönområden och villaområden riskerar
+                att tas i anspråk till förmån för nya, storskaliga bostadsområden. Planen är kopplad
+                till regionala investeringar. Kommuner som motsätter sig inriktningen hotas med
+                indragna satsningar på kollektivtrafik, infrastruktur och vård.
               </p>
             </div>
           )}
@@ -97,7 +107,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
         >
           <div className="w-8 h-px bg-current flex-shrink-0" />
           <span className="font-body font-bold uppercase text-sm sm:text-lg tracking-[0.15em]">
-            Se hur det påverkar din kommun
+            Se hur din kommun påverkas
           </span>
           <svg
             width="24"

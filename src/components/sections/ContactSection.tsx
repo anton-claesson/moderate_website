@@ -6,17 +6,17 @@ interface ContactSectionProps {
 
 export default function ContactSection({ id }: ContactSectionProps) {
   return (
-    <section id={id} className="bg-canvas">
-      <div className="mx-auto max-w-3xl w-full px-4 sm:px-6 py-12 sm:py-12">
-        <div className="w-16 h-px bg-accent mb-6 mx-auto" />
-        <h2 className="text-3xl sm:text-5xl text-on-canvas leading-tight mb-3 text-center font-display">
-          Stoppa miljonprogrammen! Din röst behövs.
+    <section id={id} className="bg-canvas border-border">
+      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-12 sm:py-12">
+        <div className="w-16 h-px bg-accent mb-6" />
+        <h2 className="max-w-3xl text-3xl sm:text-5xl text-on-canvas leading-tight mb-3 text-left font-display">
+          HJÄLP OSS STOPPA (S) NYA MILJONPROGRAM
         </h2>
         <p
-          className="font-body text-base leading-relaxed mb-10 text-center"
-          style={{ color: 'rgba(242,240,235,0.55)' }}
+          className="max-w-3xl font-body text-base leading-relaxed mb-10 text-left"
+          style={{ color: 'rgba(242, 240, 235, 0.75)' }}
         >
-          Lämna dina kontaktuppgifter så hör vi av oss när information tillkommer.
+          Tillsammans kan vi stoppa planerna. Lämna dina kontaktuppgifter här.
         </p>
         <ContactForm />
       </div>

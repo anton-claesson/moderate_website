@@ -72,7 +72,7 @@ function getIdealSectionHeight(): number {
   const pad = getOverviewPadding();
   const availW = window.innerWidth - pad.left - pad.right;
   const ideal = availW * STOCKHOLM_ASPECT_RATIO + pad.top + pad.bottom;
-  return Math.round(Math.min(ideal, window.innerHeight * 1.));
+  return Math.round(Math.min(ideal, window.innerHeight * 1));
 }
 
 const MUNICIPALITY_FILL_LAYER = 'municipalities-fill';
@@ -766,7 +766,14 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
                 </div>
                 <div className="flex items-center gap-2">
                   <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
-                    <rect x="0" y="2" width="15" height="16" rx="0.5" fill={FLERBOSTADSHUS_NEW_COLOR} />
+                    <rect
+                      x="0"
+                      y="2"
+                      width="15"
+                      height="16"
+                      rx="0.5"
+                      fill={FLERBOSTADSHUS_NEW_COLOR}
+                    />
                     <rect x="2" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
                     <rect x="6" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
                     <rect x="10" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
@@ -835,10 +842,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         <div className="absolute bottom-0 left-0 w-72 h-10 z-[9] bg-transparent" />
 
         {/* Desktop toggle */}
-        <div
-          className="hidden lg:flex absolute top-4 z-10"
-          style={{ left: toggleLeft }}
-        >
+        <div className="hidden lg:flex absolute top-4 z-10" style={{ left: toggleLeft }}>
           <LayerToggle view={view} onChange={setView} variant="map" />
         </div>
 

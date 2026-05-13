@@ -92,7 +92,7 @@ export default function StatsPanel({ stats, view }: StatsPanelProps) {
         />
         <StatCell
           value={fmt(stats.flerbo2060)}
-          label="Lgh 2060"
+          label="Bostäder 2060"
           icon={<BuildingIcon color={FLERBOSTADSHUS_NEW_COLOR} />}
           borderRight
         />
