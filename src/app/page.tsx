@@ -4,6 +4,7 @@ import MapSection from '@/components/sections/MapSection';
 import VideosSection from '@/components/sections/VideosSection';
 import VisualizerSection from '@/components/sections/VisualizerSection';
 import ContactSection from '@/components/sections/ContactSection';
+import NewsSection from '@/components/sections/NewsSection';
 import { MUNICIPALITY_CENTROIDS } from '@/data/municipalityCentroids';
 
 type Props = {
@@ -29,6 +30,7 @@ export default async function Home({ searchParams }: Props) {
         <MapSection id="map" initialMunicipality={initialMunicipality} />
         <VideosSection id="videos" />
         <VisualizerSection id="visualizer" />
+        <NewsSection id="news" />
         <ContactSection id="contact" />
       </main>
       <Footer />
