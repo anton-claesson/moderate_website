@@ -31,12 +31,12 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Stoppa miljonprogrammen',
-  description: 'Se hur de nya miljonprogrammen påverkar din hemkommun!',
+  title: 'Stoppa (S) miljonprogram',
+  description: 'Alla Stockholms kommuner ska förtätas med storskalig höghusbebyggelse. Se hur din kommun påverkas.',
   openGraph: {
-    title: 'Stoppa miljonprogrammen',
-    description: 'Se hur de nya miljonprogrammen påverkar din hemkommun!',
-    images: ['/og_image.png'],
+    title: 'Stoppa (S) miljonprogram',
+    description: 'Alla Stockholms kommuner ska förtätas med storskalig höghusbebyggelse. Se hur din kommun påverkas.',
+    images: ['/og_image.jpg'],
   },
 };
 
