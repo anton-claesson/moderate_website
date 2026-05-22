@@ -76,7 +76,7 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
             className="max-w-4xl pl-8 font-body text-base sm:text-lg leading-relaxed"
             style={{ color: 'rgba(242,240,235,0.75)' }}
           >
-            Socialdemokraterna och Hyresgästföreningen krokar åter arm i arm, denna gång i frågan om
+            Socialdemokraterna och Hyresgästföreningen krokar åter arm, denna gång i frågan om
             miljonprogram. På Lidingö vill de riva var femte villa och bygga hyreshus på var tredje
             villatomt.
           </p>

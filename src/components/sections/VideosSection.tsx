@@ -24,14 +24,14 @@ export default function VideosSection({ id }: VideosSectionProps) {
               className="font-display pt-8 text-3xl sm:text-4xl md:text-5xl italic leading-tight"
               style={{ color: 'rgba(242,240,235,0.9)' }}
             >
-              "Vill de inte bo där så är de välkomna att flytta."
+              &ldquo;Vill de inte bo där så är de välkomna att flytta.&rdquo;
             </blockquote>
             <div className="space-y-4 pt-8">
               <p
                 className="font-body text-base sm:text-lg leading-relaxed"
                 style={{ color: 'rgba(242,240,235,0.75)' }}
               >
-                Det sade Socialdemokraternas företrädare under Stockholms regionfullmäktige den 11
+                Det sade en Socialdemokratisk företrädare under Stockholms regionfullmäktige den 11
                 november 2025, när den regionala utvecklingsplanen och den nya inriktningen för
                 bostadsbyggandet i länet debatterades.
               </p>

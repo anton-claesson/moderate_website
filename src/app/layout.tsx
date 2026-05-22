@@ -33,6 +33,11 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: 'Stoppa miljonprogrammen',
   description: 'Se hur de nya miljonprogrammen påverkar din hemkommun!',
+  openGraph: {
+    title: 'Stoppa miljonprogrammen',
+    description: 'Se hur de nya miljonprogrammen påverkar din hemkommun!',
+    images: ['/og_image.png'],
+  },
 };
 
 export default function RootLayout({

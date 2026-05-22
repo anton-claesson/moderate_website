@@ -6,7 +6,6 @@ export default function Footer() {
           <span className="text-on-canvas">
             Det här är en kampanj från Moderaterna i Region Stockholm
           </span>
-          <span className="hidden sm:inline text-on-canvas">·</span>
           <a
             href="mailto:caroline.hellstrom@moderaterna.se"
             className="font-medium text-on-canvas hover:text-on-canvas/80 transition-colors duration-150 underline underline-offset-4"
