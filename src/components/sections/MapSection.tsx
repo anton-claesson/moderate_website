@@ -905,8 +905,9 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
                 </div>
               </div>
               <div className="border-t border-white/[0.07] pt-2 text-on-canvas/50 leading-relaxed">
-                Enheterna är representativa och visar inte exakta adresser för befintliga bostäder.
-                Planerad nybyggnation baseras på RUFS Bebyggelsestruktur.
+                Enheterna är representativa och visar inte exakta adresser för befintliga eller
+                planerade bostäder. Mängden planerade bostäder är en uppskattning av hur målet för
+                RUFS 2060 ska uppnås.
               </div>
             </div>
           )}
