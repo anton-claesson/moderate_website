@@ -1,33 +1,18 @@
 import type { Metadata } from 'next';
-import { Inter, Geist_Mono, DM_Serif_Display, Lora, DM_Sans } from 'next/font/google';
+import { Anton, Inter } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({
-  variable: '--font-inter',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
-const dmSerifDisplay = DM_Serif_Display({
-  variable: '--font-dm-serif',
+// Headline: heavy condensed grotesque (poster lettering). Single weight.
+const anton = Anton({
+  variable: '--font-anton',
   subsets: ['latin'],
   weight: ['400'],
 });
 
-const lora = Lora({
-  variable: '--font-lora',
+// Body / UI: clean neutral sans.
+const inter = Inter({
+  variable: '--font-inter',
   subsets: ['latin'],
-  weight: ['400', '600'],
-});
-
-const dmSans = DM_Sans({
-  variable: '--font-dm-sans',
-  subsets: ['latin'],
-  weight: ['500', '700'],
 });
 
 export const metadata: Metadata = {
@@ -48,10 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="sv"
-      className={`${inter.variable} ${geistMono.variable} ${dmSerifDisplay.variable} ${lora.variable} ${dmSans.variable} h-full w-full antialiased`}
-    >
+    <html lang="sv" className={`${anton.variable} ${inter.variable} h-full w-full antialiased`}>
       <head>
         <link rel="preconnect" href="https://api.mapbox.com" />
         <link rel="preconnect" href="https://events.mapbox.com" />

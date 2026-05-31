@@ -88,3 +88,18 @@ public/
 | Data      | Static GeoJSON       |
 | Styling   | Tailwind CSS         |
 | Hosting   | Vercel               |
+
+## Design System
+
+Visual tokens live in `src/app/globals.css` (`@theme inline`):
+
+- **Fonts** — two sans-serifs loaded in `src/app/layout.tsx`: **Anton** (heavy
+  condensed grotesque) for headlines (`font-display` / `font-heading`) and
+  **Inter** for body/UI (`font-body` / `font-ui` / `font-sans`).
+- **Palette** — dark blue-gray cement canvas (`--color-canvas: #2b3849`) with
+  light text (`--color-on-canvas`) and a red accent (`--color-accent`). The map
+  renders slightly lighter (`--color-map-bg: #3d4d61`) so it stands out.
+- **Texture** — `.textured-canvas` overlays a fine inline-SVG grain on the base
+  color (no image, no gradient). Grain strength is the adjustable
+  `--grain-opacity` knob (set in `:root`, override per-section). `.headline-texture`
+  adds a subtle grain/distress overlay to large headings while keeping glyphs crisp.

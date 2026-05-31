@@ -11,7 +11,8 @@
   /* Surface */
   --color-surface: #f7f5f2;
   --color-surface-muted: #edebe7;
-  --color-map-bg: #2c3e2d;
+  /* Map canvas — a touch lighter than the page so the map stands out (Chunk 9) */
+  --color-map-bg: #3d4d61;
 
   /* Text */
   --color-text: #111111;
@@ -25,9 +26,15 @@
   /* Accent hover */
   --color-accent-hover: #991b1b;
 
-  /* Dark canvas (hero + footer) */
-  --color-canvas: #000000;
+  /* Dark canvas — blue-gray cement (hero + content sections) */
+  --color-canvas: #2b3849;
   --color-on-canvas: #f2f0eb;
+  /* Panel surfaces sitting on the canvas (overlays, cards) */
+  --color-canvas-raised: #34435626;
+  --color-canvas-border: #ffffff14;
+
+  /* Grain strength for .textured-canvas — adjustable knob (0 = flat) */
+  --grain-opacity: 0.3;
 
   /* Border radius */
   --radius-sm: 0.25rem;
@@ -53,12 +60,16 @@
   --color-border-strong: var(--color-border-strong);
   --color-canvas: var(--color-canvas);
   --color-on-canvas: var(--color-on-canvas);
+  --color-canvas-raised: var(--color-canvas-raised);
+  --color-canvas-border: var(--color-canvas-border);
   --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), monospace;
-  --font-heading: var(--font-oswald), system-ui, sans-serif;
-  --font-display: var(--font-dm-serif), Georgia, serif;
-  --font-body: var(--font-lora), Georgia, serif;
-  --font-ui: var(--font-dm-sans), system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+  /* Headline: heavy condensed grotesque (Anton) */
+  --font-heading: var(--font-anton), system-ui, sans-serif;
+  --font-display: var(--font-anton), system-ui, sans-serif;
+  /* Body / UI: clean neutral sans (Inter) */
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-ui: var(--font-inter), system-ui, sans-serif;
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
@@ -121,13 +132,60 @@
   background-size: 256px 256px;
 }
 
+/*
+ * Textured surface for the dark canvas sections: blue-gray base color + a fine
+ * SVG grain (no image, no gradient). Grain strength is adjustable via the
+ * --grain-opacity knob (set globally in :root, or per-section to override).
+ * The grain rides in a ::after layer; direct children are lifted above it.
+ */
+.textured-canvas {
+  position: relative;
+  background-color: var(--color-canvas);
+  isolation: isolate;
+}
+.textured-canvas::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+.textured-canvas > * {
+  position: relative;
+  z-index: 1;
+}
+
+/*
+ * Subtle distress overlay for big headlines. Glyphs stay crisp (no filter on
+ * the text itself) — a low-opacity grain rides over the heading box via a
+ * blend mode. Apply to a heading wrapper/element with position context.
+ */
+.headline-texture {
+  position: relative;
+}
+.headline-texture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+}
+
 html {
   overflow-x: hidden;
 }
 
 body {
-  background-color: var(--color-surface);
-  color: var(--color-text);
+  background-color: var(--color-canvas);
+  color: var(--color-on-canvas);
   font-family: var(--font-sans);
   overflow-x: hidden;
 }

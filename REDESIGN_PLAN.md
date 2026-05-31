@@ -36,7 +36,7 @@ Features first, then design.
 
 **Design**
 
-- [ ] Chunk 7 — Design-system foundation (fonts, palette, textured background)
+- [x] Chunk 7 — Design-system foundation (fonts, palette, textured background)
 - [ ] Chunk 8 — Apply palette + texture + fonts to content sections
 - [ ] Chunk 9 — Map restyle to match the site
 - [ ] Chunk 10 — Homogenize sizing + responsive QA

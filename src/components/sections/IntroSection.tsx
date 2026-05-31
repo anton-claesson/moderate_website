@@ -10,10 +10,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
   const [faktaOpen, setFaktaOpen] = useState(false);
 
   return (
-    <section id={id} className="relative w-full flex flex-col bg-canvas overflow-hidden">
-      {/* Grain texture */}
-      <div className="hero-grain" aria-hidden="true" />
-
+    <section id={id} className="textured-canvas relative w-full flex flex-col overflow-hidden">
       <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-10 flex flex-col flex-1 justify-center pb-10 pt-10 sm:py-20">
         {/* Red bar above title */}
         <div
