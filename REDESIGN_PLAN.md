@@ -30,9 +30,9 @@ Features first, then design.
 - [x] Chunk 1 — Stats panel data update
 - [x] Chunk 2 — Map camera focuses on planned (red) buildings
 - [x] Chunk 3 — Map UX: toggle + "Alla kommuner" button
-- [ ] Chunk 4 — Visualizer left-align + video quote styling
-- [ ] Chunk 5 — News assets: fetch OG images + outlet logos
-- [ ] Chunk 6 — News cards redesign (image-filled, logo overlay)
+- [x] Chunk 4 — Visualizer left-align + video quote styling
+- [x] Chunk 5 — News assets: fetch OG images + outlet logos
+- [x] Chunk 6 — News cards redesign (image-filled, logo overlay)
 
 **Design**
 
