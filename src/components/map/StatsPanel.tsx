@@ -66,6 +66,12 @@ function StatCell({
 export default function StatsPanel({ stats, view }: StatsPanelProps) {
   const isPlanned = view !== 'current';
 
+  // Bostäder 2060 = all småhus today + all apartments in 2060 (today + tillskott).
+  const bostader2060 = stats.smahusCurrent + stats.flerbo2060;
+  // Förtätning = % increase of Bostäder 2060 over today's total housing stock.
+  const baseHousing = stats.smahusCurrent + stats.flerboCurrent;
+  const fortattning = Math.round(((bostader2060 - baseHousing) / baseHousing) * 100);
+
   const total = isPlanned
     ? stats.smahusCurrent + stats.flerbo2060
     : stats.smahusCurrent + stats.flerboCurrent;
@@ -91,12 +97,12 @@ export default function StatsPanel({ stats, view }: StatsPanelProps) {
           borderBottom
         />
         <StatCell
-          value={fmt(stats.flerbo2060)}
+          value={fmt(bostader2060)}
           label="Bostäder 2060"
           icon={<BuildingIcon color={FLERBOSTADSHUS_NEW_COLOR} />}
           borderRight
         />
-        <StatCell value={`${stats.fortattning}%`} label="Förtätning" />
+        <StatCell value={`${fortattning}%`} label="Förtätning" />
       </div>
 
       <div className="hidden">
