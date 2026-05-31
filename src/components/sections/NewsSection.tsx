@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 interface NewsSectionProps {
   id: string;
 }
@@ -29,67 +31,58 @@ const articles = [
 export default function NewsSection({ id }: NewsSectionProps) {
   return (
     <section id={id} className="bg-canvas">
-      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-16 sm:py-24 space-y-10">
-        {/* Section header */}
-        <div className="border-l-2 border-accent pl-8 space-y-3">
-          <h2
-            className="font-display text-3xl sm:text-4xl leading-snug"
-            style={{ color: 'rgba(242,240,235,0.9)' }}
-          >
-            I media
-          </h2>
-          <p className="font-body text-base sm:text-lg" style={{ color: 'rgba(242,240,235,0.55)' }}>
-            Vad skriver pressen om förtätningsplanerna?
-          </p>
-        </div>
-
-        {/* Cards: scroll-snap on mobile, 3-col grid on desktop */}
-        <div className="-mx-4 px-4 sm:-mx-10 sm:px-10 flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-dark">
+      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-16 sm:py-24">
+        {/* Image-filled cards: 1 col mobile → 3 cols desktop, filling the container width */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {articles.map((article) => (
             <a
               key={article.href}
               href={article.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="snap-start flex-shrink-0 w-[88%] sm:w-[62%] lg:w-[48%] block p-10 sm:p-14 rounded-xl border border-white/15 bg-white/[0.03] hover:border-accent/40 transition-colors duration-200 space-y-8 group"
+              className="group relative block aspect-[4/3] overflow-hidden rounded-xl bg-white/[0.04] border border-white/10 hover:border-accent/50 transition-colors duration-200"
             >
-              {/* Source badge */}
-              <span className="font-ui text-sm uppercase tracking-widest text-accent">
-                {article.source}
-              </span>
+              {/* OG image fill */}
+              {article.image && (
+                <Image
+                  src={article.image}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 33vw, 100vw"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              )}
 
-              {/* Headline */}
+              {/* Legibility scrim */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10"
+              />
+
+              {/* Outlet logo — Aftonbladet in its black-on-yellow brand mark, others white */}
+              {article.source === 'Aftonbladet' ? (
+                <span className="absolute top-4 left-4 inline-flex items-center rounded bg-[#FFE600] px-2 py-1.5 shadow">
+                  <img
+                    src={article.logo}
+                    alt={article.source}
+                    className="h-3.5 w-auto max-w-[110px] object-contain"
+                  />
+                </span>
+              ) : (
+                <img
+                  src={article.logo}
+                  alt={article.source}
+                  className="absolute top-4 left-4 h-6 w-auto max-w-[120px] object-contain object-left brightness-0 invert drop-shadow"
+                />
+              )}
+
+              {/* Headline on top, bottom-anchored */}
               <h3
-                className="font-display text-3xl sm:text-4xl leading-snug"
-                style={{ color: 'rgba(242,240,235,0.9)' }}
+                className="absolute inset-x-0 bottom-0 p-5 sm:p-6 font-display text-2xl leading-snug text-white"
+                style={{ textShadow: '0 1px 8px rgba(0,0,0,0.6)' }}
               >
                 {article.headline}
               </h3>
-
-              {/* Read link */}
-              <div
-                className="flex items-center gap-2 pt-2"
-                style={{ color: 'rgba(242,240,235,0.45)' }}
-              >
-                <span className="font-body text-sm underline underline-offset-4 group-hover:text-on-canvas/70 transition-colors duration-150">
-                  Läs artikel
-                </span>
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-              </div>
             </a>
           ))}
         </div>
