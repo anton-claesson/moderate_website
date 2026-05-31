@@ -20,10 +20,7 @@ export default function VideosSection({ id }: VideosSectionProps) {
               Socialdemokraternas svar till boende som inte vill tvångsblandas:{' '}
               <span className="font-semibold text-accent">Flytta.</span>
             </p>
-            <blockquote
-              className="font-display pt-8 text-3xl sm:text-4xl md:text-5xl italic leading-tight"
-              style={{ color: 'rgba(242,240,235,0.9)' }}
-            >
+            <blockquote className="font-display text-accent pt-8 text-3xl sm:text-4xl md:text-5xl leading-tight">
               &ldquo;Vill de inte bo där så är de välkomna att flytta.&rdquo;
             </blockquote>
             <div className="space-y-4 pt-8">

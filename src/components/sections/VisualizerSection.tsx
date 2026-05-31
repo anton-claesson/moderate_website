@@ -28,8 +28,8 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
           </p>
         </div>
 
-        {/* Two cropped images — centered, single background, clickable */}
-        <div className="max-w-4xl mx-auto">
+        {/* Two cropped images — left-aligned with the copy column, single background, clickable */}
+        <div className="max-w-4xl pl-8">
           <a
             href={PDF_HREF}
             target="_blank"
