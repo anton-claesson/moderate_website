@@ -7,16 +7,22 @@ const articles = [
     source: 'Aftonbladet',
     headline: 'S-toppen: Vi behöver blanda befolkningen',
     href: 'https://www.aftonbladet.se/nyheter/a/Eyrlwa/s-mal-blanda-befolkningen',
+    image: '/news/aftonbladet-blanda.jpg',
+    logo: '/news/logos/aftonbladet.svg',
   },
   {
     source: 'SVT',
     headline: 'M om regionens framtidsplan: “Socialdemokratisk tvångsblandning”',
     href: 'https://www.svt.se/nyheter/lokalt/stockholm/m-om-regionens-framtidsplan-socialdemokratisk-tvangsblandning',
+    image: '/news/svt-tvangsblandning.jpg',
+    logo: '/news/logos/svt.svg',
   },
   {
     source: 'SVT',
     headline: 'Socialdemokraterna vill blanda befolkningen – men ingen ska flytta',
     href: 'https://www.svt.se/nyheter/inrikes/socialdemokraterna-vill-blanda-befolkningen-men-ingen-ska-flytta',
+    image: '/news/svt-ingen-ska-flytta.jpg',
+    logo: '/news/logos/svt.svg',
   },
 ];
 
