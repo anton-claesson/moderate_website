@@ -358,8 +358,9 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         // Dynamic adjustments based on municipality size (base camera.zoom)
         // Smaller camera zoom = larger municipality (e.g. ~7.5).
         // Larger camera zoom = smaller municipality (e.g. ~10.5).
-        const maxZoomDelta = isMobile ? 0.65 : 0.7;
-        const minZoomDelta = isMobile ? 1.1 : 1.1;
+        // Bias tighter onto the planned cluster: zoom in further than the bbox fit.
+        const maxZoomDelta = isMobile ? 1.0 : 1.1;
+        const minZoomDelta = 1.5;
 
         const zoomProgress = Math.max(0, Math.min(1, (camera.zoom - 7.5) / 3.0));
         const zoomDelta = minZoomDelta + zoomProgress * (maxZoomDelta - minZoomDelta);
@@ -367,8 +368,9 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         // Pitch adjustment: steeper pitch for large municipalities to make buildings pop more.
         const dynamicPitch = Math.max(DEFAULT_PITCH, Math.min(68, 68 - (camera.zoom - 8.5) * 6));
 
-        // Interpolate target center to prevent pushing the polygon off-screen in large municipalities.
-        const centerMix = Math.max(0.4, Math.min(1.0, (camera.zoom - 8.5) * 0.2 + 0.4));
+        // Interpolate target center toward the red centroid. Higher floor keeps the camera
+        // over the planned cluster even for large municipalities (vs. the bbox midpoint).
+        const centerMix = Math.max(0.6, Math.min(1.0, (camera.zoom - 8.5) * 0.2 + 0.6));
         const finalTargetLng = targetLng * centerMix + centerLng * (1 - centerMix);
         const finalTargetLat = targetLat * centerMix + centerLat * (1 - centerMix);
 
