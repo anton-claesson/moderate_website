@@ -22,8 +22,8 @@ export default function LayerToggle({
   // The active segment is filled red; the inactive segment keeps a visible track,
   // higher-contrast text, and a clear hover so users grasp it's an interactive toggle.
   const track = isMap
-    ? 'inline-flex p-1 gap-1 rounded-full bg-black/70 backdrop-blur-sm border border-white/15 shadow-lg'
-    : 'flex w-full p-1 gap-1 rounded-2xl bg-white/10 border border-white/15 shadow-lg';
+    ? 'inline-flex p-1 gap-1 rounded-full bg-canvas/80 backdrop-blur-sm border border-on-canvas/15 shadow-lg'
+    : 'flex w-full p-1 gap-1 rounded-2xl bg-on-canvas/10 border border-on-canvas/15 shadow-lg';
 
   const segment = isMap
     ? 'px-7 py-2.5 text-xl rounded-full'
@@ -42,10 +42,10 @@ export default function LayerToggle({
             key={v}
             onClick={() => onChange(v)}
             aria-pressed={active}
-            className={`font-ui ${segment} min-h-[44px] font-bold uppercase tracking-widest text-center transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
+            className={`font-ui ${segment} min-h-[44px] font-bold uppercase tracking-widest text-center transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-canvas ${
               active
                 ? 'bg-accent text-white shadow-md'
-                : 'bg-white/10 text-white/85 hover:bg-white/20 hover:text-white'
+                : 'bg-on-canvas/10 text-on-canvas/85 hover:bg-on-canvas/20 hover:text-on-canvas'
             }`}
           >
             {LABEL[v]}

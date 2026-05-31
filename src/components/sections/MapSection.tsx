@@ -26,6 +26,15 @@ import {
   SMAHUS_COLOR,
   FLERBOSTADSHUS_COLOR,
   FLERBOSTADSHUS_NEW_COLOR,
+  NEIGHBOR_FILL_COLOR,
+  MUNICIPALITY_FILL_COLOR,
+  MUNICIPALITY_OUTLINE_COLOR,
+  MUNICIPALITY_DIM_COLOR,
+  MUNICIPALITY_HOVER_FILL_COLOR,
+  MUNICIPALITY_SELECT_COLOR,
+  LABEL_COLOR,
+  LABEL_SELECTED_COLOR,
+  LABEL_HALO_COLOR,
 } from '@/lib/mapConfig';
 import MunicipalityCard from '@/components/map/MunicipalityCard';
 import StatsCard from '@/components/map/StatsCard';
@@ -520,15 +529,15 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         id: 'neighboring-regions-fill',
         type: 'fill',
         source: 'neighboring-regions',
-        paint: { 'fill-color': '#000000', 'fill-opacity': 1.0 },
+        paint: { 'fill-color': NEIGHBOR_FILL_COLOR, 'fill-opacity': 1.0 },
       });
 
-      // Hit area + warm fill so polygons read clearly on the dark bg
+      // Hit area + fill so polygons read clearly against the lighter map canvas
       map.addLayer({
         id: MUNICIPALITY_FILL_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#787878', 'fill-opacity': 1.0 },
+        paint: { 'fill-color': MUNICIPALITY_FILL_COLOR, 'fill-opacity': 1.0 },
       });
 
       // Dim overlay added before the outline so borders remain visible above it in detail view
@@ -536,7 +545,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         id: MUNICIPALITY_DIM_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#000000', 'fill-opacity': 0.72 },
+        paint: { 'fill-color': MUNICIPALITY_DIM_COLOR, 'fill-opacity': 0.72 },
         filter: ['!=', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
         layout: { visibility: 'none' },
       });
@@ -547,7 +556,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         type: 'line',
         source: MUNICIPALITY_SOURCE,
         layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: { 'line-color': '#a0a0a0', 'line-width': 2.0, 'line-opacity': 1.0 },
+        paint: { 'line-color': MUNICIPALITY_OUTLINE_COLOR, 'line-width': 2.0, 'line-opacity': 1.0 },
       });
 
       // Hover/selected fill highlight
@@ -555,7 +564,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         id: MUNICIPALITY_HOVER_LAYER,
         type: 'fill',
         source: MUNICIPALITY_SOURCE,
-        paint: { 'fill-color': '#1a1a1a', 'fill-opacity': 0.25 },
+        paint: { 'fill-color': MUNICIPALITY_HOVER_FILL_COLOR, 'fill-opacity': 0.18 },
         filter: ['==', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
       });
 
@@ -565,7 +574,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         type: 'line',
         source: MUNICIPALITY_SOURCE,
         layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: { 'line-color': '#b91c1c', 'line-width': 3, 'line-opacity': 1.0 },
+        paint: { 'line-color': MUNICIPALITY_SELECT_COLOR, 'line-width': 3, 'line-opacity': 1.0 },
         filter: ['==', ['get', 'kom_namn'], ''] as mapboxgl.FilterSpecification,
       });
 
@@ -588,9 +597,9 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
           visibility: 'none',
         },
         paint: {
-          'text-color': '#b0a89e',
+          'text-color': LABEL_COLOR,
           'text-opacity': 0.8,
-          'text-halo-color': '#000000',
+          'text-halo-color': LABEL_HALO_COLOR,
           'text-halo-width': 2,
         },
       });
@@ -612,9 +621,9 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
           'text-letter-spacing': 0.15,
         },
         paint: {
-          'text-color': '#f2f0eb',
+          'text-color': LABEL_SELECTED_COLOR,
           'text-opacity': 1.0,
-          'text-halo-color': '#000000',
+          'text-halo-color': LABEL_HALO_COLOR,
           'text-halo-width': isMobileMap ? 2 : 4,
         },
       });
@@ -736,7 +745,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
           <button
             onClick={() => setInfoOpen((o) => !o)}
             aria-label="Visa information om kartan"
-            className="w-14 h-14 rounded-full bg-[#1a1a18] border border-white/10 flex items-center justify-center text-on-canvas/60 hover:text-on-canvas transition-colors"
+            className="w-14 h-14 rounded-full bg-canvas border border-white/10 flex items-center justify-center text-on-canvas/60 hover:text-on-canvas transition-colors"
           >
             <svg className="w-12 h-12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
@@ -803,7 +812,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
               if (val) selectMunicipality(val);
               else returnToOverview();
             }}
-            className="w-full p-4 pr-10 rounded-2xl bg-[#1a1a18] shadow-xl font-ui font-bold tracking-wide text-xl text-on-canvas appearance-none focus:outline-none focus:ring-2 focus:ring-white/20 border border-white/10"
+            className="w-full p-4 pr-10 rounded-2xl bg-canvas shadow-xl font-ui font-bold tracking-wide text-xl text-on-canvas appearance-none focus:outline-none focus:ring-2 focus:ring-white/20 border border-white/10"
           >
             <option value="">Välj kommun...</option>
             {SORTED_MUNICIPALITIES.map((name) => (

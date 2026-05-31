@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { STOCKHOLM_CENTER, OVERVIEW_PITCH, OVERVIEW_BEARING } from '@/lib/mapConfig';
+import { STOCKHOLM_CENTER, OVERVIEW_PITCH, OVERVIEW_BEARING, MAP_BG_COLOR } from '@/lib/mapConfig';
 
 interface MapCanvasProps {
   style?: string;
@@ -43,5 +43,5 @@ export default function MapCanvas({
     };
   }, [style, onMapReady]);
 
-  return <div ref={containerRef} className="w-full h-full" style={{ background: '#000000' }} />;
+  return <div ref={containerRef} className="w-full h-full" style={{ background: MAP_BG_COLOR }} />;
 }

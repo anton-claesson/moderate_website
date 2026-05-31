@@ -21,5 +21,19 @@ export const SMAHUS_COLOR = '#4A90D9';
 export const FLERBOSTADSHUS_COLOR = '#2C5282';
 export const FLERBOSTADSHUS_NEW_COLOR = '#D64045';
 
+// Map palette — blue-gray, matching the site. The map canvas sits slightly
+// lighter than the page surface (#2b3849) so it stands out; the 3D building
+// colors above are intentionally left untouched.
+export const MAP_BG_COLOR = '#3d4d61'; // map canvas — lighter than the page
+export const NEIGHBOR_FILL_COLOR = MAP_BG_COLOR; // neighboring regions blend into the map canvas
+export const MUNICIPALITY_FILL_COLOR = '#54677d'; // municipality land — lighter than the canvas
+export const MUNICIPALITY_OUTLINE_COLOR = '#9aa9bd';
+export const MUNICIPALITY_DIM_COLOR = '#1c2733'; // dims non-selected municipalities
+export const MUNICIPALITY_HOVER_FILL_COLOR = '#c7d2e0'; // light highlight on hover
+export const MUNICIPALITY_SELECT_COLOR = '#b91c1c'; // selection outline — keep accent red
+export const LABEL_COLOR = '#cdd6e2';
+export const LABEL_SELECTED_COLOR = '#f2f0eb';
+export const LABEL_HALO_COLOR = '#1c2733';
+
 export const SMAHUS_PER_REPRESENTATIVE = 50;
 export const FLERBOSTADSHUS_PER_REPRESENTATIVE = 500;
