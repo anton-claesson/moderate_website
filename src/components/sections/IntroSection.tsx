@@ -36,8 +36,8 @@ export default function IntroSection({ id }: IntroSectionProps) {
 
         {/* Subheading */}
         <p
-          className="animate-fade-up font-body font-bold uppercase tracking-wide text-xl sm:text-2xl mb-6 max-w-5xl"
-          style={{ color: 'rgba(242,240,235,0.75)', animationDelay: '280ms' }}
+          className="animate-fade-up font-body font-bold uppercase tracking-wide text-xl sm:text-2xl mb-6 max-w-5xl text-on-canvas/75"
+          style={{ animationDelay: '280ms' }}
         >
           <span className="text-accent">Beslutat:</span> 580 000 nya bostäder i Stockholmsregionen.
           <br />
@@ -49,18 +49,12 @@ export default function IntroSection({ id }: IntroSectionProps) {
           className="animate-fade-up max-w-4xl space-y-3 mb-8"
           style={{ animationDelay: '360ms' }}
         >
-          <p
-            className="font-body sm:text-lg leading-relaxed"
-            style={{ color: 'rgba(242,240,235,0.75)' }}
-          >
+          <p className="font-body sm:text-lg leading-relaxed text-on-canvas/75">
             Socialdemokraterna, med regionstyrelsens ordförande Aida Hadžialić i spetsen, har drivit
             igenom en ny bostadspolitik i Region Stockholm. Alla Stockholms kommuner ska förtätas
             med storskalig höghusbebyggelse.
           </p>
-          <p
-            className="font-body sm:text-lg leading-relaxed"
-            style={{ color: 'rgba(242,240,235,0.75)' }}
-          >
+          <p className="font-body sm:text-lg leading-relaxed text-on-canvas/75">
             Stoppa miljonprogramsplanerna.{' '}
             <span className="text-accent font-bold">
               Rösta bort Socialdemokraterna den 13 september.
@@ -72,18 +66,14 @@ export default function IntroSection({ id }: IntroSectionProps) {
         <div className="animate-fade-up mb-10 max-w-3xl" style={{ animationDelay: '440ms' }}>
           <button
             onClick={() => setFaktaOpen((o) => !o)}
-            className="font-body text-sm sm:text-base font-semibold underline underline-offset-4 transition-colors duration-150 focus:outline-none"
-            style={{ color: 'rgba(242,240,235,0.45)' }}
+            className="font-body text-sm sm:text-base font-semibold underline underline-offset-4 transition-colors duration-150 focus:outline-none text-on-canvas/45"
           >
             {faktaOpen ? 'Dölj fakta' : 'Fakta om planen'}
           </button>
           {faktaOpen && (
             <div className="mt-3 border-l-2 border-accent/20 pl-4">
-              <p
-                className="font-body text-sm leading-relaxed"
-                style={{ color: 'rgba(242,240,235,0.45)' }}
-              >
-                <strong style={{ color: 'rgba(242,240,235,0.7)' }}>Fakta: </strong>
+              <p className="font-body text-sm leading-relaxed text-on-canvas/45">
+                <strong className="text-on-canvas/70">Fakta: </strong>
                 Socialdemokraterna, Vänsterpartiet, Miljöpartiet och Centerpartiet i Region
                 Stockholm har beslutat om en ny regional utvecklingsplan. I planen fastställs hur
                 många bostäder varje kommun ska bygga och på vilka ytor. I praktiken innebär detta
@@ -99,8 +89,8 @@ export default function IntroSection({ id }: IntroSectionProps) {
 
         {/* CTA row */}
         <div
-          className="animate-fade-up flex items-center gap-3"
-          style={{ color: 'rgba(242,240,235,0.7)', animationDelay: '520ms' }}
+          className="animate-fade-up flex items-center gap-3 text-on-canvas/70"
+          style={{ animationDelay: '520ms' }}
         >
           <div className="w-8 h-px bg-current flex-shrink-0" />
           <span className="font-body font-bold uppercase text-sm sm:text-lg tracking-[0.15em]">

@@ -101,5 +101,4 @@ Visual tokens live in `src/app/globals.css` (`@theme inline`):
   renders slightly lighter (`--color-map-bg: #3d4d61`) so it stands out.
 - **Texture** — `.textured-canvas` overlays a fine inline-SVG grain on the base
   color (no image, no gradient). Grain strength is the adjustable
-  `--grain-opacity` knob (set in `:root`, override per-section). `.headline-texture`
-  adds a subtle grain/distress overlay to large headings while keeping glyphs crisp.
+  `--grain-opacity` knob (set in `:root`, override per-section).

@@ -8,15 +8,12 @@ interface VideosSectionProps {
 
 export default function VideosSection({ id }: VideosSectionProps) {
   return (
-    <section id={id} className="bg-canvas border-border">
+    <section id={id} className="textured-canvas border-border">
       <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-16 sm:py-24">
         <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center">
           {/* Left: text column with red left border */}
           <div className="w-full md:w-3/5 border-l-2 border-accent pl-8 md:pl-10 space-y-8">
-            <p
-              className="font-body text-2xl sm:text-2xl leading-snug"
-              style={{ color: 'rgba(242,240,235,0.6)' }}
-            >
+            <p className="font-body text-2xl sm:text-2xl leading-snug text-on-canvas/60">
               Socialdemokraternas svar till boende som inte vill tvångsblandas:{' '}
               <span className="font-semibold text-accent">Flytta.</span>
             </p>
@@ -24,18 +21,12 @@ export default function VideosSection({ id }: VideosSectionProps) {
               &ldquo;Vill de inte bo där så är de välkomna att flytta.&rdquo;
             </blockquote>
             <div className="space-y-4 pt-8">
-              <p
-                className="font-body text-base sm:text-lg leading-relaxed"
-                style={{ color: 'rgba(242,240,235,0.75)' }}
-              >
+              <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
                 Det sade en Socialdemokratisk företrädare under Stockholms regionfullmäktige den 11
                 november 2025, när den regionala utvecklingsplanen och den nya inriktningen för
                 bostadsbyggandet i länet debatterades.
               </p>
-              <p
-                className="font-body text-base sm:text-lg leading-relaxed"
-                style={{ color: 'rgba(242,240,235,0.75)' }}
-              >
+              <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
                 När stockholmarna ber om ett äppelträd i bakgården placerar Socialdemokraterna där i
                 stället ett regionalt miljonprogram — och de drar sig inte för att berätta om det.
               </p>

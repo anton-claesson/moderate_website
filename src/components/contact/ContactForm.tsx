@@ -208,7 +208,7 @@ export default function ContactForm() {
                 system på begäran via{' '}
                 <a
                   href="mailto:caroline.hellstrom@moderaterna.se"
-                  className="underline hover:text-text font-medium"
+                  className="underline hover:text-on-canvas font-medium"
                 >
                   caroline.hellstrom@moderaterna.se
                 </a>
@@ -231,7 +231,7 @@ export default function ContactForm() {
                   href="https://tillsammans.moderaterna.se/raddalidingo?cb_vid=963#:~:text=mer%20i%20v%C3%A5r-,integritetspolicy,-och%20cookiepolicy."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline hover:text-text font-semibold"
+                  className="underline hover:text-on-canvas font-semibold"
                 >
                   integritetspolicy
                 </a>{' '}
@@ -240,7 +240,7 @@ export default function ContactForm() {
                   href="https://moderaterna.se/integritetspolicy/om-cookies/?cb_vid=963"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline hover:text-text font-semibold"
+                  className="underline hover:text-on-canvas font-semibold"
                 >
                   cookiepolicy
                 </a>
