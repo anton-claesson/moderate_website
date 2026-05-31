@@ -32,10 +32,12 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: 'Stoppa (S) miljonprogram',
-  description: 'Alla Stockholms kommuner ska förtätas med storskalig höghusbebyggelse. Se hur din kommun påverkas.',
+  description:
+    'Alla Stockholms kommuner ska förtätas med storskalig höghusbebyggelse. Se hur din kommun påverkas.',
   openGraph: {
     title: 'Stoppa (S) miljonprogram',
-    description: 'Alla Stockholms kommuner ska förtätas med storskalig höghusbebyggelse. Se hur din kommun påverkas.',
+    description:
+      'Alla Stockholms kommuner ska förtätas med storskalig höghusbebyggelse. Se hur din kommun påverkas.',
     images: ['/og_image.jpg'],
   },
 };
