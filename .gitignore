@@ -42,3 +42,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# heavy image source (sliced rufs_before.png / rufs_after.png are committed instead)
+/public/rufs_visualizer_upscaled.png

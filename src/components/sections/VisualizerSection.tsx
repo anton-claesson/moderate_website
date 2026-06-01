@@ -5,9 +5,6 @@ interface VisualizerSectionProps {
 const PDF_HREF =
   'https://www.hyresgastforeningen.se/globalassets/bostadsfakta/rapporter/2025/sveriges-basta-villaomraden/sveriges-basta-villaomraden.pdf?cb_vid=963';
 
-// Image is 1820×1778 — each crop is 1820×889 (aspect ratio ≈ 2.047:1)
-const CROP_RATIO = 1820 / 889;
-
 export default function VisualizerSection({ id }: VisualizerSectionProps) {
   return (
     <section id={id} className="textured-canvas border-border">
@@ -22,44 +19,37 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
           </p>
         </div>
 
-        {/* Two cropped images — left-aligned with the copy column, single background, clickable */}
-        <div className="max-w-4xl pl-8">
+        {/* Both island renders in one raised panel, split into labelled "before / after" halves */}
+        <div className="max-w-6xl pl-8">
           <a
             href={PDF_HREF}
             target="_blank"
             rel="noopener noreferrer"
-            className="block rounded-xl bg-[#1c1c1c] p-4 sm:p-4 border-2 border-white/25 transition-opacity hover:opacity-90"
+            className="block rounded-xl bg-map-bg p-4 sm:p-6 border border-white/10 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-lg hover:shadow-black/30"
           >
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
-              {/* Upper half of image */}
-              <div
-                className="flex-1 overflow-hidden rounded-lg"
-                style={{ aspectRatio: CROP_RATIO, position: 'relative' }}
-              >
+            <div className="flex flex-col sm:flex-row">
+              <figure className="min-w-0 flex-1 space-y-3">
+                <figcaption className="font-body text-base sm:text-lg font-semibold uppercase tracking-widest text-on-canvas/70">
+                  Idag
+                </figcaption>
                 <img
-                  src="/rufs_visualizer.png"
+                  src="/rufs_before.png"
                   alt="Villaområde – före förtätning"
-                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 'auto' }}
+                  loading="lazy"
+                  className="w-full h-auto"
                 />
-              </div>
-
-              {/* Lower half of image */}
-              <div
-                className="flex-1 overflow-hidden rounded-lg"
-                style={{ aspectRatio: CROP_RATIO, position: 'relative' }}
-              >
+              </figure>
+              <figure className="min-w-0 flex-1 space-y-3 mt-6 border-t border-white/10 pt-6 sm:mt-0 sm:ml-6 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-6">
+                <figcaption className="font-body text-base sm:text-lg font-semibold uppercase tracking-widest text-on-canvas/70">
+                  Planerat
+                </figcaption>
                 <img
-                  src="/rufs_visualizer.png"
+                  src="/rufs_after.png"
                   alt="Trädgårdsstad – efter förtätning"
-                  style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    width: '100%',
-                    height: 'auto',
-                  }}
+                  loading="lazy"
+                  className="w-full h-auto"
                 />
-              </div>
+              </figure>
             </div>
           </a>
         </div>
