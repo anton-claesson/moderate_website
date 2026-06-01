@@ -11,7 +11,7 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
       <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-12 sm:py-16 space-y-10">
         {/* Top text — key word highlighted in red to echo the main title */}
         <div className="space-y-3">
-          <h2 className="font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90">
+          <h2 className="font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90 uppercase">
             Hur ser <span className="text-accent">förtätning</span> ut i praktiken?
           </h2>
           <p className="font-body text-base sm:text-lg leading-snug text-on-canvas/75">
