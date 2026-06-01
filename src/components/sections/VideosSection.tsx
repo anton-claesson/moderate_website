@@ -1,6 +1,7 @@
 'use client';
 
 import Script from 'next/script';
+import type { CSSProperties } from 'react';
 
 interface VideosSectionProps {
   id: string;
@@ -16,7 +17,7 @@ export default function VideosSection({ id }: VideosSectionProps) {
             <p className="font-body font-bold uppercase tracking-wide text-lg sm:text-xl leading-snug text-on-canvas/75 hyphens-auto">
               Socialdemokraternas svar till boende som inte vill tvångsblandas:
             </p>
-            <blockquote className="rounded-xl bg-map-bg p-6 sm:p-8 border border-white/10 shadow-md shadow-black/20 font-display text-3xl sm:text-4xl leading-tight text-on-canvas uppercase">
+            <blockquote className="sticker sticker-tilt rounded-lg bg-map-bg p-6 sm:p-8 font-display text-3xl sm:text-4xl leading-tight text-on-canvas uppercase">
               &ldquo;Vill de inte bo där så är de välkomna att{' '}
               <span className="text-accent">flytta</span>.&rdquo;
             </blockquote>
@@ -34,7 +35,10 @@ export default function VideosSection({ id }: VideosSectionProps) {
           </div>
 
           {/* Right: tweet embed */}
-          <div className="w-full md:w-42/100 flex-shrink-0 [&_iframe]:!mt-0 [&_.twitter-tweet]:!mt-0">
+          <div
+            className="sticker sticker-tilt w-full md:w-42/100 flex-shrink-0 rounded-lg bg-[#f4f1ea] [&_iframe]:!mt-0 [&_.twitter-tweet]:!mt-0"
+            style={{ '--tilt': '1.5deg' } as CSSProperties}
+          >
             <blockquote className="twitter-tweet" data-lang="sv" data-theme="dark" data-dnt="true">
               <a href="https://x.com/ktamsons/status/1988546499555348891">Laddar inlägg…</a>
             </blockquote>

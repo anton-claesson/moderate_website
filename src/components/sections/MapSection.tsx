@@ -836,7 +836,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
       </div>
 
       {/* Map — seamless, no card border */}
-      <div className="relative" style={{ height: sectionHeight }}>
+      <div className="sticker relative" style={{ height: sectionHeight }}>
         {shouldLoadMap ? (
           <MapCanvas onMapReady={handleMapReady} />
         ) : (

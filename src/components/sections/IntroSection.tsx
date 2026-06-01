@@ -11,6 +11,26 @@ export default function IntroSection({ id }: IntroSectionProps) {
 
   return (
     <section id={id} className="textured-canvas relative w-full flex flex-col overflow-hidden">
+      {/* Decorative bird silhouettes — hero only (Chunk 11). Sits above the grain
+          (::after, z-0) and below the content (z-10). `position` is set inline
+          because the unlayered `.textured-canvas > *` rule would otherwise force
+          `position: relative` over Tailwind's layered `absolute` utility. */}
+      <svg
+        aria-hidden="true"
+        style={{ position: 'absolute' }}
+        className="pointer-events-none right-4 top-10 w-40 sm:w-72 text-on-canvas/25"
+        viewBox="0 0 220 130"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      >
+        <path d="M14 44 q13 -13 26 0 q13 -13 26 0" />
+        <path d="M82 24 q9 -9 18 0 q9 -9 18 0" />
+        <path d="M132 58 q15 -15 30 0 q15 -15 30 0" />
+        <path d="M48 86 q8 -8 16 0 q8 -8 16 0" />
+        <path d="M168 100 q10 -10 20 0 q10 -10 20 0" />
+      </svg>
       <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-10 flex flex-col flex-1 justify-center pb-10 pt-10 sm:py-20">
         {/* Red bar above title */}
         <div
@@ -20,7 +40,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
 
         {/* Main headline */}
         <h1
-          className="animate-fade-up font-display text-on-canvas leading-[0.95] mb-8"
+          className="headline-texture animate-fade-up font-display text-on-canvas leading-[0.95] mb-8"
           style={{ fontSize: 'min(10vw, 6.5rem)', animationDelay: '80ms' }}
         >
           STOPPA (S) NYA
@@ -90,7 +110,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
           className="animate-fade-up flex items-center gap-3 text-on-canvas/90"
           style={{ animationDelay: '520ms' }}
         >
-          <span className="font-display uppercase text-3xl sm:text-4xl leading-snug">
+          <span className="headline-texture inline-block font-display uppercase text-3xl sm:text-4xl leading-snug">
             Se hur <span className="text-accent">din kommun</span> påverkas
           </span>
         </div>

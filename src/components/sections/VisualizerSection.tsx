@@ -11,7 +11,7 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
       <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-12 sm:py-16 space-y-10">
         {/* Top text — key word highlighted in red to echo the main title */}
         <div className="space-y-3">
-          <h2 className="font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90 uppercase">
+          <h2 className="headline-texture font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90 uppercase">
             Hur ser <span className="text-accent">förtätning</span> ut i praktiken?
           </h2>
           <p className="font-body font-bold uppercase tracking-wide text-lg sm:text-xl text-on-canvas/75 hyphens-auto">
@@ -25,7 +25,7 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
             href={PDF_HREF}
             target="_blank"
             rel="noopener noreferrer"
-            className="block rounded-xl bg-map-bg p-3 sm:p-4 border border-white/10 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-lg hover:shadow-black/30"
+            className="sticker sticker-tilt block rounded-lg bg-map-bg p-3 sm:p-4"
           >
             {/* Islands overlap (negative margin) and the right one staggers DOWN so each
                 island's transparent corner nests into the other's, killing the centre gap.

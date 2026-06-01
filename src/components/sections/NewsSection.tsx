@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import type { CSSProperties } from 'react';
 
 interface NewsSectionProps {
   id: string;
@@ -32,18 +33,19 @@ export default function NewsSection({ id }: NewsSectionProps) {
   return (
     <section id={id} className="textured-canvas">
       <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-12 sm:py-16">
-        <h2 className="font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90 mb-8 uppercase">
+        <h2 className="headline-texture font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90 mb-8 uppercase">
           Vad säger <span className="text-accent">media</span>?
         </h2>
         {/* Image-filled cards: 1 col mobile → 3 cols desktop, filling the container width */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {articles.map((article) => (
+          {articles.map((article, i) => (
             <a
               key={article.href}
               href={article.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative block aspect-[4/3] overflow-hidden rounded-xl bg-white/[0.04] border border-white/10 hover:border-accent/50 transition-colors duration-200"
+              style={{ '--tilt': ['-1.4deg', '1deg', '-0.5deg'][i % 3] } as CSSProperties}
+              className="sticker sticker-tilt group relative block aspect-[4/3] overflow-hidden rounded-lg bg-white/[0.04]"
             >
               {/* OG image fill */}
               {article.image && (
