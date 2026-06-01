@@ -14,7 +14,7 @@
   /* Map canvas — a touch lighter than the page so the map stands out (Chunk 9),
      and nudged slightly grayer so the blue housing extrusions separate a bit more
      from the surface (Request 1). Keep in sync with MAP_BG_COLOR in mapConfig.ts. */
-  --color-map-bg: #434e5b;
+  --color-map-bg: #4d5765;
 
   /* Text */
   --color-text: #111111;

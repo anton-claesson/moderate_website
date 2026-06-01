@@ -22,7 +22,7 @@ export default function LayerToggle({
   // The active segment is filled red; the inactive segment keeps a visible track,
   // higher-contrast text, and a clear hover so users grasp it's an interactive toggle.
   const track = isMap
-    ? 'inline-flex p-1 gap-1 rounded-full bg-canvas/80 backdrop-blur-sm border border-on-canvas/15 shadow-lg'
+    ? 'inline-flex p-1 gap-1 rounded-full bg-map-bg/85 backdrop-blur-sm border border-on-canvas/15 shadow-lg'
     : 'flex w-full p-1 gap-1 rounded-2xl bg-on-canvas/10 border border-on-canvas/15 shadow-lg';
 
   const segment = isMap

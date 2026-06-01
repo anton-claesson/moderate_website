@@ -25,7 +25,7 @@ export const FLERBOSTADSHUS_NEW_COLOR = '#D64045';
 // lighter than the page and nudged a touch grayer (Request 1) so the blue housing
 // extrusions (esp. existing apartments, #2C5282) separate a bit more from the
 // surface. The 3D building colors above are intentionally left untouched.
-export const MAP_BG_COLOR = '#434e5b'; // map canvas — slightly grayer, lighter than the page
+export const MAP_BG_COLOR = '#4d5765'; // map canvas — slightly grayer, a touch lighter than the page
 export const NEIGHBOR_FILL_COLOR = MAP_BG_COLOR; // neighboring regions blend into the map canvas
 export const MUNICIPALITY_FILL_COLOR = '#586673'; // municipality land — slightly grayer, lighter than the canvas
 export const MUNICIPALITY_OUTLINE_COLOR = '#9aa9bd';
