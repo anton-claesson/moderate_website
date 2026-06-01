@@ -49,12 +49,12 @@ export default function IntroSection({ id }: IntroSectionProps) {
           className="animate-fade-up max-w-4xl space-y-3 mb-8"
           style={{ animationDelay: '360ms' }}
         >
-          <p className="font-body sm:text-lg leading-relaxed text-on-canvas/75">
+          <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
             Socialdemokraterna, med regionstyrelsens ordförande Aida Hadžialić i spetsen, har drivit
             igenom en ny bostadspolitik i Region Stockholm. Alla Stockholms kommuner ska förtätas
             med storskalig höghusbebyggelse.
           </p>
-          <p className="font-body sm:text-lg leading-relaxed text-on-canvas/75">
+          <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
             Stoppa miljonprogramsplanerna.{' '}
             <span className="text-accent font-bold">
               Rösta bort Socialdemokraterna den 13 september.

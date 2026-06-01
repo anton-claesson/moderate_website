@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
     <footer className="textured-canvas w-full border-t border-on-canvas/10">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-8">
         <div className="font-ui flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-sm">
           <span className="text-on-canvas">
             Det här är en kampanj från Moderaterna i Region Stockholm
