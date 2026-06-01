@@ -44,7 +44,7 @@ export default function NewsSection({ id }: NewsSectionProps) {
               href={article.href}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ '--tilt': ['-1.4deg', '1deg', '-0.5deg'][i % 3] } as CSSProperties}
+              style={{ '--tilt': ['-0.6deg', '0.4deg', '-0.3deg'][i % 3] } as CSSProperties}
               className="sticker sticker-tilt group relative block aspect-[4/3] overflow-hidden rounded-lg bg-white/[0.04]"
             >
               {/* OG image fill */}

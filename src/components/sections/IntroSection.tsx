@@ -14,22 +14,32 @@ export default function IntroSection({ id }: IntroSectionProps) {
       {/* Decorative bird silhouettes — hero only (Chunk 11). Sits above the grain
           (::after, z-0) and below the content (z-10). `position` is set inline
           because the unlayered `.textured-canvas > *` rule would otherwise force
-          `position: relative` over Tailwind's layered `absolute` utility. */}
+          `position: relative` over Tailwind's layered `absolute` utility. Angular
+          wings (not round) + a turbulence displacement give a distressed look. */}
       <svg
         aria-hidden="true"
         style={{ position: 'absolute' }}
-        className="pointer-events-none right-4 top-10 w-40 sm:w-72 text-on-canvas/25"
-        viewBox="0 0 220 130"
+        className="pointer-events-none right-4 top-10 w-28 sm:w-44 text-black/50"
+        viewBox="0 0 200 120"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2.5"
+        strokeWidth="2"
         strokeLinecap="round"
+        strokeLinejoin="round"
       >
-        <path d="M14 44 q13 -13 26 0 q13 -13 26 0" />
-        <path d="M82 24 q9 -9 18 0 q9 -9 18 0" />
-        <path d="M132 58 q15 -15 30 0 q15 -15 30 0" />
-        <path d="M48 86 q8 -8 16 0 q8 -8 16 0" />
-        <path d="M168 100 q10 -10 20 0 q10 -10 20 0" />
+        <defs>
+          <filter id="bird-distress">
+            <feTurbulence type="fractalNoise" baseFrequency="0.3" numOctaves="2" result="n" />
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="2" />
+          </filter>
+        </defs>
+        <g filter="url(#bird-distress)">
+          <path d="M0 8 L5 2 L8 6 L11 2 L16 8" transform="translate(6 12) scale(1.1)" />
+          <path d="M0 8 L5 2 L8 6 L11 2 L16 8" transform="translate(62 2) scale(0.8)" />
+          <path d="M0 8 L5 2 L8 6 L11 2 L16 8" transform="translate(126 22) scale(1.3)" />
+          <path d="M0 8 L5 2 L8 6 L11 2 L16 8" transform="translate(40 44) scale(0.7)" />
+          <path d="M0 8 L5 2 L8 6 L11 2 L16 8" transform="translate(150 58) scale(0.95)" />
+        </g>
       </svg>
       <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-10 flex flex-col flex-1 justify-center pb-10 pt-10 sm:py-20">
         {/* Red bar above title */}

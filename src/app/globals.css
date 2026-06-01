@@ -142,6 +142,10 @@
  * mid-frequency speckle, each on its own larger tile so the repeat is hard to
  * spot. Strength is the single --grain-opacity knob (:root, per-section
  * overridable). The grain rides in a ::after layer; children lift above it.
+ * `background-attachment: fixed` anchors the tile grid to the viewport rather
+ * than each section's box, so the texture stays continuous across the seams
+ * between stacked sections instead of restarting (and showing a tile edge) at
+ * every boundary.
  */
 .textured-canvas {
   position: relative;
@@ -159,6 +163,7 @@
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
   background-repeat: repeat, repeat;
+  background-attachment: fixed, fixed;
   background-size:
     600px 600px,
     300px 300px;
@@ -178,8 +183,8 @@
  * Apply to a block / inline-block heading element.
  */
 .headline-texture {
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='gamma' exponent='0.4'/%3E%3CfeFuncG type='gamma' exponent='0.4'/%3E%3CfeFuncB type='gamma' exponent='0.4'/%3E%3CfeFuncA type='gamma' exponent='0.4'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23h)'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='gamma' exponent='0.4'/%3E%3CfeFuncG type='gamma' exponent='0.4'/%3E%3CfeFuncB type='gamma' exponent='0.4'/%3E%3CfeFuncA type='gamma' exponent='0.4'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23h)'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='gamma' exponent='0.25'/%3E%3CfeFuncG type='gamma' exponent='0.25'/%3E%3CfeFuncB type='gamma' exponent='0.25'/%3E%3CfeFuncA type='gamma' exponent='0.25'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23h)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='gamma' exponent='0.25'/%3E%3CfeFuncG type='gamma' exponent='0.25'/%3E%3CfeFuncB type='gamma' exponent='0.25'/%3E%3CfeFuncA type='gamma' exponent='0.25'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23h)'/%3E%3C/svg%3E");
   -webkit-mask-size: 240px 240px;
   mask-size: 240px 240px;
   -webkit-mask-repeat: repeat;
@@ -209,11 +214,11 @@
     0 4px 14px rgba(0, 0, 0, 0.4);
 }
 .sticker-tilt {
-  --tilt: -1.2deg;
+  --tilt: -0.5deg;
   transform: rotate(var(--tilt));
 }
 .sticker-tilt:hover {
-  transform: rotate(var(--tilt)) translateY(-5px);
+  transform: rotate(var(--tilt)) translateY(-3px);
 }
 
 html {

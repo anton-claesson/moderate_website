@@ -76,12 +76,22 @@ function getOverviewPadding() {
 // many pixels as one degree of longitude, giving: latSpan / (lngSpan × cos(lat)).
 const STOCKHOLM_ASPECT_RATIO = 1.6 / (1.6 * Math.cos((59.45 * Math.PI) / 180));
 
+// The map is now a centered, framed panel (max-w-7xl + section padding + the
+// sticker border), so the available width is the container's, not the window's.
+function getMapWidth(): number {
+  const w = window.innerWidth;
+  const container = Math.min(w, 1280); // max-w-7xl (80rem)
+  const px = w >= 640 ? 40 : 16; // px-4 / sm:px-10
+  const border = 8; // 0.5rem sticker border, each side
+  return container - 2 * px - 2 * border;
+}
+
 function getIdealSectionHeight(): number {
   if (typeof window === 'undefined') return 700;
   const pad = getOverviewPadding();
-  const availW = window.innerWidth - pad.left - pad.right;
+  const availW = getMapWidth() - pad.left - pad.right;
   const ideal = availW * STOCKHOLM_ASPECT_RATIO + pad.top + pad.bottom;
-  return Math.round(Math.min(ideal, window.innerHeight * 1));
+  return Math.round(Math.min(ideal, window.innerHeight));
 }
 
 const MUNICIPALITY_FILL_LAYER = 'municipalities-fill';
@@ -173,8 +183,6 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
   const [infoOpen, setInfoOpen] = useState(false);
   // SSR-safe defaults; all updated after hydration.
   const [sectionHeight, setSectionHeight] = useState<number>(700);
-  const [regionPx, setRegionPx] = useState<{ left: number; right: number } | null>(null);
-  const [windowWidth, setWindowWidth] = useState<number>(1440);
   const stats = selected != null ? (HOUSING_STATS[selected] ?? null) : null;
 
   // Retains the last selected municipality's data so StatsCard stays mounted
@@ -200,18 +208,9 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
     selectedRef.current = selected;
   }, [selected]);
 
-  const computeRegionPx = useCallback(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    const w = map.project([17.5, 59.45] as [number, number]);
-    const e = map.project([19.1, 59.45] as [number, number]);
-    setRegionPx({ left: w.x, right: e.x });
-  }, []);
-
   // Sync dimensions with the actual window after hydration and on every resize.
   useEffect(() => {
     const sync = () => {
-      setWindowWidth(window.innerWidth);
       setSectionHeight(getIdealSectionHeight());
     };
     sync();
@@ -220,7 +219,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
   }, []);
 
   // After height changes, resize the Mapbox canvas and refit the overview bounds so
-  // the camera and overlay positions stay accurate. Skip while a municipality is selected.
+  // the camera stays accurate. Skip while a municipality is selected.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || selectedRef.current) return;
@@ -235,9 +234,8 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
       });
       const c = map.getCenter();
       overviewCameraRef.current = { center: [c.lng, c.lat], zoom: map.getZoom() };
-      computeRegionPx();
     });
-  }, [sectionHeight, computeRegionPx]);
+  }, [sectionHeight]);
 
   async function ensureHousingReady(map: MapboxMap) {
     if (!housingReadyPromiseRef.current) {
@@ -459,8 +457,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         duration: 1200,
       });
     }
-    map.once('moveend', computeRegionPx);
-  }, [computeRegionPx]);
+  }, []);
 
   const handleListHover = useCallback((name: string | null) => {
     if (selectedRef.current) return;
@@ -500,7 +497,6 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
       // Save exact camera state so returnToOverview can replay it precisely.
       const c = map.getCenter();
       overviewCameraRef.current = { center: [c.lng, c.lat], zoom: map.getZoom() };
-      computeRegionPx();
 
       map.addSource(MUNICIPALITY_SOURCE, {
         type: 'geojson',
@@ -725,261 +721,399 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         selectMunicipality(initialMunicipality);
       }
     },
-    [selectMunicipality, initialMunicipality, returnToOverview, computeRegionPx],
+    [selectMunicipality, initialMunicipality, returnToOverview],
   );
 
-  // Buttons sit 200px left of the region's left edge (bounding box at 17.5°E), tracking it as the
-  // window resizes. Fallback of 340 gives ~140px from left before the map has loaded.
-  const regionLeft = regionPx?.left ?? 340;
-  const infoLeft = Math.max(regionLeft - 230, 8);
-  const toggleLeft = Math.max(regionLeft - 158, 72);
-  // Panel: snaps to 240px on large desktop (inside the 360px right shelf); 8px otherwise.
-  const panelRight = windowWidth >= 1280 ? 240 : 8;
-
   return (
-    <section ref={sectionRef} id={id} className="relative bg-canvas pb-6 overflow-hidden">
-      {/* Mobile: info button + dropdown on the same row */}
-      <div className="lg:hidden flex items-center gap-2 mb-2">
-        {/* Info button */}
-        <div className="relative flex-shrink-0">
-          <button
-            onClick={() => setInfoOpen((o) => !o)}
-            aria-label="Visa information om kartan"
-            className="w-14 h-14 rounded-full bg-canvas border border-white/10 flex items-center justify-center text-on-canvas/60 hover:text-on-canvas transition-colors"
-          >
-            <svg className="w-12 h-12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-            </svg>
-          </button>
-          {infoOpen && (
-            <div className="font-ui absolute top-full left-0 mt-2 z-50 bg-canvas/90 backdrop-blur-md rounded-xl border border-white/[0.07] p-3 w-64 text-xs text-on-canvas">
-              <p className="font-ui font-bold uppercase tracking-wide text-[10px] text-on-canvas/40 mb-2">
-                Teckenförklaring
-              </p>
-              <div className="flex flex-col gap-1.5 mb-3">
-                <div className="flex items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                    <path d="M2 9L9 2L16 9V16H12V11H6V16H2V9Z" fill={SMAHUS_COLOR} />
-                  </svg>
-                  <span>= 50 småhus</span>
+    <section
+      ref={sectionRef}
+      id={id}
+      className="textured-canvas relative py-12 sm:py-16 overflow-hidden"
+    >
+      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10">
+        {/* Mobile: info button + dropdown on the same row */}
+        <div className="lg:hidden flex items-center gap-2 mb-2">
+          {/* Info button */}
+          <div className="relative flex-shrink-0">
+            <button
+              onClick={() => setInfoOpen((o) => !o)}
+              aria-label="Visa information om kartan"
+              className="w-14 h-14 rounded-full bg-canvas border border-white/10 flex items-center justify-center text-on-canvas/60 hover:text-on-canvas transition-colors"
+            >
+              <svg className="w-12 h-12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+              </svg>
+            </button>
+            {infoOpen && (
+              <div className="font-ui absolute top-full left-0 mt-2 z-50 bg-canvas/90 backdrop-blur-md rounded-xl border border-white/[0.07] p-3 w-64 text-xs text-on-canvas">
+                <p className="font-ui font-bold uppercase tracking-wide text-[10px] text-on-canvas/40 mb-2">
+                  Teckenförklaring
+                </p>
+                <div className="flex flex-col gap-1.5 mb-3">
+                  <div className="flex items-center gap-2">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                      <path d="M2 9L9 2L16 9V16H12V11H6V16H2V9Z" fill={SMAHUS_COLOR} />
+                    </svg>
+                    <span>= 50 småhus</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
+                      <rect
+                        x="0"
+                        y="2"
+                        width="15"
+                        height="16"
+                        rx="0.5"
+                        fill={FLERBOSTADSHUS_COLOR}
+                      />
+                      <rect x="2" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                      <rect x="6" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                      <rect
+                        x="10"
+                        y="5"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                      <rect
+                        x="2"
+                        y="10"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                      <rect
+                        x="6"
+                        y="10"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                      <rect
+                        x="10"
+                        y="10"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                    </svg>
+                    <span>= 500 lägenheter (idag)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
+                      <rect
+                        x="0"
+                        y="2"
+                        width="15"
+                        height="16"
+                        rx="0.5"
+                        fill={FLERBOSTADSHUS_NEW_COLOR}
+                      />
+                      <rect x="2" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                      <rect x="6" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                      <rect
+                        x="10"
+                        y="5"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                      <rect
+                        x="2"
+                        y="10"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                      <rect
+                        x="6"
+                        y="10"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                      <rect
+                        x="10"
+                        y="10"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                    </svg>
+                    <span>= 500 lägenheter (planerade)</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
-                    <rect x="0" y="2" width="15" height="16" rx="0.5" fill={FLERBOSTADSHUS_COLOR} />
-                    <rect x="2" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="6" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="10" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="2" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="6" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="10" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                  </svg>
-                  <span>= 500 lägenheter (idag)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
-                    <rect
-                      x="0"
-                      y="2"
-                      width="15"
-                      height="16"
-                      rx="0.5"
-                      fill={FLERBOSTADSHUS_NEW_COLOR}
-                    />
-                    <rect x="2" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="6" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="10" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="2" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="6" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="10" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                  </svg>
-                  <span>= 500 lägenheter (planerade)</span>
+                <div className="border-t border-white/[0.07] pt-2 text-on-canvas/50 leading-relaxed">
+                  Enheterna är representativa och visar inte exakta adresser för befintliga
+                  bostäder. Planerad nybyggnation baseras på RUFS Bebyggelsestruktur.
                 </div>
               </div>
-              <div className="border-t border-white/[0.07] pt-2 text-on-canvas/50 leading-relaxed">
-                Enheterna är representativa och visar inte exakta adresser för befintliga bostäder.
-                Planerad nybyggnation baseras på RUFS Bebyggelsestruktur.
-              </div>
+            )}
+          </div>
+          {/* Dropdown */}
+          <div className="flex-1 relative">
+            <select
+              aria-label="Välj kommun"
+              value={selected || ''}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val) selectMunicipality(val);
+                else returnToOverview();
+              }}
+              className="w-full p-4 pr-10 rounded-2xl bg-canvas shadow-xl font-ui font-bold tracking-wide text-xl text-on-canvas appearance-none focus:outline-none focus:ring-2 focus:ring-white/20 border border-white/10"
+            >
+              <option value="">Välj kommun...</option>
+              {SORTED_MUNICIPALITIES.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg width="24" height="12" viewBox="0 0 36 18" fill="none" className="opacity-50">
+                <path
+                  d="M2 2L18 16L34 2"
+                  stroke="#9ca3af"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Map — framed "sticker" panel, rounded, no tilt (overlays hug its edges) */}
+        <div
+          className="sticker rounded-xl relative overflow-hidden"
+          style={{ height: sectionHeight }}
+        >
+          {shouldLoadMap ? (
+            <MapCanvas onMapReady={handleMapReady} />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="text-text-on-dark/40 text-sm">Loading map…</span>
             </div>
           )}
-        </div>
-        {/* Dropdown */}
-        <div className="flex-1 relative">
-          <select
-            aria-label="Välj kommun"
-            value={selected || ''}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (val) selectMunicipality(val);
-              else returnToOverview();
-            }}
-            className="w-full p-4 pr-10 rounded-2xl bg-canvas shadow-xl font-ui font-bold tracking-wide text-xl text-on-canvas appearance-none focus:outline-none focus:ring-2 focus:ring-white/20 border border-white/10"
+
+          {/* 1px black strips that cover any WebGL canvas edge artifact at top/bottom */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-canvas z-[5] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-canvas z-[5] pointer-events-none" />
+
+          {/* Transparent overlay to block Mapbox attribution clicks, sits behind info button */}
+          <div className="absolute bottom-0 left-0 w-72 h-10 z-[9] bg-transparent" />
+
+          {/* Desktop toggle — pinned near the map's top-left edge */}
+          <div className="hidden lg:flex absolute top-4 left-20 z-10">
+            <LayerToggle view={view} onChange={setView} variant="map" />
+          </div>
+
+          {/* Info button + panel — desktop overlay only, top-left corner */}
+          <div className="hidden lg:flex absolute top-4 left-4 z-10 flex-col items-start gap-2">
+            <button
+              onClick={() => setInfoOpen((o) => !o)}
+              aria-label="Visa information om kartan"
+              className="w-14 h-14 rounded-full bg-canvas/80 backdrop-blur-sm border border-white/10 flex items-center justify-center text-on-canvas/60 hover:text-on-canvas transition-colors"
+            >
+              <svg className="w-12 h-12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+              </svg>
+            </button>
+            {infoOpen && (
+              <div className="font-ui bg-canvas/90 backdrop-blur-md rounded-xl border border-white/[0.07] p-3 w-64 text-xs text-on-canvas">
+                <p className="font-ui font-bold uppercase tracking-wide text-[10px] text-on-canvas/40 mb-2">
+                  Teckenförklaring
+                </p>
+                <div className="flex flex-col gap-1.5 mb-3">
+                  <div className="flex items-center gap-2">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                      <path d="M2 9L9 2L16 9V16H12V11H6V16H2V9Z" fill={SMAHUS_COLOR} />
+                    </svg>
+                    <span>= 50 småhus</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
+                      <rect
+                        x="0"
+                        y="2"
+                        width="15"
+                        height="16"
+                        rx="0.5"
+                        fill={FLERBOSTADSHUS_COLOR}
+                      />
+                      <rect x="2" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                      <rect x="6" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                      <rect
+                        x="10"
+                        y="5"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                      <rect
+                        x="2"
+                        y="10"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                      <rect
+                        x="6"
+                        y="10"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                      <rect
+                        x="10"
+                        y="10"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                    </svg>
+                    <span>= 500 lägenheter (idag)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
+                      <rect
+                        x="0"
+                        y="2"
+                        width="15"
+                        height="16"
+                        rx="0.5"
+                        fill={FLERBOSTADSHUS_NEW_COLOR}
+                      />
+                      <rect x="2" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                      <rect x="6" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
+                      <rect
+                        x="10"
+                        y="5"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                      <rect
+                        x="2"
+                        y="10"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                      <rect
+                        x="6"
+                        y="10"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                      <rect
+                        x="10"
+                        y="10"
+                        width="3"
+                        height="3"
+                        rx="0.5"
+                        fill="white"
+                        opacity="0.55"
+                      />
+                    </svg>
+                    <span>= 500 lägenheter (planerade)</span>
+                  </div>
+                </div>
+                <div className="border-t border-white/[0.07] pt-2 text-on-canvas/50 leading-relaxed">
+                  Enheterna är representativa och visar inte exakta adresser för befintliga eller
+                  planerade bostäder. Mängden planerade bostäder är en uppskattning av hur målet för
+                  RUFS 2060 ska uppnås.
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Desktop list card — pinned to the map's right edge */}
+          <div
+            className={`hidden lg:block absolute top-4 right-4 z-10 w-[260px] h-[calc(100%-3rem)] transition-opacity duration-300 ease-in-out ${
+              selected ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+            }`}
           >
-            <option value="">Välj kommun...</option>
-            {SORTED_MUNICIPALITIES.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-            <svg width="24" height="12" viewBox="0 0 36 18" fill="none" className="opacity-50">
-              <path
-                d="M2 2L18 16L34 2"
-                stroke="#9ca3af"
-                strokeWidth="5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            <MunicipalityCard
+              isMobile={false}
+              municipalities={SORTED_MUNICIPALITIES}
+              selected={null}
+              view={view}
+              hoveredMunicipality={hoveredMunicipality}
+              onSelect={selectMunicipality}
+              onBack={returnToOverview}
+              onViewChange={setView}
+              onHoverMunicipality={handleListHover}
+            />
+          </div>
+
+          {/* Desktop Stats card — same position as list card */}
+          <div
+            className={`hidden lg:block absolute top-4 right-4 z-20 w-[260px] transition-opacity duration-300 ease-in-out ${
+              selected && stats
+                ? 'opacity-100 pointer-events-auto'
+                : 'opacity-0 pointer-events-none'
+            }`}
+          >
+            {displayStats && (
+              <StatsCard
+                selected={displayStats.name}
+                stats={displayStats.stats}
+                view={view}
+                onBack={returnToOverview}
               />
-            </svg>
+            )}
           </div>
         </div>
-      </div>
 
-      {/* Map — seamless, no card border */}
-      <div className="sticker relative" style={{ height: sectionHeight }}>
-        {shouldLoadMap ? (
-          <MapCanvas onMapReady={handleMapReady} />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="text-text-on-dark/40 text-sm">Loading map…</span>
-          </div>
-        )}
-
-        {/* 1px black strips that cover any WebGL canvas edge artifact at top/bottom */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-canvas z-[5] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-canvas z-[5] pointer-events-none" />
-
-        {/* Transparent overlay to block Mapbox attribution clicks, sits behind info button */}
-        <div className="absolute bottom-0 left-0 w-72 h-10 z-[9] bg-transparent" />
-
-        {/* Desktop toggle */}
-        <div className="hidden lg:flex absolute top-4 z-10" style={{ left: toggleLeft }}>
+        {/* Mobile toggle — below map on dark bg */}
+        <div className="lg:hidden mt-4 flex justify-center">
           <LayerToggle view={view} onChange={setView} variant="map" />
         </div>
 
-        {/* Info button + panel — desktop overlay only */}
-        <div
-          className="hidden lg:flex absolute top-4 z-10 flex-col items-start gap-2"
-          style={{ left: infoLeft }}
-        >
-          <button
-            onClick={() => setInfoOpen((o) => !o)}
-            aria-label="Visa information om kartan"
-            className="w-14 h-14 rounded-full bg-canvas/80 backdrop-blur-sm border border-white/10 flex items-center justify-center text-on-canvas/60 hover:text-on-canvas transition-colors"
-          >
-            <svg className="w-12 h-12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-            </svg>
-          </button>
-          {infoOpen && (
-            <div className="font-ui bg-canvas/90 backdrop-blur-md rounded-xl border border-white/[0.07] p-3 w-64 text-xs text-on-canvas">
-              <p className="font-ui font-bold uppercase tracking-wide text-[10px] text-on-canvas/40 mb-2">
-                Teckenförklaring
-              </p>
-              <div className="flex flex-col gap-1.5 mb-3">
-                <div className="flex items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                    <path d="M2 9L9 2L16 9V16H12V11H6V16H2V9Z" fill={SMAHUS_COLOR} />
-                  </svg>
-                  <span>= 50 småhus</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
-                    <rect x="0" y="2" width="15" height="16" rx="0.5" fill={FLERBOSTADSHUS_COLOR} />
-                    <rect x="2" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="6" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="10" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="2" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="6" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="10" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                  </svg>
-                  <span>= 500 lägenheter (idag)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
-                    <rect
-                      x="0"
-                      y="2"
-                      width="15"
-                      height="16"
-                      rx="0.5"
-                      fill={FLERBOSTADSHUS_NEW_COLOR}
-                    />
-                    <rect x="2" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="6" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="10" y="5" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="2" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="6" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                    <rect x="10" y="10" width="3" height="3" rx="0.5" fill="white" opacity="0.55" />
-                  </svg>
-                  <span>= 500 lägenheter (planerade)</span>
-                </div>
-              </div>
-              <div className="border-t border-white/[0.07] pt-2 text-on-canvas/50 leading-relaxed">
-                Enheterna är representativa och visar inte exakta adresser för befintliga eller
-                planerade bostäder. Mängden planerade bostäder är en uppskattning av hur målet för
-                RUFS 2060 ska uppnås.
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Desktop list card */}
-        <div
-          className={`hidden lg:block absolute top-4 z-10 w-[260px] h-[calc(100%-3rem)] transition-opacity duration-300 ease-in-out ${
-            selected ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
-          }`}
-          style={{ right: panelRight }}
-        >
-          <MunicipalityCard
-            isMobile={false}
-            municipalities={SORTED_MUNICIPALITIES}
-            selected={null}
-            view={view}
-            hoveredMunicipality={hoveredMunicipality}
-            onSelect={selectMunicipality}
-            onBack={returnToOverview}
-            onViewChange={setView}
-            onHoverMunicipality={handleListHover}
-          />
-        </div>
-
-        {/* Desktop Stats card — same position as list card */}
-        <div
-          className={`hidden lg:block absolute top-4 z-20 w-[260px] transition-opacity duration-300 ease-in-out ${
-            selected && stats ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-          }`}
-          style={{ right: panelRight }}
-        >
-          {displayStats && (
+        {/* Mobile Stats panel — below map */}
+        {selected && stats && displayStats && (
+          <div className="lg:hidden mt-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
             <StatsCard
               selected={displayStats.name}
               stats={displayStats.stats}
               view={view}
               onBack={returnToOverview}
             />
-          )}
-        </div>
+          </div>
+        )}
       </div>
-
-      {/* Mobile toggle — below map on dark bg */}
-      <div className="lg:hidden mt-4 flex justify-center">
-        <LayerToggle view={view} onChange={setView} variant="map" />
-      </div>
-
-      {/* Mobile Stats panel — below map */}
-      {selected && stats && displayStats && (
-        <div className="lg:hidden mt-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <StatsCard
-            selected={displayStats.name}
-            stats={displayStats.stats}
-            view={view}
-            onBack={returnToOverview}
-          />
-        </div>
-      )}
-      {/* 1px black strip covering any rendering artifact at the section's bottom boundary */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-canvas z-10 pointer-events-none" />
     </section>
   );
 }
