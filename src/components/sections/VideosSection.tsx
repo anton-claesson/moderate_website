@@ -13,7 +13,7 @@ export default function VideosSection({ id }: VideosSectionProps) {
         <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center">
           {/* Left: text column with red left border */}
           <div className="w-full md:w-3/5 space-y-8">
-            <p className="font-body font-bold uppercase text-xl sm:text-2xl leading-snug text-on-canvas/60">
+            <p className="font-body font-bold uppercase text-lg sm:text-xl leading-snug text-on-canvas/60">
               Socialdemokraternas svar till boende som inte vill tvångsblandas:
             </p>
             <blockquote className="rounded-xl bg-map-bg p-6 sm:p-8 border border-white/10 shadow-md shadow-black/20 font-display text-3xl sm:text-4xl leading-tight text-on-canvas uppercase">
