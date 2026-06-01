@@ -22,11 +22,12 @@ export const FLERBOSTADSHUS_COLOR = '#2C5282';
 export const FLERBOSTADSHUS_NEW_COLOR = '#D64045';
 
 // Map palette — blue-gray, matching the site. The map canvas sits slightly
-// lighter than the page surface (#2b3849) so it stands out; the 3D building
-// colors above are intentionally left untouched.
-export const MAP_BG_COLOR = '#3d4d61'; // map canvas — lighter than the page
+// lighter than the page and nudged a touch grayer (Request 1) so the blue housing
+// extrusions (esp. existing apartments, #2C5282) separate a bit more from the
+// surface. The 3D building colors above are intentionally left untouched.
+export const MAP_BG_COLOR = '#434e5b'; // map canvas — slightly grayer, lighter than the page
 export const NEIGHBOR_FILL_COLOR = MAP_BG_COLOR; // neighboring regions blend into the map canvas
-export const MUNICIPALITY_FILL_COLOR = '#54677d'; // municipality land — lighter than the canvas
+export const MUNICIPALITY_FILL_COLOR = '#586673'; // municipality land — slightly grayer, lighter than the canvas
 export const MUNICIPALITY_OUTLINE_COLOR = '#9aa9bd';
 export const MUNICIPALITY_DIM_COLOR = '#1c2733'; // dims non-selected municipalities
 export const MUNICIPALITY_HOVER_FILL_COLOR = '#c7d2e0'; // light highlight on hover

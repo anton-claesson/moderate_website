@@ -11,8 +11,10 @@
   /* Surface */
   --color-surface: #f7f5f2;
   --color-surface-muted: #edebe7;
-  /* Map canvas — a touch lighter than the page so the map stands out (Chunk 9) */
-  --color-map-bg: #3d4d61;
+  /* Map canvas — a touch lighter than the page so the map stands out (Chunk 9),
+     and nudged slightly grayer so the blue housing extrusions separate a bit more
+     from the surface (Request 1). Keep in sync with MAP_BG_COLOR in mapConfig.ts. */
+  --color-map-bg: #434e5b;
 
   /* Text */
   --color-text: #111111;
@@ -26,7 +28,7 @@
   /* Accent hover */
   --color-accent-hover: #991b1b;
 
-  /* Dark canvas — blue-gray cement (hero + content sections) */
+  /* Dark canvas — blue-gray cement (hero + content sections). */
   --color-canvas: #2b3849;
   --color-on-canvas: #f2f0eb;
   /* Panel surfaces sitting on the canvas (overlays, cards) */
