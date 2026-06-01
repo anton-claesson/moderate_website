@@ -25,11 +25,14 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
             href={PDF_HREF}
             target="_blank"
             rel="noopener noreferrer"
-            className="block rounded-xl bg-map-bg p-4 sm:p-6 border border-white/10 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-lg hover:shadow-black/30"
+            className="block rounded-xl bg-map-bg p-3 sm:p-4 border border-white/10 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-lg hover:shadow-black/30"
           >
-            <div className="flex flex-col sm:flex-row">
-              <figure className="min-w-0 flex-1 space-y-3">
-                <figcaption className="font-body text-base sm:text-lg font-semibold uppercase tracking-widest text-on-canvas/70">
+            {/* Islands overlap (negative margin) and the right one staggers DOWN so each
+                island's transparent corner nests into the other's, killing the centre gap.
+                Labels stay top-aligned and centred over their own image. */}
+            <div className="flex flex-col sm:flex-row sm:items-start">
+              <figure className="relative z-10 min-w-0 flex-1">
+                <figcaption className="mb-2 text-center font-display text-2xl sm:text-3xl uppercase tracking-wide text-on-canvas">
                   Idag
                 </figcaption>
                 <img
@@ -39,8 +42,8 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
                   className="w-full h-auto"
                 />
               </figure>
-              <figure className="min-w-0 flex-1 space-y-3 mt-6 border-t border-white/10 pt-6 sm:mt-0 sm:ml-6 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-6">
-                <figcaption className="font-body text-base sm:text-lg font-semibold uppercase tracking-widest text-on-canvas/70">
+              <figure className="relative min-w-0 flex-1 mt-6 sm:mt-0 sm:-ml-24">
+                <figcaption className="mb-2 text-center font-display text-2xl sm:text-3xl uppercase tracking-wide text-accent">
                   Planerat
                 </figcaption>
                 <img
