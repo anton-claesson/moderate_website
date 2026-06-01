@@ -93,7 +93,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
           style={{ animationDelay: '520ms' }}
         >
           <span className="font-display uppercase text-3xl sm:text-4xl leading-snug">
-            Se hur din kommun påverkas
+            Se hur <span className="text-accent">din kommun</span> påverkas
           </span>
           <svg
             width="32"

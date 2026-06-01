@@ -14,7 +14,7 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
           <h2 className="font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90 uppercase">
             Hur ser <span className="text-accent">förtätning</span> ut i praktiken?
           </h2>
-          <p className="font-body text-base sm:text-lg leading-snug text-on-canvas/75">
+          <p className="font-body font-bold uppercase tracking-wide text-xl sm:text-2xl text-on-canvas/75">
             Såhär vill Hyresgästföreningen förtäta Stockholms villaområden:
           </p>
         </div>
