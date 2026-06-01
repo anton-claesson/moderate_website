@@ -36,7 +36,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
 
         {/* Subheading */}
         <p
-          className="animate-fade-up font-body font-bold uppercase tracking-wide text-xl sm:text-2xl mb-6 max-w-5xl text-on-canvas/75"
+          className="animate-fade-up font-body font-bold uppercase tracking-wide text-lg sm:text-2xl mb-6 max-w-5xl text-on-canvas/75 hyphens-auto"
           style={{ animationDelay: '280ms' }}
         >
           <span className="text-accent">Beslutat:</span> 580 000 nya bostäder i Stockholmsregionen.
@@ -49,12 +49,12 @@ export default function IntroSection({ id }: IntroSectionProps) {
           className="animate-fade-up max-w-4xl space-y-3 mb-8"
           style={{ animationDelay: '360ms' }}
         >
-          <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
+          <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
             Socialdemokraterna, med regionstyrelsens ordförande Aida Hadžialić i spetsen, har drivit
             igenom en ny bostadspolitik i Region Stockholm. Alla Stockholms kommuner ska förtätas
             med storskalig höghusbebyggelse.
           </p>
-          <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
+          <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
             Stoppa miljonprogramsplanerna.{' '}
             <span className="font-bold">Rösta bort Socialdemokraterna den 13 september.</span>
           </p>
@@ -70,7 +70,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
           </button>
           {faktaOpen && (
             <div className="mt-3 border-l-2 border-on-canvas/15 pl-4">
-              <p className="font-body text-sm leading-relaxed text-on-canvas/45">
+              <p className="font-body text-sm leading-relaxed text-on-canvas/45 hyphens-auto">
                 <strong className="text-on-canvas/70">Fakta: </strong>
                 Socialdemokraterna, Vänsterpartiet, Miljöpartiet och Centerpartiet i Region
                 Stockholm har beslutat om en ny regional utvecklingsplan. I planen fastställs hur

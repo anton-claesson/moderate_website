@@ -190,6 +190,10 @@ body {
   color: var(--color-on-canvas);
   font-family: var(--font-sans);
   overflow-x: hidden;
+  /* Anti-overflow net for long Swedish compound words: break to a new line only
+     when a word would otherwise overflow (no hyphen inserted). Inherited, so it
+     cascades to every text element. Headlines get this; prose adds hyphens:auto. */
+  overflow-wrap: break-word;
 }
 
 .mapboxgl-ctrl-logo,

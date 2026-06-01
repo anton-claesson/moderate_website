@@ -12,7 +12,7 @@ export default function ContactSection({ id }: ContactSectionProps) {
           <h2 className="max-w-3xl font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90 uppercase">
             HJÄLP OSS STOPPA (S) NYA <span className="text-accent">MILJONPROGRAM</span>
           </h2>
-          <p className="max-w-3xl font-body text-base sm:text-lg leading-snug text-on-canvas/75">
+          <p className="max-w-3xl font-body text-base sm:text-lg leading-snug text-on-canvas/75 hyphens-auto">
             Tillsammans kan vi stoppa planerna. Lämna dina kontaktuppgifter här.
           </p>
         </div>

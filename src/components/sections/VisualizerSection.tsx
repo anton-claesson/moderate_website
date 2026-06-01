@@ -14,7 +14,7 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
           <h2 className="font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90 uppercase">
             Hur ser <span className="text-accent">förtätning</span> ut i praktiken?
           </h2>
-          <p className="font-body font-bold uppercase tracking-wide text-lg sm:text-xl text-on-canvas/75">
+          <p className="font-body font-bold uppercase tracking-wide text-lg sm:text-xl text-on-canvas/75 hyphens-auto">
             Såhär vill Hyresgästföreningen förtäta Stockholms villaområden:
           </p>
         </div>
@@ -59,12 +59,12 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
 
         {/* Bottom text */}
         <div className="space-y-4">
-          <p className="max-w-4xl font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
+          <p className="max-w-4xl font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
             Socialdemokraterna och Hyresgästföreningen krokar åter arm, denna gång i frågan om
             miljonprogram. På Lidingö vill de riva var femte villa och bygga hyreshus på var tredje
             villatomt.
           </p>
-          <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
+          <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
             Ovan är ett visuellt exempel på hur Hyresgästföreningen vill förtäta Lidingö.
           </p>
         </div>
