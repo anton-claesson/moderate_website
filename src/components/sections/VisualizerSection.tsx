@@ -43,7 +43,7 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
                 />
               </figure>
               <figure className="relative min-w-0 flex-1 mt-6 sm:mt-0 sm:-ml-24">
-                <figcaption className="mb-2 text-center font-display text-2xl sm:text-3xl uppercase tracking-wide text-accent">
+                <figcaption className="mb-2 text-center font-display text-2xl sm:text-3xl uppercase tracking-wide text-on-canvas">
                   Planerat
                 </figcaption>
                 <img

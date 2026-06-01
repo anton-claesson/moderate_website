@@ -18,8 +18,7 @@ export default function VideosSection({ id }: VideosSectionProps) {
               <span className="font-semibold text-accent">Flytta.</span>
             </p>
             <blockquote className="rounded-xl bg-map-bg p-6 sm:p-8 border border-white/10 shadow-md shadow-black/20 font-display text-3xl sm:text-4xl leading-tight text-on-canvas">
-              &ldquo;Vill de inte bo där så är de välkomna att{' '}
-              <span className="text-accent">flytta</span>.&rdquo;
+              &ldquo;Vill de inte bo där så är de välkomna att flytta.&rdquo;
             </blockquote>
             <div className="space-y-4">
               <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">

@@ -388,8 +388,8 @@ homogenization pass; Request 3 was scoped out into its own chunk (below).
   one key word highlighted in red. Contact heading normalized to `text-3xl sm:text-4xl`
   with "MILJONPROGRAM" red; Visualizer highlights "förtätning"; orphaned `pl-8` removed so
   content aligns flush-left; the two faint red accordion borders (Intro fakta, ContactForm
-  GDPR) neutralized to a non-red indent. News stays header-less; the Intro hero keeps its
-  masthead treatment.
+  GDPR) neutralized to a non-red indent. News later got a matching headline ("Vad säger
+  **media**?"); the Intro hero keeps its masthead treatment.
 
 ## Chunk 11 — OG-image aesthetic pass (deferred)
 
