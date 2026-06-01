@@ -383,10 +383,13 @@ homogenization pass; Request 3 was scoped out into its own chunk (below).
   (`mapConfig.ts` + `minimal-map-style.json` + `--color-map-bg`). The visualizer's inner
   box reuses `bg-map-bg`, so it greys with the map; the page canvas and 3D building colors
   are unchanged.
-- **Request 2 — consistent section design language (done).** Converted Contact's
-  horizontal red rule + 5xl heading to the canonical vertical red left-border + `pl-8`,
-  `text-3xl sm:text-4xl` header block used by Videos/Visualizer. News stays header-less;
-  the Intro hero keeps its masthead treatment.
+- **Request 2 — consistent section design language (done).** Dropped the red vertical
+  rules entirely (client dislikes them) and homogenized headings on the hero's device:
+  one key word highlighted in red. Contact heading normalized to `text-3xl sm:text-4xl`
+  with "MILJONPROGRAM" red; Visualizer highlights "förtätning"; orphaned `pl-8` removed so
+  content aligns flush-left; the two faint red accordion borders (Intro fakta, ContactForm
+  GDPR) neutralized to a non-red indent. News stays header-less; the Intro hero keeps its
+  masthead treatment.
 
 ## Chunk 11 — OG-image aesthetic pass (deferred)
 
