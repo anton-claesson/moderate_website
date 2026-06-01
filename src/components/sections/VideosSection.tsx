@@ -9,7 +9,7 @@ interface VideosSectionProps {
 export default function VideosSection({ id }: VideosSectionProps) {
   return (
     <section id={id} className="textured-canvas border-border">
-      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-16 sm:py-24">
+      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-12 sm:py-16">
         <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center">
           {/* Left: text column with red left border */}
           <div className="w-full md:w-3/5 space-y-8">
@@ -17,10 +17,11 @@ export default function VideosSection({ id }: VideosSectionProps) {
               Socialdemokraternas svar till boende som inte vill tvångsblandas:{' '}
               <span className="font-semibold text-accent">Flytta.</span>
             </p>
-            <blockquote className="font-display text-accent pt-8 text-3xl sm:text-4xl md:text-5xl leading-tight">
-              &ldquo;Vill de inte bo där så är de välkomna att flytta.&rdquo;
+            <blockquote className="rounded-xl bg-map-bg p-6 sm:p-8 border border-white/10 shadow-md shadow-black/20 font-display text-3xl sm:text-4xl leading-tight text-on-canvas">
+              &ldquo;Vill de inte bo där så är de välkomna att{' '}
+              <span className="text-accent">flytta</span>.&rdquo;
             </blockquote>
-            <div className="space-y-4 pt-8">
+            <div className="space-y-4">
               <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
                 Det sade en Socialdemokratisk företrädare under Stockholms regionfullmäktige den 11
                 november 2025, när den regionala utvecklingsplanen och den nya inriktningen för

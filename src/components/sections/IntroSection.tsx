@@ -92,7 +92,6 @@ export default function IntroSection({ id }: IntroSectionProps) {
           className="animate-fade-up flex items-center gap-3 text-on-canvas/70"
           style={{ animationDelay: '520ms' }}
         >
-          <div className="w-8 h-px bg-current flex-shrink-0" />
           <span className="font-body font-bold uppercase text-sm sm:text-lg tracking-[0.15em]">
             Se hur din kommun påverkas
           </span>

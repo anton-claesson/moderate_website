@@ -31,7 +31,7 @@ const articles = [
 export default function NewsSection({ id }: NewsSectionProps) {
   return (
     <section id={id} className="textured-canvas">
-      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-16 sm:py-24">
+      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-12 sm:py-16">
         {/* Image-filled cards: 1 col mobile → 3 cols desktop, filling the container width */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {articles.map((article) => (

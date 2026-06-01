@@ -8,7 +8,7 @@ const PDF_HREF =
 export default function VisualizerSection({ id }: VisualizerSectionProps) {
   return (
     <section id={id} className="textured-canvas border-border">
-      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-16 sm:py-24 space-y-10">
+      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-12 sm:py-16 space-y-10">
         {/* Top text — key word highlighted in red to echo the main title */}
         <div className="space-y-3">
           <h2 className="font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90">
