@@ -27,7 +27,9 @@ export const FLERBOSTADSHUS_NEW_COLOR = '#D64045';
 // surface. The 3D building colors above are intentionally left untouched.
 export const MAP_BG_COLOR = '#4d5765'; // map canvas — slightly grayer, a touch lighter than the page
 export const NEIGHBOR_FILL_COLOR = MAP_BG_COLOR; // neighboring regions blend into the map canvas
-export const MUNICIPALITY_FILL_COLOR = '#586673'; // municipality land — slightly grayer, lighter than the canvas
+// Municipality land shares the one map gray (= background, neighbors, and the
+// site's bg-map-bg elements); municipalities stay delineated by their outlines.
+export const MUNICIPALITY_FILL_COLOR = MAP_BG_COLOR;
 export const MUNICIPALITY_OUTLINE_COLOR = '#9aa9bd';
 export const MUNICIPALITY_DIM_COLOR = '#1c2733'; // dims non-selected municipalities
 export const MUNICIPALITY_HOVER_FILL_COLOR = '#c7d2e0'; // light highlight on hover
