@@ -56,9 +56,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
           </p>
           <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
             Stoppa miljonprogramsplanerna.{' '}
-            <span className="text-accent font-bold">
-              Rösta bort Socialdemokraterna den 13 september.
-            </span>
+            <span className="font-bold">Rösta bort Socialdemokraterna den 13 september.</span>
           </p>
         </div>
 
