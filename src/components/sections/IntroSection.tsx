@@ -89,15 +89,15 @@ export default function IntroSection({ id }: IntroSectionProps) {
 
         {/* CTA row */}
         <div
-          className="animate-fade-up flex items-center gap-3 text-on-canvas/70"
+          className="animate-fade-up flex items-center gap-3 text-on-canvas/90"
           style={{ animationDelay: '520ms' }}
         >
-          <span className="font-body font-bold uppercase text-sm sm:text-lg tracking-[0.15em]">
+          <span className="font-display uppercase text-3xl sm:text-4xl leading-snug">
             Se hur din kommun påverkas
           </span>
           <svg
-            width="24"
-            height="24"
+            width="32"
+            height="32"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
