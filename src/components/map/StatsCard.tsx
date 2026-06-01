@@ -11,7 +11,7 @@ interface StatsCardProps {
 
 export default function StatsCard({ selected, stats, view, onBack }: StatsCardProps) {
   return (
-    <div className="bg-canvas/80 backdrop-blur-md rounded-2xl border border-white/[0.07] overflow-hidden flex flex-col">
+    <div className="bg-map-bg/90 backdrop-blur-md rounded-2xl border border-white/[0.07] overflow-hidden flex flex-col">
       <div className="hidden md:flex px-4 pt-3 pb-2 border-b border-white/[0.07] items-center">
         <button
           onClick={onBack}
