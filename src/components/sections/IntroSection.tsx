@@ -71,7 +71,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
             {faktaOpen ? 'Dölj fakta' : 'Fakta om planen'}
           </button>
           {faktaOpen && (
-            <div className="mt-3 border-l-2 border-accent/20 pl-4">
+            <div className="mt-3 border-l-2 border-on-canvas/15 pl-4">
               <p className="font-body text-sm leading-relaxed text-on-canvas/45">
                 <strong className="text-on-canvas/70">Fakta: </strong>
                 Socialdemokraterna, Vänsterpartiet, Miljöpartiet och Centerpartiet i Region

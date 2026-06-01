@@ -12,7 +12,7 @@ export default function VideosSection({ id }: VideosSectionProps) {
       <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-16 sm:py-24">
         <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center">
           {/* Left: text column with red left border */}
-          <div className="w-full md:w-3/5 border-l-2 border-accent pl-8 space-y-8">
+          <div className="w-full md:w-3/5 space-y-8">
             <p className="font-body text-xl sm:text-2xl leading-snug text-on-canvas/60">
               Socialdemokraternas svar till boende som inte vill tvångsblandas:{' '}
               <span className="font-semibold text-accent">Flytta.</span>

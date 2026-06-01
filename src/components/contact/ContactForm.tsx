@@ -199,7 +199,7 @@ export default function ContactForm() {
           </button>
 
           {isGdprExpanded && (
-            <div className="font-body mt-3 text-xs text-on-canvas/70 leading-relaxed space-y-3 border-l-2 border-accent/20 pl-3">
+            <div className="font-body mt-3 text-xs text-on-canvas/70 leading-relaxed space-y-3 border-l-2 border-on-canvas/15 pl-3">
               <p>
                 Genom att lämna dina kontaktuppgifter samtycker du till att vi på Moderaterna då och
                 då hör av oss till dig med information om kampanjen och andra nyheter från

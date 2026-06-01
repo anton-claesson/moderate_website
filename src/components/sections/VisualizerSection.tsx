@@ -9,10 +9,10 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
   return (
     <section id={id} className="textured-canvas border-border">
       <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-16 sm:py-24 space-y-10">
-        {/* Top text — right-aligned with right accent border */}
-        <div className="text-left border-l-2 border-accent pl-8 md:pr-10 space-y-3">
+        {/* Top text — key word highlighted in red to echo the main title */}
+        <div className="space-y-3">
           <h2 className="font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90">
-            Hur ser förtätning ut i praktiken?
+            Hur ser <span className="text-accent">förtätning</span> ut i praktiken?
           </h2>
           <p className="font-body text-base sm:text-lg leading-snug text-on-canvas/75">
             Såhär vill Hyresgästföreningen förtäta Stockholms villaområden:
@@ -20,7 +20,7 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
         </div>
 
         {/* Both island renders in one raised panel, split into labelled "before / after" halves */}
-        <div className="max-w-6xl pl-8">
+        <div className="max-w-6xl">
           <a
             href={PDF_HREF}
             target="_blank"
@@ -59,12 +59,12 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
 
         {/* Bottom text */}
         <div className="space-y-4">
-          <p className="max-w-4xl pl-8 font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
+          <p className="max-w-4xl font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
             Socialdemokraterna och Hyresgästföreningen krokar åter arm, denna gång i frågan om
             miljonprogram. På Lidingö vill de riva var femte villa och bygga hyreshus på var tredje
             villatomt.
           </p>
-          <p className="font-body pl-8 text-base sm:text-lg leading-relaxed text-on-canvas/75">
+          <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75">
             Ovan är ett visuellt exempel på hur Hyresgästföreningen vill förtäta Lidingö.
           </p>
         </div>
