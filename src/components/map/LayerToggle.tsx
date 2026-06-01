@@ -8,7 +8,7 @@ interface LayerToggleProps {
 }
 
 const VIEWS: HousingView[] = ['current', 'planned'];
-const LABEL: Record<HousingView, string> = { current: 'IDAG', planned: 'PLANERAD' };
+const LABEL: Record<HousingView, string> = { current: 'IDAG', planned: 'PLANERAT' };
 
 export default function LayerToggle({
   view,
