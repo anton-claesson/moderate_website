@@ -10,7 +10,7 @@ const TWEET_URL = 'https://x.com/ktamsons/status/1988546499555348891';
 
 export default function VideosSection({ id }: VideosSectionProps) {
   return (
-    <section id={id} className="textured-canvas border-border">
+    <section id={id} className="textured-canvas cv-section border-border">
       <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-8 sm:py-12">
         <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center">
           {/* Left: text column with red left border */}

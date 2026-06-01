@@ -30,7 +30,7 @@ const articles = [
 
 export default function NewsSection({ id }: NewsSectionProps) {
   return (
-    <section id={id} className="textured-canvas">
+    <section id={id} className="textured-canvas cv-section">
       <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-8 sm:py-12">
         <h2 className="font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90 mb-8 uppercase">
           Vad säger <span className="text-accent">media</span>?

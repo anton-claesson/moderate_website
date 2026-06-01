@@ -601,9 +601,17 @@ for (const row of rows) {
   );
 }
 
+// Round all numbers to 5 decimals on write. At ~59°N that's sub-meter precision
+// (≈0.6 m lng / 1.1 m lat) — far finer than these representative building boxes
+// need — and it roughly halves the output file size (faster download + parse +
+// Mapbox ingestion). Integer heights are unaffected.
+function roundNumbers(_key: string, value: unknown): unknown {
+  return typeof value === 'number' ? Math.round(value * 1e5) / 1e5 : value;
+}
+
 function writeCollection(filePath: string, features: Feature<Polygon, HousingUnitProperties>[]) {
   const collection: HousingCollection = { type: 'FeatureCollection', features };
-  fs.writeFileSync(filePath, JSON.stringify(collection));
+  fs.writeFileSync(filePath, JSON.stringify(collection, roundNumbers));
   console.log(`✓ Wrote ${features.length} features → ${path.relative(process.cwd(), filePath)}`);
 }
 

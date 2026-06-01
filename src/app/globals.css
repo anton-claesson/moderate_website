@@ -135,45 +135,49 @@
 }
 
 /*
- * Textured surface for the dark canvas sections: blue-gray base color + a
- * procedural SVG grain (no image, no gradient — Chunk 11). Two grayscale
- * turbulence layers are composited so the texture reads coarse and irregular
- * rather than a fine regular screen: a low-frequency "blotch" cloud over a
- * mid-frequency speckle. Strength is the single --grain-opacity knob (:root,
- * per-section overridable). The grain rides in a ::after layer; children lift
- * above it.
+ * Page background: a blue-gray base color + a procedural SVG grain (no image
+ * files, no gradient). The grain lives in ONE .page-grain layer behind all the
+ * (transparent) sections rather than once per section, so the texture is
+ * continuous/seamless across section boundaries. It scrolls normally — NOT
+ * background-attachment: fixed — so the browser composites it on the GPU during
+ * scroll instead of repainting a big SVG noise on every section every frame,
+ * which is what made scrolling lag. Two grayscale turbulence tiles (a coarse
+ * "blotch" cloud + a fine speckle) are rasterized once and tiled. Strength is
+ * the single --grain-opacity knob.
  *
- * Seamlessness: `background-attachment: fixed` anchors the tile grid to the
- * viewport (not each section's box), so the texture is continuous across the
- * seams between stacked sections. To avoid seeing the tile *repeat* itself, the
- * coarse blotch tile is sized larger than a desktop viewport (2048px) so at most
- * one copy is ever on screen; the fine speckle repeats but at a scale too small
- * for the repeat to read.
+ * `.textured-canvas` is now just a transparent positioning context — sections
+ * carry no background of their own, so the shared grain shows through.
  */
 .textured-canvas {
   position: relative;
-  background-color: var(--color-canvas);
-  isolation: isolate;
 }
-.textured-canvas::after {
-  content: '';
+.page-grain {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   opacity: var(--grain-opacity);
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2048 2048'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
   background-repeat: repeat, repeat;
-  background-attachment: fixed, fixed;
+  /* Coarse tile is 1024px (was 2048) — quarters the GPU texture / raster cost;
+     the extra repeat is imperceptible at --grain-opacity. */
   background-size:
-    2048px 2048px,
+    1024px 1024px,
     512px 512px;
 }
-.textured-canvas > * {
-  position: relative;
-  z-index: 1;
+
+/*
+ * Skip rendering offscreen sections to keep scrolling cheap on this long page:
+ * the browser doesn't lay out / paint a section until it nears the viewport.
+ * `auto` in contain-intrinsic-size remembers each section's last rendered
+ * height so the scrollbar doesn't jump; 600px is just the pre-render estimate.
+ * Not applied to the map section (its WebGL canvas manages its own lifecycle).
+ */
+.cv-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
 }
 
 /*

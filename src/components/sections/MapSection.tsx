@@ -65,7 +65,14 @@ const OVERVIEW_PADDING_MOBILE = { top: 20, bottom: 20, left: 20, right: 20 };
 
 // Nudge the overview a touch tighter than fitBounds so the region fills the
 // framed container top-to-bottom (fitBounds otherwise leaves the padding margins).
+// On phones the framed map is short and the boost over-zooms / crops the region,
+// so drop it there and use the plain fitBounds framing.
 const OVERVIEW_ZOOM_BOOST = 0.3;
+
+function getOverviewZoomBoost(): number {
+  if (typeof window === 'undefined') return OVERVIEW_ZOOM_BOOST;
+  return window.innerWidth < 768 ? 0 : OVERVIEW_ZOOM_BOOST;
+}
 
 function getOverviewPadding() {
   if (typeof window === 'undefined') return OVERVIEW_PADDING_DESKTOP;
@@ -240,7 +247,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         bearing: OVERVIEW_BEARING,
         duration: 0,
       });
-      map.setZoom(map.getZoom() + OVERVIEW_ZOOM_BOOST);
+      map.setZoom(map.getZoom() + getOverviewZoomBoost());
       const c = map.getCenter();
       overviewCameraRef.current = { center: [c.lng, c.lat], zoom: map.getZoom() };
     });
@@ -503,7 +510,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         bearing: OVERVIEW_BEARING,
         duration: 0,
       });
-      map.setZoom(map.getZoom() + OVERVIEW_ZOOM_BOOST);
+      map.setZoom(map.getZoom() + getOverviewZoomBoost());
       // Save exact camera state so returnToOverview can replay it precisely.
       const c = map.getCenter();
       overviewCameraRef.current = { center: [c.lng, c.lat], zoom: map.getZoom() };
@@ -909,10 +916,21 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
           </div>
         </div>
 
-        {/* Map — framed "sticker" panel, rounded, no tilt (overlays hug its edges) */}
+        {/* Map — framed "sticker" panel, rounded, no tilt (overlays hug its edges).
+            translateZ(0) promotes this to its own compositor layer so the rounded
+            overflow-clip of the live WebGL canvas + the box-shadow are rasterized
+            once and composited during scroll, instead of repainting every frame
+            (which made scrolling lag around the map). */}
         <div
           className="sticker rounded-xl relative overflow-hidden"
-          style={{ height: sectionHeight }}
+          style={{
+            height: sectionHeight,
+            transform: 'translateZ(0)',
+            willChange: 'transform',
+            // No shadow on the map (keeps the white frame) — the big blur is the
+            // expensive half to paint as it scrolls.
+            boxShadow: 'none',
+          }}
         >
           {shouldLoadMap ? (
             <MapCanvas onMapReady={handleMapReady} />
