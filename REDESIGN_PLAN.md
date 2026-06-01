@@ -39,7 +39,8 @@ Features first, then design.
 - [x] Chunk 7 — Design-system foundation (fonts, palette, textured background)
 - [x] Chunk 8 — Apply palette + texture + fonts to content sections
 - [x] Chunk 9 — Map restyle to match the site
-- [ ] Chunk 10 — Homogenize sizing + responsive QA
+- [x] Chunk 10 — Homogenize sizing + responsive QA (+ client Requests 1 & 2, see below)
+- [ ] Chunk 11 — OG-image aesthetic pass (deferred; client Request 3)
 
 ---
 
@@ -368,6 +369,42 @@ possibly small shared utilities in `globals.css`.
 sit correctly, and the page looks intentional and seamless at every common width.
 
 **Commit:** `style: homogenize sizing, spacing, and responsive layout`
+
+---
+
+## Client design requests folded into Chunk 10
+
+Three requests came in with the Chunk 10 session. Requests 1 & 2 landed alongside the
+homogenization pass; Request 3 was scoped out into its own chunk (below).
+
+- **Request 1 — grayer map + visualizer (done).** The dark-blue existing-apartment
+  extrusion (`#2C5282`) read too close to the map surface. Nudged `MAP_BG_COLOR`,
+  `NEIGHBOR_FILL_COLOR`, and `MUNICIPALITY_FILL_COLOR` slightly grayer/lighter
+  (`mapConfig.ts` + `minimal-map-style.json` + `--color-map-bg`). The visualizer's inner
+  box reuses `bg-map-bg`, so it greys with the map; the page canvas and 3D building colors
+  are unchanged.
+- **Request 2 — consistent section design language (done).** Converted Contact's
+  horizontal red rule + 5xl heading to the canonical vertical red left-border + `pl-8`,
+  `text-3xl sm:text-4xl` header block used by Videos/Visualizer. News stays header-less;
+  the Intro hero keeps its masthead treatment.
+
+## Chunk 11 — OG-image aesthetic pass (deferred)
+
+Make the page feel closer to the OG poster (mixed-media newspaper collage). **Locked
+decisions** (so this can be executed without re-asking):
+
+- **Sticker style (3a)** — map, visualizer, news cards, tweet become _torn-paper / white
+  sticker_: thick white (paper) border + drop shadow + subtle tilt, with a clear hover lift.
+- **Texture (3b)** — **procedural only, no images.** The current `.textured-canvas` grain
+  is too fine and regular; rebuild it coarser and less uniform (layer multiple turbulence
+  frequencies / larger tile / irregularity), then raise `--grain-opacity` from 0. Reconsider
+  the exact recipe carefully at implementation time.
+- **Headline texture (3b)** — distress the **glyphs only, not the box** (clip grain to the
+  text via background-clip/mask) so letters look eroded like the OG numerals. A
+  `.headline-texture` scaffold already exists in `globals.css` (box overlay) and must be
+  reworked to the glyph-clipped approach.
+- **Background details (3b)** — subtle **bird silhouettes in the intro/hero only** (inline
+  SVG, lightweight). No skyline elsewhere.
 
 ---
 
