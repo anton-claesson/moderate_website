@@ -41,7 +41,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
           <path d="M0 8 L5 2 L8 6 L11 2 L16 8" transform="translate(150 58) scale(0.95)" />
         </g>
       </svg>
-      <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-10 flex flex-col flex-1 justify-center pb-10 pt-10 sm:py-20">
+      <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-10 flex flex-col flex-1 justify-center pt-10 pb-6 sm:pt-20 sm:pb-10">
         {/* Red bar above title */}
         <div
           className="animate-fade-up w-16 h-px bg-accent mb-6"
@@ -50,7 +50,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
 
         {/* Main headline */}
         <h1
-          className="headline-texture animate-fade-up font-display text-on-canvas leading-[0.95] mb-8"
+          className="animate-fade-up font-display text-on-canvas leading-[0.95] mb-8"
           style={{ fontSize: 'min(10vw, 6.5rem)', animationDelay: '80ms' }}
         >
           STOPPA (S) NYA
@@ -120,7 +120,7 @@ export default function IntroSection({ id }: IntroSectionProps) {
           className="animate-fade-up flex items-center gap-3 text-on-canvas/90"
           style={{ animationDelay: '520ms' }}
         >
-          <span className="headline-texture inline-block font-display uppercase text-3xl sm:text-4xl leading-snug">
+          <span className="font-display uppercase text-3xl sm:text-4xl leading-snug">
             Se hur <span className="text-accent">din kommun</span> påverkas
           </span>
         </div>

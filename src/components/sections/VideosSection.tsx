@@ -11,7 +11,7 @@ const TWEET_URL = 'https://x.com/ktamsons/status/1988546499555348891';
 export default function VideosSection({ id }: VideosSectionProps) {
   return (
     <section id={id} className="textured-canvas border-border">
-      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-12 sm:py-16">
+      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-8 sm:py-12">
         <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center">
           {/* Left: text column with red left border */}
           <div className="w-full md:w-3/5 space-y-8">
@@ -19,7 +19,7 @@ export default function VideosSection({ id }: VideosSectionProps) {
               Socialdemokraternas svar till boende som inte vill tvångsblandas:
             </p>
             <a href={TWEET_URL} target="_blank" rel="noopener noreferrer" className="block">
-              <blockquote className="sticker sticker-tilt rounded-lg bg-map-bg p-6 sm:p-8 font-display text-3xl sm:text-4xl leading-tight text-on-canvas uppercase">
+              <blockquote className="sticker sticker-lift rounded-lg bg-map-bg p-6 sm:p-8 font-display text-3xl sm:text-4xl leading-tight text-on-canvas uppercase">
                 &ldquo;Vill de inte bo där så är de välkomna att{' '}
                 <span className="text-accent">flytta</span>.&rdquo;
               </blockquote>

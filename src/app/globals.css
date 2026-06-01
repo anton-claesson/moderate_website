@@ -139,13 +139,16 @@
  * procedural SVG grain (no image, no gradient — Chunk 11). Two grayscale
  * turbulence layers are composited so the texture reads coarse and irregular
  * rather than a fine regular screen: a low-frequency "blotch" cloud over a
- * mid-frequency speckle, each on its own larger tile so the repeat is hard to
- * spot. Strength is the single --grain-opacity knob (:root, per-section
- * overridable). The grain rides in a ::after layer; children lift above it.
- * `background-attachment: fixed` anchors the tile grid to the viewport rather
- * than each section's box, so the texture stays continuous across the seams
- * between stacked sections instead of restarting (and showing a tile edge) at
- * every boundary.
+ * mid-frequency speckle. Strength is the single --grain-opacity knob (:root,
+ * per-section overridable). The grain rides in a ::after layer; children lift
+ * above it.
+ *
+ * Seamlessness: `background-attachment: fixed` anchors the tile grid to the
+ * viewport (not each section's box), so the texture is continuous across the
+ * seams between stacked sections. To avoid seeing the tile *repeat* itself, the
+ * coarse blotch tile is sized larger than a desktop viewport (2048px) so at most
+ * one copy is ever on screen; the fine speckle repeats but at a scale too small
+ * for the repeat to read.
  */
 .textured-canvas {
   position: relative;
@@ -160,13 +163,13 @@
   pointer-events: none;
   opacity: var(--grain-opacity);
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2048 2048'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
   background-repeat: repeat, repeat;
   background-attachment: fixed, fixed;
   background-size:
-    600px 600px,
-    300px 300px;
+    2048px 2048px,
+    512px 512px;
 }
 .textured-canvas > * {
   position: relative;
@@ -174,30 +177,10 @@
 }
 
 /*
- * Distress for big headlines — eroded GLYPHS, not the box (Chunk 11). A
- * grayscale noise is used as a mask over the heading so tiny bites are eaten
- * out of the letterforms (like the worn numerals on the OG poster), affecting
- * the white and red parts alike. The noise is gamma-pushed bright so most of
- * each glyph stays solid and legible; only sparse specks erode. Where mask
- * isn't supported the text simply renders solid (graceful fallback).
- * Apply to a block / inline-block heading element.
- */
-.headline-texture {
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='gamma' exponent='0.25'/%3E%3CfeFuncG type='gamma' exponent='0.25'/%3E%3CfeFuncB type='gamma' exponent='0.25'/%3E%3CfeFuncA type='gamma' exponent='0.25'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23h)'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='gamma' exponent='0.25'/%3E%3CfeFuncG type='gamma' exponent='0.25'/%3E%3CfeFuncB type='gamma' exponent='0.25'/%3E%3CfeFuncA type='gamma' exponent='0.25'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23h)'/%3E%3C/svg%3E");
-  -webkit-mask-size: 240px 240px;
-  mask-size: 240px 240px;
-  -webkit-mask-repeat: repeat;
-  mask-repeat: repeat;
-}
-
-/*
- * Torn-paper / white "sticker" treatment (Chunk 11): a thick paper border, a
- * drop shadow and a transition for a hover lift, giving the mixed-media collage
- * feel. `.sticker` alone = a square-on frame (use on the interactive map, where
- * a tilt would misalign the pixel-positioned overlays). Add `.sticker-tilt` for
- * the subtle rotation + hover lift; the angle is the per-element --tilt knob so
- * cards can scatter (e.g. style="--tilt:1deg").
+ * White "sticker" treatment (Chunk 11): a thick paper border + drop shadow,
+ * giving the mixed-media collage feel. No tilt — the frame sits square-on.
+ * `.sticker-lift` adds a subtle hover lift for clickable cards (omit it on the
+ * interactive map, which shouldn't move under the cursor).
  */
 .sticker {
   border: 0.5rem solid #f4f1ea;
@@ -213,12 +196,8 @@
     0 24px 46px -12px rgba(0, 0, 0, 0.68),
     0 4px 14px rgba(0, 0, 0, 0.4);
 }
-.sticker-tilt {
-  --tilt: -0.5deg;
-  transform: rotate(var(--tilt));
-}
-.sticker-tilt:hover {
-  transform: rotate(var(--tilt)) translateY(-3px);
+.sticker-lift:hover {
+  transform: translateY(-3px);
 }
 
 html {

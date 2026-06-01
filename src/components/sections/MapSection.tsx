@@ -63,6 +63,10 @@ const OVERVIEW_PADDING_TABLET = { top: 40, bottom: 40, left: 20, right: 20 };
 // <1024px (mobile + portrait tablet): 20px breathing room on each side.
 const OVERVIEW_PADDING_MOBILE = { top: 20, bottom: 20, left: 20, right: 20 };
 
+// Nudge the overview a touch tighter than fitBounds so the region fills the
+// framed container top-to-bottom (fitBounds otherwise leaves the padding margins).
+const OVERVIEW_ZOOM_BOOST = 0.3;
+
 function getOverviewPadding() {
   if (typeof window === 'undefined') return OVERVIEW_PADDING_DESKTOP;
   const w = window.innerWidth;
@@ -76,11 +80,14 @@ function getOverviewPadding() {
 // many pixels as one degree of longitude, giving: latSpan / (lngSpan × cos(lat)).
 const STOCKHOLM_ASPECT_RATIO = 1.6 / (1.6 * Math.cos((59.45 * Math.PI) / 180));
 
-// The map is now a centered, framed panel (max-w-7xl + section padding + the
-// sticker border), so the available width is the container's, not the window's.
+// The map is a centered, framed panel sized a touch wider than the 80rem content
+// column (MAP_MAX_WIDTH / max-w-[88rem]), so the available width is its
+// container's, not the window's.
+const MAP_MAX_WIDTH = 1408; // 88rem — a bit wider than the rest of the page
+
 function getMapWidth(): number {
   const w = window.innerWidth;
-  const container = Math.min(w, 1280); // max-w-7xl (80rem)
+  const container = Math.min(w, MAP_MAX_WIDTH);
   const px = w >= 640 ? 40 : 16; // px-4 / sm:px-10
   const border = 8; // 0.5rem sticker border, each side
   return container - 2 * px - 2 * border;
@@ -91,7 +98,8 @@ function getIdealSectionHeight(): number {
   const pad = getOverviewPadding();
   const availW = getMapWidth() - pad.left - pad.right;
   const ideal = availW * STOCKHOLM_ASPECT_RATIO + pad.top + pad.bottom;
-  return Math.round(Math.min(ideal, window.innerHeight));
+  // Cap below the viewport so the framed map reads a bit shorter / less dominant.
+  return Math.round(Math.min(ideal, window.innerHeight * 0.85));
 }
 
 const MUNICIPALITY_FILL_LAYER = 'municipalities-fill';
@@ -232,6 +240,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         bearing: OVERVIEW_BEARING,
         duration: 0,
       });
+      map.setZoom(map.getZoom() + OVERVIEW_ZOOM_BOOST);
       const c = map.getCenter();
       overviewCameraRef.current = { center: [c.lng, c.lat], zoom: map.getZoom() };
     });
@@ -494,6 +503,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         bearing: OVERVIEW_BEARING,
         duration: 0,
       });
+      map.setZoom(map.getZoom() + OVERVIEW_ZOOM_BOOST);
       // Save exact camera state so returnToOverview can replay it precisely.
       const c = map.getCenter();
       overviewCameraRef.current = { center: [c.lng, c.lat], zoom: map.getZoom() };
@@ -728,9 +738,9 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
     <section
       ref={sectionRef}
       id={id}
-      className="textured-canvas relative py-12 sm:py-16 overflow-hidden"
+      className="textured-canvas relative pt-2 pb-8 sm:pt-3 sm:pb-12 overflow-hidden"
     >
-      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10">
+      <div className="mx-auto max-w-[88rem] w-full px-4 sm:px-10">
         {/* Mobile: info button + dropdown on the same row */}
         <div className="lg:hidden flex items-center gap-2 mb-2">
           {/* Info button */}
