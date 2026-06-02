@@ -7,8 +7,8 @@ const PDF_HREF =
 
 export default function VisualizerSection({ id }: VisualizerSectionProps) {
   return (
-    <section id={id} className="textured-canvas border-border">
-      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-12 sm:py-16 space-y-10">
+    <section id={id} className="textured-canvas cv-section border-border">
+      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-8 sm:py-12 space-y-10">
         {/* Top text — key word highlighted in red to echo the main title */}
         <div className="space-y-3">
           <h2 className="font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90 uppercase">
@@ -25,7 +25,7 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
             href={PDF_HREF}
             target="_blank"
             rel="noopener noreferrer"
-            className="block rounded-xl bg-map-bg p-3 sm:p-4 border border-white/10 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-lg hover:shadow-black/30"
+            className="sticker sticker-lift block rounded-lg bg-map-bg p-3 sm:p-4"
           >
             {/* Islands overlap (negative margin) and the right one staggers DOWN so each
                 island's transparent corner nests into the other's, killing the centre gap.
@@ -59,13 +59,14 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
 
         {/* Bottom text */}
         <div className="space-y-4">
-          <p className="max-w-4xl font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
+          <p className="max-w-5xl font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
             Socialdemokraterna och Hyresgästföreningen krokar åter arm, denna gång i frågan om
-            miljonprogram. På Lidingö vill de riva var femte villa och bygga hyreshus på var tredje
-            villatomt.
+            miljonprogram.
           </p>
-          <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
-            Ovan är ett visuellt exempel på hur Hyresgästföreningen vill förtäta Lidingö.
+          <p className="max-w-6xl font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
+            Hyresgästföreningens modell för länets villakvarter. Här illustreras den ”varsamma”
+            varianten med flerbostadshus mellan villorna.
+            <br></br>Rapportens andra scenario går längre och bygger på att var femte villa rivs.
           </p>
         </div>
       </div>

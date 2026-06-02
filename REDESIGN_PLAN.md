@@ -40,7 +40,7 @@ Features first, then design.
 - [x] Chunk 8 — Apply palette + texture + fonts to content sections
 - [x] Chunk 9 — Map restyle to match the site
 - [x] Chunk 10 — Homogenize sizing + responsive QA (+ client Requests 1 & 2, see below)
-- [ ] Chunk 11 — OG-image aesthetic pass (deferred; client Request 3)
+- [x] Chunk 11 — OG-image aesthetic pass (deferred; client Request 3)
 
 ---
 
