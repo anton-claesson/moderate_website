@@ -1,5 +1,6 @@
 import Footer from '@/components/Footer';
 import IntroSection from '@/components/sections/IntroSection';
+import IntroInfoSection from '@/components/sections/IntroInfoSection';
 import MapSection from '@/components/sections/MapSection';
 import VideosSection from '@/components/sections/VideosSection';
 import VisualizerSection from '@/components/sections/VisualizerSection';
@@ -32,6 +33,7 @@ export default async function Home({ searchParams }: Props) {
       <main className="relative z-10 flex flex-col flex-1 w-full">
         <IntroSection id="intro" />
         <MapSection id="map" initialMunicipality={initialMunicipality} />
+        <IntroInfoSection id="intro-info" />
         <VideosSection id="videos" />
         <VisualizerSection id="visualizer" />
         <NewsSection id="news" />
