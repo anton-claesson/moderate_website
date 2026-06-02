@@ -31,14 +31,6 @@ export default function IntroSection({ id }: IntroSectionProps) {
           style={{ animationDelay: '200ms' }}
         />
 
-        {/* Subheading */}
-        <p
-          className="animate-fade-up font-body font-bold uppercase tracking-wide text-lg sm:text-2xl mb-6 max-w-6xl text-on-canvas/75 hyphens-auto"
-          style={{ animationDelay: '280ms' }}
-        >
-          Nya miljonprogram med 580 000 fler bostäder bara i Stockholmsregionen.
-        </p>
-
         {/* CTA row — lead-in to the map below */}
         <div
           className="animate-fade-up flex items-center gap-3 text-on-canvas/90"

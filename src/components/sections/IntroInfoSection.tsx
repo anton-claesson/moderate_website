@@ -17,7 +17,17 @@ export default function IntroInfoSection({ id }: IntroInfoSectionProps) {
         variant="info"
         className="right-2 sm:right-10 top-6 w-44 sm:w-72"
       />
+
       <div className="relative mx-auto max-w-7xl w-full px-4 sm:px-10 py-8 sm:py-12">
+        {/* Subheading */}
+        <h2
+          className="animate-fade-up font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90 uppercase mb-6 max-w-6xl hyphens-auto"
+          style={{ animationDelay: '280ms' }}
+        >
+          Nya miljonprogram med <span className="text-accent">580 000 fler bostäder</span> bara i
+          Stockholmsregionen.
+        </h2>
+
         {/* Body text */}
         <div className="max-w-5xl space-y-3 mb-8">
           <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
