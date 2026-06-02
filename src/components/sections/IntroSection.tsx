@@ -66,12 +66,10 @@ export default function IntroSection({ id }: IntroSectionProps) {
 
         {/* Subheading */}
         <p
-          className="animate-fade-up font-body font-bold uppercase tracking-wide text-lg sm:text-2xl mb-6 max-w-5xl text-on-canvas/75 hyphens-auto"
+          className="animate-fade-up font-body font-bold uppercase tracking-wide text-lg sm:text-2xl mb-6 max-w-6xl text-on-canvas/75 hyphens-auto"
           style={{ animationDelay: '280ms' }}
         >
-          <span className="text-accent">Beslutat:</span> 580 000 nya bostäder i Stockholmsregionen.
-          <br />
-          Förtätningar och försämringar i din trädgård och på ditt torg.
+          Nya miljonprogram med 580 000 fler bostäder bara i Stockholmsregionen.
         </p>
 
         {/* Body text */}

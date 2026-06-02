@@ -7,7 +7,8 @@ export default function VideosSection({ id }: VideosSectionProps) {
     <section id={id} className="textured-canvas cv-section border-border">
       <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-8 sm:py-12">
         <p className="font-body font-bold tracking-wide text-lg sm:text-xl leading-snug text-on-canvas/75 hyphens-auto mb-8">
-          Socialdemokraternas svar till stockholmare som inte vill ha ett miljonprogram i trädgården:
+          Socialdemokraternas svar till stockholmare som inte vill ha ett miljonprogram i
+          trädgården:
         </p>
         <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center">
           {/* Left: text column */}
@@ -18,7 +19,7 @@ export default function VideosSection({ id }: VideosSectionProps) {
             </blockquote>
             <div className="space-y-4">
               <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
-                Det sade en Socialdemokratisk företrädare under Stockholms regionfullmäktige den 11
+                Det sade en socialdemokratisk gruppledare under Stockholms regionfullmäktige den 11
                 november 2025, när den regionala utvecklingsplanen och den nya inriktningen för
                 bostadsbyggandet i länet debatterades.
               </p>

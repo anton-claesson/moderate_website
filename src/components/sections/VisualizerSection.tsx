@@ -59,13 +59,14 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
 
         {/* Bottom text */}
         <div className="space-y-4">
-          <p className="max-w-4xl font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
+          <p className="max-w-5xl font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
             Socialdemokraterna och Hyresgästföreningen krokar åter arm, denna gång i frågan om
-            miljonprogram. På Lidingö vill de riva var femte villa och bygga hyreshus på var tredje
-            villatomt.
+            miljonprogram.
           </p>
-          <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
-            Ovan är ett visuellt exempel på hur Hyresgästföreningen vill förtäta Lidingö.
+          <p className="max-w-6xl font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
+            Hyresgästföreningens modell för länets villakvarter. Här illustreras den ”varsamma”
+            varianten med flerbostadshus mellan villorna.
+            <br></br>Rapportens andra scenario går längre och bygger på att var femte villa rivs.
           </p>
         </div>
       </div>
