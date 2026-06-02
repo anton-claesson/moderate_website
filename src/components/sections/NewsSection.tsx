@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import BirdFlock from '@/components/ui/BirdFlock';
 
 interface NewsSectionProps {
   id: string;
@@ -30,8 +31,13 @@ const articles = [
 
 export default function NewsSection({ id }: NewsSectionProps) {
   return (
-    <section id={id} className="textured-canvas cv-section">
-      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-8 sm:py-12">
+    <section id={id} className="textured-canvas cv-section overflow-hidden">
+      <BirdFlock
+        filterId="birds-between"
+        variant="between"
+        className="left-1/2 -translate-x-1/2 top-4 w-60 sm:w-96"
+      />
+      <div className="relative mx-auto max-w-7xl w-full px-4 sm:px-10 py-8 sm:py-12">
         <h2 className="font-display text-3xl sm:text-4xl leading-snug text-on-canvas/90 mb-8 uppercase">
           Vad sägs det i <span className="text-accent">media</span>?
         </h2>

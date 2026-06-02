@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import BirdFlock from '@/components/ui/BirdFlock';
 
 interface IntroInfoSectionProps {
   id: string;
@@ -10,18 +11,19 @@ export default function IntroInfoSection({ id }: IntroInfoSectionProps) {
   const [faktaOpen, setFaktaOpen] = useState(false);
 
   return (
-    <section id={id} className="textured-canvas cv-section">
-      <div className="mx-auto max-w-7xl w-full px-4 sm:px-10 py-8 sm:py-12">
+    <section id={id} className="textured-canvas cv-section overflow-hidden">
+      <BirdFlock
+        filterId="birds-info"
+        variant="info"
+        className="right-2 sm:right-10 top-6 w-44 sm:w-72"
+      />
+      <div className="relative mx-auto max-w-7xl w-full px-4 sm:px-10 py-8 sm:py-12">
         {/* Body text */}
         <div className="max-w-5xl space-y-3 mb-8">
           <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
             Socialdemokraterna, med regionstyrelsens ordförande Aida Hadžialić i spetsen, har drivit
             igenom en ny bostadspolitik i Region Stockholm. Alla Stockholms kommuner ska förtätas
             med storskalig höghusbebyggelse.
-          </p>
-          <p className="font-body text-base sm:text-lg leading-relaxed text-on-canvas/75 hyphens-auto">
-            Stoppa miljonprogramsplanerna.{' '}
-            <span className="font-bold">Rösta bort Socialdemokraterna den 13 september.</span>
           </p>
         </div>
 

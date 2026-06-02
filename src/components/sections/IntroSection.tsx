@@ -7,7 +7,7 @@ interface IntroSectionProps {
 export default function IntroSection({ id }: IntroSectionProps) {
   return (
     <section id={id} className="textured-canvas relative w-full flex flex-col overflow-hidden">
-      <BirdFlock filterId="birds-hero" className="right-4 top-10 w-44 sm:w-72" />
+      <BirdFlock filterId="birds-hero" variant="hero" className="right-4 top-10 w-52 sm:w-120" />
       <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-10 flex flex-col flex-1 justify-center pt-10 pb-6 sm:pt-20 sm:pb-10">
         {/* Red bar above title */}
         <div

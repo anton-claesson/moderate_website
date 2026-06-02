@@ -11,8 +11,8 @@ export default function VideosSection({ id }: VideosSectionProps) {
           trädgården:
         </p>
         <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center">
-          {/* Left: text column */}
-          <div className="w-full md:w-3/5 space-y-8">
+          {/* Left: quote + body text */}
+          <div className="w-full md:w-1/2 space-y-8">
             <blockquote className="font-display text-3xl sm:text-4xl leading-tight text-on-canvas uppercase">
               &ldquo;Vill de inte bo där så är de välkomna att{' '}
               <span className="text-accent">flytta</span>.&rdquo;
@@ -31,7 +31,7 @@ export default function VideosSection({ id }: VideosSectionProps) {
           </div>
 
           {/* Right: video sticker, vertically centered */}
-          <div className="w-full md:w-42/100 flex-shrink-0">
+          <div className="w-full md:w-1/2 flex-shrink-0">
             <video
               controls
               playsInline
