@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Anton, Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
@@ -26,6 +26,10 @@ export const metadata: Metadata = {
       'Alla Stockholms kommuner ska förtätas med storskalig höghusbebyggelse. Se hur din kommun påverkas.',
     images: ['/og_image.jpg'],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#2b3849',
 };
 
 export default function RootLayout({
