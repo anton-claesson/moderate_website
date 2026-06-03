@@ -71,6 +71,9 @@ export default function NewsSection({ id }: NewsSectionProps) {
               {/* Outlet logo — Aftonbladet in its black-on-yellow brand mark, others white */}
               {article.source === 'Aftonbladet' ? (
                 <span className="absolute top-4 left-4 inline-flex items-center rounded bg-[#FFE600] px-2 py-1.5 shadow">
+                  {/* Plain <img>: SVG logos aren't optimized by next/image and rely on
+                      height-only (w-auto) sizing, which next/image doesn't support. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={article.logo}
                     alt={article.source}
@@ -78,6 +81,9 @@ export default function NewsSection({ id }: NewsSectionProps) {
                   />
                 </span>
               ) : (
+                // Plain <img>: SVG logos aren't optimized by next/image and rely on
+                // height-only (w-auto) sizing, which next/image doesn't support.
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={article.logo}
                   alt={article.source}
