@@ -41,6 +41,7 @@ import StatsCard from '@/components/map/StatsCard';
 import LayerToggle from '@/components/map/LayerToggle';
 import { HOUSING_STATS } from '@/data/housingStats';
 import type { MunicipalityStats } from '@/data/housingStats';
+import { track } from '@vercel/analytics';
 
 const MapCanvas = dynamic(() => import('@/components/map/MapCanvas'), {
   ssr: false,
@@ -281,6 +282,8 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
     if (!map) return;
     if (!MUNICIPALITY_CENTROIDS[name]) return;
 
+    track('municipality_selected', { municipality: name });
+
     selectedRef.current = name;
     setSelected(name);
     setView('planned');
@@ -473,6 +476,11 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
         duration: 1200,
       });
     }
+  }, []);
+
+  const handleViewChange = useCallback((next: HousingView) => {
+    track('layer_toggled', { view: next });
+    setView(next);
   }, []);
 
   const handleListHover = useCallback((name: string | null) => {
@@ -949,7 +957,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
 
           {/* Desktop toggle — pinned near the map's top-left edge */}
           <div className="hidden lg:flex absolute top-4 left-20 z-10">
-            <LayerToggle view={view} onChange={setView} variant="map" />
+            <LayerToggle view={view} onChange={handleViewChange} variant="map" />
           </div>
 
           {/* Info button + panel — desktop overlay only, top-left corner */}
@@ -1101,7 +1109,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
               hoveredMunicipality={hoveredMunicipality}
               onSelect={selectMunicipality}
               onBack={returnToOverview}
-              onViewChange={setView}
+              onViewChange={handleViewChange}
               onHoverMunicipality={handleListHover}
             />
           </div>
@@ -1127,7 +1135,7 @@ export default function MapSection({ id, initialMunicipality }: MapSectionProps)
 
         {/* Mobile toggle — below map on dark bg */}
         <div className="lg:hidden mt-4 flex justify-center">
-          <LayerToggle view={view} onChange={setView} variant="map" />
+          <LayerToggle view={view} onChange={handleViewChange} variant="map" />
         </div>
 
         {/* Mobile Stats panel — below map */}

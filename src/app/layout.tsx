@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Anton, Inter } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 
 // Headline: heavy condensed grotesque (poster lettering). Single weight.
@@ -39,7 +40,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://events.mapbox.com" />
         <link rel="dns-prefetch" href="https://tiles.mapbox.com" />
       </head>
-      <body className="min-h-full w-full flex flex-col">{children}</body>
+      <body className="min-h-full w-full flex flex-col">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
