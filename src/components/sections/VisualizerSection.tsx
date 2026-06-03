@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 interface VisualizerSectionProps {
   id: string;
 }
@@ -35,10 +37,12 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
                 <figcaption className="mb-2 text-center font-display text-2xl sm:text-3xl uppercase tracking-wide text-on-canvas">
                   Idag
                 </figcaption>
-                <img
+                <Image
                   src="/rufs_before.png"
                   alt="Villaområde – före förtätning"
-                  loading="lazy"
+                  width={1400}
+                  height={672}
+                  sizes="(min-width: 640px) 50vw, 100vw"
                   className="w-full h-auto"
                 />
               </figure>
@@ -46,10 +50,12 @@ export default function VisualizerSection({ id }: VisualizerSectionProps) {
                 <figcaption className="mb-2 text-center font-display text-2xl sm:text-3xl uppercase tracking-wide text-on-canvas">
                   Planerat
                 </figcaption>
-                <img
+                <Image
                   src="/rufs_after.png"
                   alt="Trädgårdsstad – efter förtätning"
-                  loading="lazy"
+                  width={1400}
+                  height={672}
+                  sizes="(min-width: 640px) 50vw, 100vw"
                   className="w-full h-auto"
                 />
               </figure>
