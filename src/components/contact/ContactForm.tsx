@@ -228,7 +228,7 @@ export default function ContactForm() {
                 flera andra rättigheter, t.ex. rätten att begära att få information om vilka
                 personuppgifter som vi behandlar. Läs mer i vår{' '}
                 <a
-                  href="https://tillsammans.moderaterna.se/raddalidingo?cb_vid=963#:~:text=mer%20i%20v%C3%A5r-,integritetspolicy,-och%20cookiepolicy."
+                  href="https://moderaterna.se/integritetspolicy/hur-vi-hanterar-dina-personuppgifter/?cb_vid=963"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline hover:text-on-canvas font-semibold"
